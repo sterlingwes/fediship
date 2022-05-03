@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import HTMLView from 'react-native-htmlview';
 import {TStatus} from '../types';
@@ -19,6 +19,24 @@ const getType = (props: TStatus) => {
   return 'toot';
 };
 
+const CollapsedStatus = (props: TStatus) => {
+  const [collapsed, setCollapsed] = useState(true);
+
+  return (
+    <View>
+      <Text style={styles.spoilerText}>{props.spoiler_text}</Text>
+      <TouchableOpacity
+        onPress={() => setCollapsed(!collapsed)}
+        style={styles.collapsedButton}>
+        <Text style={styles.buttonLabel}>
+          {collapsed ? 'Show more' : 'Show less'}
+        </Text>
+      </TouchableOpacity>
+      {!collapsed && <HTMLView value={props.content} stylesheet={nodeStyles} />}
+    </View>
+  );
+};
+
 export const Status = (
   props: TStatus & {onPress: () => void; onPressAvatar?: () => void},
 ) => {
@@ -36,7 +54,11 @@ export const Status = (
           />
         </TouchableOpacity>
         <View style={styles.statusMessage}>
-          <HTMLView value={props.content} stylesheet={nodeStyles} />
+          {props.sensitive ? (
+            <CollapsedStatus {...props} />
+          ) : (
+            <HTMLView value={props.content} stylesheet={nodeStyles} />
+          )}
           {props.poll && <Poll {...props.poll} />}
           {props.reblog && props.reblog.poll && <Poll {...props.reblog.poll} />}
           <Text style={styles.statusUser}>
@@ -56,6 +78,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     minHeight: 100,
+  },
+  collapsedButton: {
+    backgroundColor: 'black',
+    padding: 5,
+    borderRadius: 2,
+    width: '50%',
+    marginVertical: 8,
+  },
+  buttonLabel: {
+    color: 'grey',
+    textAlign: 'center',
+  },
+  spoilerText: {
+    color: 'white',
   },
   statusContainer: {
     flex: 1,

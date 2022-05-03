@@ -15,6 +15,8 @@ export interface TStatus {
   url: string;
   in_reply_to_id: string; // ?
   poll?: TPoll;
+  sensitive: boolean;
+  spoiler_text: string;
 }
 
 export type Route = 'timeline' | 'profile' | 'thread';
