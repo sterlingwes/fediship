@@ -2,6 +2,7 @@ import React from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import HTMLView from 'react-native-htmlview';
 import {TStatus} from '../types';
+import {Poll} from './Poll';
 
 const nodeStyles = {
   p: {color: 'white'},
@@ -36,6 +37,8 @@ export const Status = (
         </TouchableOpacity>
         <View style={styles.statusMessage}>
           <HTMLView value={props.content} stylesheet={nodeStyles} />
+          {props.poll && <Poll {...props.poll} />}
+          {props.reblog && props.reblog.poll && <Poll {...props.reblog.poll} />}
           <Text style={styles.statusUser}>
             @
             {props.reblog

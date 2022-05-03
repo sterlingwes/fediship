@@ -14,6 +14,7 @@ export interface TStatus {
   reblog: TStatus | null;
   url: string;
   in_reply_to_id: string; // ?
+  poll?: TPoll;
 }
 
 export type Route = 'timeline' | 'profile' | 'thread';
@@ -34,4 +35,22 @@ interface TStatusContext {
 
 export interface TThread extends TStatusContext {
   status: TStatus;
+}
+
+interface TPollOption {
+  title: string;
+  votes_count: number;
+}
+
+export interface TPoll {
+  id: string;
+  expires_at: string; // "2022-05-03T01:20:16.000Z",
+  expired: boolean;
+  multiple: boolean;
+  votes_count: number;
+  voters_count: number;
+  voted: boolean;
+  // "own_votes": [],
+  options: TPollOption[];
+  // "emojis": []
 }
