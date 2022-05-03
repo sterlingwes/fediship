@@ -17,6 +17,14 @@ export interface TStatus {
   poll?: TPoll;
   sensitive: boolean;
   spoiler_text: string;
+  emojis: Emoji[];
+}
+
+interface Emoji {
+  shortcode: string; // without the preceding / ending ':'
+  static_url: string;
+  url: string;
+  visible_in_picker: true;
 }
 
 export type Route = 'timeline' | 'profile' | 'thread';

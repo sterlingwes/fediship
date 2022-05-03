@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import HTMLView from 'react-native-htmlview';
+import HTMLView, {HTMLViewNode} from 'react-native-htmlview';
 import {TStatus} from '../types';
 import {Poll} from './Poll';
 
@@ -19,6 +19,20 @@ const getType = (props: TStatus) => {
   return 'toot';
 };
 
+const contentWithEmojis = (props: TStatus) =>
+  props.emojis.reduce((content, emoji) => {
+    return content.replace(
+      `:${emoji.shortcode}:`,
+      `<emoji src="${emoji.url}" />`,
+    );
+  }, props.content);
+
+const renderNode = (node: HTMLViewNode) => {
+  if (node.name === 'emoji') {
+    return <Image source={{uri: node.attribs.src}} style={styles.emoji} />;
+  }
+};
+
 const CollapsedStatus = (props: TStatus) => {
   const [collapsed, setCollapsed] = useState(true);
 
@@ -32,7 +46,13 @@ const CollapsedStatus = (props: TStatus) => {
           {collapsed ? 'Show more' : 'Show less'}
         </Text>
       </TouchableOpacity>
-      {!collapsed && <HTMLView value={props.content} stylesheet={nodeStyles} />}
+      {!collapsed && (
+        <HTMLView
+          value={contentWithEmojis(props)}
+          stylesheet={nodeStyles}
+          renderNode={renderNode}
+        />
+      )}
     </View>
   );
 };
@@ -57,7 +77,11 @@ export const Status = (
           {mainStatus.sensitive ? (
             <CollapsedStatus {...mainStatus} />
           ) : (
-            <HTMLView value={mainStatus.content} stylesheet={nodeStyles} />
+            <HTMLView
+              value={contentWithEmojis(mainStatus)}
+              stylesheet={nodeStyles}
+              renderNode={renderNode}
+            />
           )}
           {mainStatus.poll && <Poll {...mainStatus.poll} />}
           <Text style={styles.statusUser}>
@@ -73,6 +97,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     minHeight: 100,
+  },
+  emoji: {
+    width: 20,
+    height: 20,
   },
   collapsedButton: {
     backgroundColor: 'black',

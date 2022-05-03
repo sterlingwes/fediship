@@ -24,7 +24,7 @@ export const Poll = (props: TPoll) => {
   return (
     <View style={styles.pollContainer}>
       {props.options.map(option => (
-        <PollOption {...option} total={props.votes_count} />
+        <PollOption key={option.title} {...option} total={props.votes_count} />
       ))}
     </View>
   );
