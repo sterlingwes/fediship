@@ -40,33 +40,28 @@ const CollapsedStatus = (props: TStatus) => {
 export const Status = (
   props: TStatus & {onPress: () => void; onPressAvatar?: () => void},
 ) => {
+  const mainStatus = props.reblog ? props.reblog : props;
+
   return (
     <TouchableOpacity onPress={props.onPress} style={styles.container}>
       <View style={styles.statusContainer}>
         <TouchableOpacity onPress={props.onPressAvatar}>
           <Image
             source={{
-              uri: props.reblog
-                ? props.reblog.account.avatar
-                : props.account.avatar,
+              uri: mainStatus.account.avatar,
             }}
             style={styles.avatar}
           />
         </TouchableOpacity>
         <View style={styles.statusMessage}>
-          {props.sensitive ? (
-            <CollapsedStatus {...props} />
+          {mainStatus.sensitive ? (
+            <CollapsedStatus {...mainStatus} />
           ) : (
-            <HTMLView value={props.content} stylesheet={nodeStyles} />
+            <HTMLView value={mainStatus.content} stylesheet={nodeStyles} />
           )}
-          {props.poll && <Poll {...props.poll} />}
-          {props.reblog && props.reblog.poll && <Poll {...props.reblog.poll} />}
+          {mainStatus.poll && <Poll {...mainStatus.poll} />}
           <Text style={styles.statusUser}>
-            @
-            {props.reblog
-              ? props.reblog.account.username
-              : props.account.username}
-            ({getType(props)})
+            @{mainStatus.account.username}({getType(props)})
           </Text>
         </View>
       </View>
