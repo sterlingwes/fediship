@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import HTMLView from 'react-native-htmlview';
 import {TStatus} from '../types';
 
@@ -18,25 +18,45 @@ const getType = (props: TStatus) => {
   return 'toot';
 };
 
-export const Status = (props: TStatus & {onPress: () => void}) => {
+export const Status = (
+  props: TStatus & {onPress: () => void; onPressAvatar?: () => void},
+) => {
   return (
-    <TouchableOpacity onPress={props.onPress}>
+    <TouchableOpacity onPress={props.onPress} style={styles.container}>
       <View style={styles.statusContainer}>
-        <HTMLView value={props.content} stylesheet={nodeStyles} />
-        <Text style={styles.statusUser}>
-          @
-          {props.reblog
-            ? props.reblog.account.username
-            : props.account.username}
-          ({getType(props)})
-        </Text>
+        <TouchableOpacity onPress={props.onPressAvatar}>
+          <Image
+            source={{
+              uri: props.reblog
+                ? props.reblog.account.avatar
+                : props.account.avatar,
+            }}
+            style={styles.avatar}
+          />
+        </TouchableOpacity>
+        <View style={styles.statusMessage}>
+          <HTMLView value={props.content} stylesheet={nodeStyles} />
+          <Text style={styles.statusUser}>
+            @
+            {props.reblog
+              ? props.reblog.account.username
+              : props.account.username}
+            ({getType(props)})
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    minHeight: 100,
+  },
   statusContainer: {
+    flex: 1,
+    flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderBottomColor: 'grey',
@@ -47,5 +67,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 5,
     textAlign: 'right',
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    resizeMode: 'cover',
+    marginRight: 15,
+    marginTop: 5,
+    borderRadius: 5,
+  },
+  statusMessage: {
+    flex: 1,
   },
 });

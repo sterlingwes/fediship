@@ -3,6 +3,7 @@ export interface TAccount {
   username: string;
   display_name: string;
   avatar: string; // url
+  url: string;
 }
 
 export interface TStatus {
@@ -15,7 +16,7 @@ export interface TStatus {
   in_reply_to_id: string; // ?
 }
 
-export type Route = 'timeline' | 'thread';
+export type Route = 'timeline' | 'profile' | 'thread';
 
 export type RouteParams = Record<string, string>;
 

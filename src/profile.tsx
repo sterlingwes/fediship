@@ -1,11 +1,18 @@
 import React from 'react';
 import {RefreshControl, ScrollView, StyleSheet} from 'react-native';
-import {useTimeline} from './api';
+import {useProfile} from './api';
 import {Status} from './components/Status';
 import {NavigableScreenProps} from './types';
+import {useBackHandler} from './utils';
 
-export const Timeline = ({navigation}: NavigableScreenProps) => {
-  const {statuses, loading, fetchTimeline} = useTimeline('home');
+export const Profile = ({navigation}: NavigableScreenProps) => {
+  const params = navigation.getParams();
+  const {statuses, loading, fetchTimeline} = useProfile(params.statusUrl);
+
+  useBackHandler(() => {
+    navigation.navigate('timeline');
+    return true;
+  });
 
   return (
     <ScrollView

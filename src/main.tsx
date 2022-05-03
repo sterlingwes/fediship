@@ -1,10 +1,12 @@
 import React, {useMemo, useState} from 'react';
+import {Profile} from './profile';
 import {Thread} from './thread';
 import {Timeline} from './timeline';
 import {Route, RouteParams} from './types';
 
 export const routes = Object.freeze({
   timeline: Timeline,
+  profile: Profile,
   thread: Thread,
 });
 
