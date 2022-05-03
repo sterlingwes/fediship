@@ -63,3 +63,4 @@ _bundle/
 
 # project
 src/constants.ts
+scripts/out
