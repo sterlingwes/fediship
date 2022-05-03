@@ -1,10 +1,13 @@
 import React from 'react';
-import {RefreshControl, ScrollView, StyleSheet} from 'react-native';
+import {RefreshControl, ScrollView} from 'react-native';
 import {useTimeline} from './api';
 import {Status} from './components/Status';
+import {StyleCreator} from './theme';
+import {useThemeStyle} from './theme/utils';
 import {NavigableScreenProps} from './types';
 
 export const Timeline = ({navigation}: NavigableScreenProps) => {
+  const styles = useThemeStyle(styleCreator);
   const {statuses, loading, fetchTimeline} = useTimeline('home');
 
   return (
@@ -31,18 +34,18 @@ export const Timeline = ({navigation}: NavigableScreenProps) => {
   );
 };
 
-const styles = StyleSheet.create({
+const styleCreator: StyleCreator = ({getColor}) => ({
   container: {
     flex: 1,
   },
   statusContainer: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderBottomColor: 'grey',
+    borderBottomColor: getColor('secondary'),
     borderBottomWidth: 1,
   },
   statusUser: {
-    color: 'grey',
+    color: getColor('baseTextColor'),
     fontWeight: 'bold',
     marginTop: 5,
     textAlign: 'right',

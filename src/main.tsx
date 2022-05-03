@@ -1,5 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {Profile} from './profile';
+import {ThemeProvider} from './theme';
 import {Thread} from './thread';
 import {Timeline} from './timeline';
 import {Route, RouteParams} from './types';
@@ -31,5 +32,9 @@ export const App = () => {
 
   const Component = routes[route];
 
-  return <Component {...{navigation}} />;
+  return (
+    <ThemeProvider>
+      <Component {...{navigation}} />
+    </ThemeProvider>
+  );
 };

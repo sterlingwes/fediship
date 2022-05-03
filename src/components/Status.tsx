@@ -1,14 +1,11 @@
 import {formatDuration, intervalToDuration} from 'date-fns';
 import React, {useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, ImageStyle, Text, TouchableOpacity, View} from 'react-native';
 import HTMLView, {HTMLViewNode} from 'react-native-htmlview';
+import {StyleCreator} from '../theme';
+import {useThemeStyle} from '../theme/utils';
 import {TMediaAttachment, TStatus} from '../types';
 import {Poll} from './Poll';
-
-const nodeStyles = {
-  p: {color: 'white'},
-  span: {color: 'white'},
-};
 
 const getType = (props: TStatus) => {
   if (props.in_reply_to_id) {
@@ -28,13 +25,14 @@ const contentWithEmojis = (props: TStatus) =>
     );
   }, props.content);
 
-const renderNode = (node: HTMLViewNode) => {
+const renderNode = (imageStyle: ImageStyle) => (node: HTMLViewNode) => {
   if (node.name === 'emoji') {
-    return <Image source={{uri: node.attribs.src}} style={styles.emoji} />;
+    return <Image source={{uri: node.attribs.src}} style={imageStyle} />;
   }
 };
 
 const CollapsedStatus = (props: TStatus) => {
+  const styles = useThemeStyle(styleCreator);
   const [collapsed, setCollapsed] = useState(true);
 
   return (
@@ -51,8 +49,8 @@ const CollapsedStatus = (props: TStatus) => {
         <>
           <HTMLView
             value={contentWithEmojis(props)}
-            stylesheet={nodeStyles}
-            renderNode={renderNode}
+            stylesheet={htmlStylesCreator(styles)}
+            renderNode={renderNode(styles)}
           />
           {props.poll && <Poll {...props.poll} />}
           {props.media_attachments && (
@@ -64,28 +62,43 @@ const CollapsedStatus = (props: TStatus) => {
   );
 };
 
-const Media = (props: TMediaAttachment) => (
-  <View>
-    {props.type === 'image' ? (
-      <Image
-        source={{uri: props.preview_url, ...props.meta.small}}
-        style={[
-          styles.mediaImg,
-          {...props.meta.small, aspectRatio: props.meta.small.aspect},
-        ]}
-      />
-    ) : (
-      <Text>?</Text>
-    )}
-  </View>
-);
-export const MediaAttachments = (props: {media: TMediaAttachment[]}) => (
-  <View style={styles.media}>
-    {props.media.map(attachment => (
-      <Media {...attachment} />
-    ))}
-  </View>
-);
+const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
+  width,
+  height,
+});
+
+const Media = (props: TMediaAttachment) => {
+  const styles = useThemeStyle(styleCreator);
+  return (
+    <View>
+      {props.type === 'image' ? (
+        <Image
+          source={{uri: props.preview_url, ...dimensProps(props.meta.small)}}
+          style={[
+            styles.mediaImg,
+            {
+              ...dimensProps(props.meta.small),
+              aspectRatio: props.meta.small.aspect,
+            },
+          ]}
+        />
+      ) : (
+        <Text>?</Text>
+      )}
+    </View>
+  );
+};
+
+export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
+  const styles = useThemeStyle(styleCreator);
+  return (
+    <View style={styles.media}>
+      {props.media.map(attachment => (
+        <Media key={attachment.id} {...attachment} />
+      ))}
+    </View>
+  );
+};
 
 const timeAgo = (props: TStatus) => {
   const time = new Date(props.created_at);
@@ -96,6 +109,8 @@ const timeAgo = (props: TStatus) => {
 export const Status = (
   props: TStatus & {onPress: () => void; onPressAvatar?: () => void},
 ) => {
+  const styles = useThemeStyle(styleCreator);
+
   const mainStatus = props.reblog ? props.reblog : props;
 
   return (
@@ -116,8 +131,8 @@ export const Status = (
             <>
               <HTMLView
                 value={contentWithEmojis(mainStatus)}
-                stylesheet={nodeStyles}
-                renderNode={renderNode}
+                stylesheet={htmlStylesCreator(styles)}
+                renderNode={renderNode(styles)}
               />
               {mainStatus.poll && <Poll {...mainStatus.poll} />}
               {mainStatus.media_attachments && (
@@ -135,10 +150,18 @@ export const Status = (
   );
 };
 
-const styles = StyleSheet.create({
+const htmlStylesCreator = (styles: ReturnType<typeof styleCreator>) => ({
+  p: styles.textColor,
+  span: styles.textColor,
+});
+
+const styleCreator: StyleCreator = ({getColor}) => ({
   container: {
     flex: 1,
     minHeight: 100,
+  },
+  textColor: {
+    color: getColor('baseTextColor'),
   },
   emoji: {
     width: 20,
@@ -154,30 +177,30 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   collapsedButton: {
-    backgroundColor: 'black',
+    borderColor: getColor('baseAccent'),
+    borderWidth: 1,
     padding: 5,
     borderRadius: 2,
     width: '50%',
     marginVertical: 8,
   },
   buttonLabel: {
-    color: 'grey',
+    color: getColor('baseTextColor'),
     textAlign: 'center',
   },
   spoilerText: {
-    color: 'white',
+    color: getColor('baseTextColor'),
   },
   statusContainer: {
     flex: 1,
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderBottomColor: 'grey',
+    borderBottomColor: getColor('baseAccent'),
     borderBottomWidth: 1,
   },
   statusUser: {
-    color: 'grey',
-    fontWeight: 'bold',
+    color: getColor('secondary'),
     marginTop: 5,
     textAlign: 'right',
   },
