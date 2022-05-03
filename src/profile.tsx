@@ -1,16 +1,20 @@
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {RefreshControl, ScrollView, StyleSheet} from 'react-native';
 import {useProfile} from './api';
 import {Status} from './components/Status';
-import {NavigableScreenProps} from './types';
+import {RootStackParamList} from './types';
 import {useBackHandler} from './utils';
 
-export const Profile = ({navigation}: NavigableScreenProps) => {
-  const params = navigation.getParams();
-  const {statuses, loading, fetchTimeline} = useProfile(params.statusUrl);
+export const Profile = ({
+  navigation,
+  route,
+}: NativeStackScreenProps<RootStackParamList, 'Profile'>) => {
+  const {statusUrl} = route.params;
+  const {statuses, loading, fetchTimeline} = useProfile(statusUrl);
 
   useBackHandler(() => {
-    navigation.navigate('timeline');
+    navigation.navigate('Timeline');
     return true;
   });
 
@@ -20,20 +24,21 @@ export const Profile = ({navigation}: NavigableScreenProps) => {
       refreshControl={
         <RefreshControl refreshing={loading} onRefresh={fetchTimeline} />
       }>
-      {statuses.map(status => (
-        <Status
-          key={status.id}
-          {...status}
-          onPress={() => {
-            const statusUrl = status.reblog ? status.reblog.url : status.url;
-            navigation.navigate('thread', {statusUrl});
-          }}
-          onPressAvatar={() => {
-            const statusUrl = status.reblog ? status.reblog.url : status.url;
-            navigation.navigate('profile', {statusUrl});
-          }}
-        />
-      ))}
+      {statuses.map(status => {
+        const nextStatusUrl = status.reblog ? status.reblog.url : status.url;
+        return (
+          <Status
+            key={status.id}
+            {...status}
+            onPress={() => {
+              navigation.navigate('Thread', {statusUrl: nextStatusUrl});
+            }}
+            onPressAvatar={() => {
+              navigation.navigate('Profile', {statusUrl: nextStatusUrl});
+            }}
+          />
+        );
+      })}
     </ScrollView>
   );
 };

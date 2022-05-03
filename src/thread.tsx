@@ -1,16 +1,20 @@
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {RefreshControl, ScrollView, StyleSheet} from 'react-native';
 import {useThread} from './api';
 import {Status} from './components/Status';
-import {NavigableScreenProps} from './types';
+import {RootStackParamList} from './types';
 import {useBackHandler} from './utils';
 
-export const Thread = ({navigation}: NavigableScreenProps) => {
-  const params = navigation.getParams();
-  const {thread, loading, fetchThread} = useThread(params.statusUrl);
+export const Thread = ({
+  navigation,
+  route,
+}: NativeStackScreenProps<RootStackParamList, 'Thread'>) => {
+  const {statusUrl} = route.params;
+  const {thread, loading, fetchThread} = useThread(statusUrl);
 
   useBackHandler(() => {
-    navigation.navigate('timeline');
+    navigation.navigate('Timeline');
     return true;
   });
 
@@ -25,7 +29,7 @@ export const Thread = ({navigation}: NavigableScreenProps) => {
           key={childStatus.id}
           {...childStatus}
           onPress={() =>
-            navigation.navigate('thread', {statusUrl: childStatus.url})
+            navigation.navigate('Thread', {statusUrl: childStatus.url})
           }
         />
       ))}
@@ -37,7 +41,7 @@ export const Thread = ({navigation}: NavigableScreenProps) => {
           key={childStatus.id}
           {...childStatus}
           onPress={() =>
-            navigation.navigate('thread', {statusUrl: childStatus.url})
+            navigation.navigate('Thread', {statusUrl: childStatus.url})
           }
         />
       ))}

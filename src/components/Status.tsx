@@ -1,6 +1,13 @@
 import {formatDuration, intervalToDuration} from 'date-fns';
 import React, {useState} from 'react';
-import {Image, ImageStyle, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  ImageStyle,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import HTMLView, {HTMLViewNode} from 'react-native-htmlview';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
@@ -197,7 +204,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderBottomColor: getColor('baseAccent'),
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   statusUser: {
     color: getColor('secondary'),

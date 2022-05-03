@@ -14,9 +14,9 @@ export const ThemeContext = React.createContext<TThemeContext>({
 });
 
 export const ThemeProvider = ({children}: {children: JSX.Element}) => {
-  const theme = useColorScheme();
+  const scheme = useColorScheme();
   return (
-    <ThemeContext.Provider value={{palette: themes[theme || 'dark']}}>
+    <ThemeContext.Provider value={{palette: themes[scheme || 'dark']}}>
       {children}
     </ThemeContext.Provider>
   );

@@ -1,3 +1,5 @@
+import {Theme as NavTheme} from '@react-navigation/native';
+
 import {TThemeContext} from './types';
 
 export const darkPalette: TThemeContext['palette'] = Object.freeze({
@@ -12,4 +14,16 @@ export const darkPalette: TThemeContext['palette'] = Object.freeze({
   success: '#79bd9a',
 
   baseTextColor: '#E6EEF6',
+});
+
+export const darkNavigationTheme: NavTheme = Object.freeze({
+  dark: true,
+  colors: {
+    primary: '#9baec8',
+    background: '#282c37',
+    card: '#282c37',
+    text: '#E6EEF6',
+    border: '#59627B',
+    notification: '#2b90d9',
+  },
 });

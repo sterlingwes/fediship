@@ -53,16 +53,11 @@ interface Emoji {
   visible_in_picker: true;
 }
 
-export type Route = 'timeline' | 'profile' | 'thread';
-
-export type RouteParams = Record<string, string>;
-
-export interface NavigableScreenProps {
-  navigation: {
-    getParams: () => RouteParams;
-    navigate: (route: Route, params?: RouteParams) => void;
-  };
-}
+export type RootStackParamList = {
+  Timeline: undefined;
+  Profile: {statusUrl: string};
+  Thread: {statusUrl: string};
+};
 
 interface TStatusContext {
   ancestors: TStatus[];

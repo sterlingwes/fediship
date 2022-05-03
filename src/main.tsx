@@ -1,40 +1,32 @@
-import React, {useMemo, useState} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React from 'react';
+import {useColorScheme} from 'react-native';
 import {Profile} from './profile';
-import {ThemeProvider} from './theme';
+import {
+  ThemeProvider,
+  darkNavigationTheme,
+  lightNavigationTheme,
+} from './theme';
 import {Thread} from './thread';
 import {Timeline} from './timeline';
-import {Route, RouteParams} from './types';
+import {RootStackParamList} from './types';
 
-export const routes = Object.freeze({
-  timeline: Timeline,
-  profile: Profile,
-  thread: Thread,
-});
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const App = () => {
-  const [params, setParams] = useState<RouteParams>({});
-  const [route, setRoute] = useState<Route>('timeline');
-
-  const navigation = useMemo(
-    () => ({
-      getParams: () => params,
-      navigate: (name: Route, forwardParams?: RouteParams) => {
-        if (forwardParams) {
-          setParams(forwardParams);
-        } else {
-          setParams({});
-        }
-        setRoute(name);
-      },
-    }),
-    [params, setRoute, setParams],
-  );
-
-  const Component = routes[route];
+  const scheme = useColorScheme();
 
   return (
     <ThemeProvider>
-      <Component {...{navigation}} />
+      <NavigationContainer
+        theme={scheme === 'dark' ? darkNavigationTheme : lightNavigationTheme}>
+        <Stack.Navigator screenOptions={{}}>
+          <Stack.Screen name="Timeline" component={Timeline} />
+          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="Thread" component={Thread} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </ThemeProvider>
   );
 };

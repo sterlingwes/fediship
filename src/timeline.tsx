@@ -1,12 +1,15 @@
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {RefreshControl, ScrollView} from 'react-native';
 import {useTimeline} from './api';
 import {Status} from './components/Status';
 import {StyleCreator} from './theme';
 import {useThemeStyle} from './theme/utils';
-import {NavigableScreenProps} from './types';
+import {RootStackParamList} from './types';
 
-export const Timeline = ({navigation}: NavigableScreenProps) => {
+export const Timeline = ({
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, 'Timeline'>) => {
   const styles = useThemeStyle(styleCreator);
   const {statuses, loading, fetchTimeline} = useTimeline('home');
 
@@ -22,11 +25,11 @@ export const Timeline = ({navigation}: NavigableScreenProps) => {
           {...status}
           onPress={() => {
             const statusUrl = status.reblog ? status.reblog.url : status.url;
-            navigation.navigate('thread', {statusUrl});
+            navigation.navigate('Thread', {statusUrl});
           }}
           onPressAvatar={() => {
             const statusUrl = status.reblog ? status.reblog.url : status.url;
-            navigation.navigate('profile', {statusUrl});
+            navigation.navigate('Profile', {statusUrl});
           }}
         />
       ))}
