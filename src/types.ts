@@ -18,6 +18,32 @@ export interface TStatus {
   sensitive: boolean;
   spoiler_text: string;
   emojis: Emoji[];
+  media_attachments?: TMediaAttachment[];
+}
+
+export interface TMediaAttachment {
+  id: string;
+  type: 'image';
+  url: string;
+  preview_url: string;
+  remote_url: string;
+  text_url: null;
+  meta: {
+    original: {
+      width: number;
+      height: number;
+      size: string;
+      aspect: number;
+    };
+    small: {
+      width: number;
+      height: number;
+      size: string;
+      aspect: number;
+    };
+  };
+  description: string;
+  blurhash: string;
 }
 
 interface Emoji {

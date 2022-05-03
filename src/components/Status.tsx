@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import HTMLView, {HTMLViewNode} from 'react-native-htmlview';
-import {TStatus} from '../types';
+import {TMediaAttachment, TStatus} from '../types';
 import {Poll} from './Poll';
 
 const nodeStyles = {
@@ -47,15 +47,44 @@ const CollapsedStatus = (props: TStatus) => {
         </Text>
       </TouchableOpacity>
       {!collapsed && (
-        <HTMLView
-          value={contentWithEmojis(props)}
-          stylesheet={nodeStyles}
-          renderNode={renderNode}
-        />
+        <>
+          <HTMLView
+            value={contentWithEmojis(props)}
+            stylesheet={nodeStyles}
+            renderNode={renderNode}
+          />
+          {props.poll && <Poll {...props.poll} />}
+          {props.media_attachments && (
+            <MediaAttachments media={props.media_attachments} />
+          )}
+        </>
       )}
     </View>
   );
 };
+
+const Media = (props: TMediaAttachment) => (
+  <View>
+    {props.type === 'image' ? (
+      <Image
+        source={{uri: props.preview_url, ...props.meta.small}}
+        style={[
+          styles.mediaImg,
+          {...props.meta.small, aspectRatio: props.meta.small.aspect},
+        ]}
+      />
+    ) : (
+      <Text>?</Text>
+    )}
+  </View>
+);
+export const MediaAttachments = (props: {media: TMediaAttachment[]}) => (
+  <View style={styles.media}>
+    {props.media.map(attachment => (
+      <Media {...attachment} />
+    ))}
+  </View>
+);
 
 export const Status = (
   props: TStatus & {onPress: () => void; onPressAvatar?: () => void},
@@ -77,13 +106,19 @@ export const Status = (
           {mainStatus.sensitive ? (
             <CollapsedStatus {...mainStatus} />
           ) : (
-            <HTMLView
-              value={contentWithEmojis(mainStatus)}
-              stylesheet={nodeStyles}
-              renderNode={renderNode}
-            />
+            <>
+              <HTMLView
+                value={contentWithEmojis(mainStatus)}
+                stylesheet={nodeStyles}
+                renderNode={renderNode}
+              />
+              {mainStatus.poll && <Poll {...mainStatus.poll} />}
+              {mainStatus.media_attachments && (
+                <MediaAttachments media={mainStatus.media_attachments} />
+              )}
+            </>
           )}
-          {mainStatus.poll && <Poll {...mainStatus.poll} />}
+
           <Text style={styles.statusUser}>
             @{mainStatus.account.username}({getType(props)})
           </Text>
@@ -101,6 +136,15 @@ const styles = StyleSheet.create({
   emoji: {
     width: 20,
     height: 20,
+  },
+  media: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  mediaImg: {
+    resizeMode: 'cover',
+    maxWidth: '100%',
   },
   collapsedButton: {
     backgroundColor: 'black',
