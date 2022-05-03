@@ -1,3 +1,4 @@
+import {formatDuration, intervalToDuration} from 'date-fns';
 import React, {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import HTMLView, {HTMLViewNode} from 'react-native-htmlview';
@@ -86,6 +87,12 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => (
   </View>
 );
 
+const timeAgo = (props: TStatus) => {
+  const time = new Date(props.created_at);
+  const duration = intervalToDuration({start: time, end: new Date()});
+  return formatDuration(duration, {format: ['hours', 'minutes']});
+};
+
 export const Status = (
   props: TStatus & {onPress: () => void; onPressAvatar?: () => void},
 ) => {
@@ -120,7 +127,7 @@ export const Status = (
           )}
 
           <Text style={styles.statusUser}>
-            @{mainStatus.account.username}({getType(props)})
+            {timeAgo(props)} • @{mainStatus.account.username}({getType(props)})
           </Text>
         </View>
       </View>

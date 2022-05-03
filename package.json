@@ -10,6 +10,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "date-fns": "^2.28.0",
     "react": "17.0.2",
     "react-native": "0.68.1",
     "react-native-htmlview": "^0.16.0"
