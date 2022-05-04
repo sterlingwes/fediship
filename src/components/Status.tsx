@@ -1,12 +1,13 @@
 import {formatDuration, intervalToDuration} from 'date-fns';
 import React, {useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {TMediaAttachment, TStatus} from '../types';
 import {HTMLView} from './HTMLView';
 import {Poll} from './Poll';
+import {Type} from './Type';
 
 const getType = (props: TStatus) => {
   if (props.in_reply_to_id) {
@@ -24,13 +25,13 @@ const CollapsedStatus = (props: TStatus) => {
 
   return (
     <View>
-      <Text style={styles.spoilerText}>{props.spoiler_text}</Text>
+      <Type style={styles.spoilerText}>{props.spoiler_text}</Type>
       <TouchableOpacity
         onPress={() => setCollapsed(!collapsed)}
         style={styles.collapsedButton}>
-        <Text style={styles.buttonLabel}>
+        <Type style={styles.buttonLabel}>
           {collapsed ? 'Show more' : 'Show less'}
-        </Text>
+        </Type>
       </TouchableOpacity>
       {!collapsed && (
         <>
@@ -66,7 +67,7 @@ const Media = (props: TMediaAttachment) => {
           ]}
         />
       ) : (
-        <Text>?</Text>
+        <Type>?</Type>
       )}
     </View>
   );
@@ -120,9 +121,9 @@ export const Status = (
             </>
           )}
 
-          <Text style={styles.statusUser}>
+          <Type style={styles.statusUser} scale="XS">
             {timeAgo(props)} • @{mainStatus.account.username}({getType(props)})
-          </Text>
+          </Type>
         </View>
       </View>
     </TouchableOpacity>
@@ -175,7 +176,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   statusUser: {
-    color: getColor('secondary'),
     marginTop: 5,
     textAlign: 'right',
   },

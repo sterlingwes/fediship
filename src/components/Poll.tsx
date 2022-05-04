@@ -1,6 +1,7 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {TPoll} from '../types';
+import {Type} from './Type';
 
 const widthPct = (value: number, total: number) =>
   `${Math.round((value / total) * 100) || 1}%`;
@@ -15,7 +16,7 @@ const VoteAmountLine = (props: {value: number; total: number}) => (
 
 const PollOption = (props: TPoll['options'][0] & {total: number}) => (
   <View style={styles.pollOption}>
-    <Text style={styles.pollText}>{props.title}</Text>
+    <Type>{props.title}</Type>
     <VoteAmountLine value={props.votes_count} total={props.total} />
   </View>
 );
@@ -43,9 +44,6 @@ const styles = StyleSheet.create({
   },
   pollOption: {
     flexDirection: 'column',
-  },
-  pollText: {
-    color: 'white',
   },
   pollContainer: {
     marginTop: 15,
