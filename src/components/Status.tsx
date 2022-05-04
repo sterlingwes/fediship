@@ -1,17 +1,11 @@
 import {formatDuration, intervalToDuration} from 'date-fns';
 import React, {useState} from 'react';
-import {
-  Image,
-  ImageStyle,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import HTMLView, {HTMLViewNode} from 'react-native-htmlview';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {TMediaAttachment, TStatus} from '../types';
+import {HTMLView} from './HTMLView';
 import {Poll} from './Poll';
 
 const getType = (props: TStatus) => {
@@ -22,20 +16,6 @@ const getType = (props: TStatus) => {
     return 'reblog';
   }
   return 'toot';
-};
-
-const contentWithEmojis = (props: TStatus) =>
-  props.emojis.reduce((content, emoji) => {
-    return content.replace(
-      `:${emoji.shortcode}:`,
-      `<emoji src="${emoji.url}" />`,
-    );
-  }, props.content);
-
-const renderNode = (imageStyle: ImageStyle) => (node: HTMLViewNode) => {
-  if (node.name === 'emoji') {
-    return <Image source={{uri: node.attribs.src}} style={imageStyle} />;
-  }
 };
 
 const CollapsedStatus = (props: TStatus) => {
@@ -54,11 +34,7 @@ const CollapsedStatus = (props: TStatus) => {
       </TouchableOpacity>
       {!collapsed && (
         <>
-          <HTMLView
-            value={contentWithEmojis(props)}
-            stylesheet={htmlStylesCreator(styles)}
-            renderNode={renderNode(styles)}
-          />
+          <HTMLView emojis={props.emojis} value={props.content} />
           {props.poll && <Poll {...props.poll} />}
           {props.media_attachments && (
             <MediaAttachments media={props.media_attachments} />
@@ -136,11 +112,7 @@ export const Status = (
             <CollapsedStatus {...mainStatus} />
           ) : (
             <>
-              <HTMLView
-                value={contentWithEmojis(mainStatus)}
-                stylesheet={htmlStylesCreator(styles)}
-                renderNode={renderNode(styles)}
-              />
+              <HTMLView emojis={mainStatus.emojis} value={mainStatus.content} />
               {mainStatus.poll && <Poll {...mainStatus.poll} />}
               {mainStatus.media_attachments && (
                 <MediaAttachments media={mainStatus.media_attachments} />
@@ -156,11 +128,6 @@ export const Status = (
     </TouchableOpacity>
   );
 };
-
-const htmlStylesCreator = (styles: ReturnType<typeof styleCreator>) => ({
-  p: styles.textColor,
-  span: styles.textColor,
-});
 
 const styleCreator: StyleCreator = ({getColor}) => ({
   container: {
@@ -203,6 +170,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 20,
+    paddingLeft: 15,
     borderBottomColor: getColor('baseAccent'),
     borderBottomWidth: StyleSheet.hairlineWidth,
   },

@@ -21,9 +21,13 @@ export const App = () => {
     <ThemeProvider>
       <NavigationContainer
         theme={scheme === 'dark' ? darkNavigationTheme : lightNavigationTheme}>
-        <Stack.Navigator screenOptions={{}}>
+        <Stack.Navigator>
           <Stack.Screen name="Timeline" component={Timeline} />
-          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{headerShown: false}}
+          />
           <Stack.Screen name="Thread" component={Thread} />
         </Stack.Navigator>
       </NavigationContainer>

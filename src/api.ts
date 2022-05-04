@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {mastoBearerToken} from './constants';
-import {TStatus, TThread} from './types';
+import {TAccount, TStatus, TThread} from './types';
 import {useMount} from './utils';
 
 const timelineUris = Object.freeze({
@@ -28,6 +28,7 @@ export const useTimeline = (timeline: Timeline) => {
   const [statuses, setStatuses] = useState<TStatus[]>([]);
 
   const fetchTimeline = async () => {
+    setLoading(true);
     try {
       const list = await getTimeline(timeline);
       setStatuses(list);
@@ -75,21 +76,24 @@ export const getProfile = async (url: string) => {
   const accountTimelineUrl = `${protocol}//${host}/api/v1/accounts/${accountId}/statuses`;
   const timelineResponse = await fetch(accountTimelineUrl);
   const timeline = await timelineResponse.json();
-  return timeline as TStatus[];
-  // const accountUrl = `${protocol}//${host}/api/v1/accounts/${accountId}`
-  // const account = await fetch(accountUrl)
-  // const accountJson = await account.json()
+  const accountUrl = `${protocol}//${host}/api/v1/accounts/${accountId}`;
+  const accountResponse = await fetch(accountUrl);
+  const account = await accountResponse.json();
+  return {account, timeline} as {account: TAccount; timeline: TStatus[]};
 };
 
 export const useProfile = (statusUrl: string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [profile, setProfile] = useState<TAccount>();
   const [statuses, setStatuses] = useState<TStatus[]>([]);
 
   const fetchTimeline = async () => {
+    setLoading(true);
     try {
-      const list = await getProfile(statusUrl);
-      setStatuses(list);
+      const result = await getProfile(statusUrl);
+      setStatuses(result.timeline);
+      setProfile(result.account);
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);
@@ -102,7 +106,7 @@ export const useProfile = (statusUrl: string) => {
     fetchTimeline();
   });
 
-  return {statuses, fetchTimeline, error, loading};
+  return {profile, statuses, fetchTimeline, error, loading};
 };
 
 /**
@@ -129,6 +133,7 @@ export const useThread = (statusUrl: string) => {
   const [thread, setThread] = useState<TThread>();
 
   const fetchThread = async () => {
+    setLoading(true);
     try {
       const result = await getThread(statusUrl);
       setThread(result);

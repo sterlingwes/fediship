@@ -1,9 +1,25 @@
 export interface TAccount {
   id: string; // instance specific
-  username: string;
-  display_name: string;
+  acct: string; // same as username
   avatar: string; // url
+  avatar_static: string; // version w/ no animation?
+  bot: boolean;
+  created_at: string;
+  discoverable: boolean;
+  display_name: string;
+  emojis: Emoji[];
+  fields: any[];
+  followers_count: number;
+  following_count: number;
+  group: boolean;
+  header: string; // url
+  header_static: string;
+  last_status_at: string;
+  locked: boolean;
+  note: string;
+  statuses_count: number;
   url: string;
+  username: string;
 }
 
 export interface TStatus {
@@ -46,7 +62,7 @@ export interface TMediaAttachment {
   blurhash: string;
 }
 
-interface Emoji {
+export interface Emoji {
   shortcode: string; // without the preceding / ending ':'
   static_url: string;
   url: string;
