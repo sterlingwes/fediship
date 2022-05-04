@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, Pressable, View} from 'react-native';
 
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
@@ -26,13 +26,13 @@ const CollapsedStatus = (props: TStatus) => {
   return (
     <View>
       <Type style={styles.spoilerText}>{props.spoiler_text}</Type>
-      <TouchableOpacity
+      <Pressable
         onPress={() => setCollapsed(!collapsed)}
         style={styles.collapsedButton}>
         <Type style={styles.buttonLabel} scale="XS">
           {collapsed ? 'Show more' : 'Show less'}
         </Type>
-      </TouchableOpacity>
+      </Pressable>
       {!collapsed && (
         <>
           <HTMLView emojis={props.emojis} value={props.content} />
@@ -113,16 +113,16 @@ export const Status = (
   const mainStatus = props.reblog ? props.reblog : props;
 
   return (
-    <TouchableOpacity onPress={props.onPress} style={styles.container}>
+    <Pressable onPress={props.onPress} style={styles.container}>
       <View style={styles.statusContainer}>
-        <TouchableOpacity onPress={props.onPressAvatar}>
+        <Pressable onPress={props.onPressAvatar}>
           <Image
             source={{
               uri: mainStatus.account.avatar,
             }}
             style={styles.avatar}
           />
-        </TouchableOpacity>
+        </Pressable>
         <View style={styles.statusMessage}>
           <StatusHeader
             username={mainStatus.account.display_name}
@@ -142,7 +142,7 @@ export const Status = (
           )}
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
