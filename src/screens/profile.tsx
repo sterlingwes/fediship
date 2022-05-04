@@ -10,15 +10,15 @@ import {
   Image,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useProfile} from './api';
-import {BackButton} from './components/BackButton';
-import {HTMLView} from './components/HTMLView';
-import {Status} from './components/Status';
-import {Type} from './components/Type';
-import {screenHeight} from './dimensions';
-import {StyleCreator} from './theme';
-import {useThemeStyle} from './theme/utils';
-import {RootStackParamList, TAccount, TStatus} from './types';
+import {useProfile} from '../api';
+import {BackButton} from '../components/BackButton';
+import {HTMLView} from '../components/HTMLView';
+import {Status} from '../components/Status';
+import {Type} from '../components/Type';
+import {screenHeight} from '../dimensions';
+import {StyleCreator} from '../theme';
+import {useThemeStyle} from '../theme/utils';
+import {RootStackParamList, TAccount, TStatus} from '../types';
 
 interface ProfileHeaderProps {
   profile: TAccount | undefined;

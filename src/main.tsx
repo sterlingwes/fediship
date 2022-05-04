@@ -3,15 +3,15 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {useColorScheme} from 'react-native';
-import {Profile} from './profile';
-import {Explore} from './explore';
+import {Profile} from './screens/profile';
+import {Explore} from './screens/explore';
 import {
   ThemeProvider,
   darkNavigationTheme,
   lightNavigationTheme,
 } from './theme';
-import {Thread} from './thread';
-import {Timeline} from './timeline';
+import {Thread} from './screens/thread';
+import {Timeline} from './screens/timeline';
 import {RootStackParamList} from './types';
 
 const Tab = createBottomTabNavigator();

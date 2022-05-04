@@ -1,9 +1,9 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {RefreshControl, ScrollView, StyleSheet} from 'react-native';
-import {useThread} from './api';
-import {Status} from './components/Status';
-import {RootStackParamList} from './types';
+import {useThread} from '../api';
+import {Status} from '../components/Status';
+import {RootStackParamList} from '../types';
 
 export const Thread = ({
   navigation,

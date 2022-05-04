@@ -1,9 +1,9 @@
 import React from 'react';
 import {ActivityIndicator, View} from 'react-native';
-import {usePeers} from './api';
-import {Type} from './components/Type';
-import {StyleCreator} from './theme';
-import {useThemeStyle} from './theme/utils';
+import {usePeers} from '../api';
+import {Type} from '../components/Type';
+import {StyleCreator} from '../theme';
+import {useThemeStyle} from '../theme/utils';
 
 export const Explore = () => {
   const styles = useThemeStyle(styleCreator);

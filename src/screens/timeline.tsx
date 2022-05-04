@@ -1,11 +1,11 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {RefreshControl, ScrollView} from 'react-native';
-import {useTimeline} from './api';
-import {Status} from './components/Status';
-import {StyleCreator} from './theme';
-import {useThemeStyle} from './theme/utils';
-import {RootStackParamList} from './types';
+import {useTimeline} from '../api';
+import {Status} from '../components/Status';
+import {StyleCreator} from '../theme';
+import {useThemeStyle} from '../theme/utils';
+import {RootStackParamList} from '../types';
 
 export const Timeline = ({
   navigation,
