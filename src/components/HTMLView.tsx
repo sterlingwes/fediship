@@ -4,6 +4,7 @@ import RNHtmlView, {HTMLViewNode} from 'react-native-htmlview';
 import {StyleCreator} from '../theme';
 import {Emoji} from '../types';
 import {useThemeStyle} from '../theme/utils';
+import {Type, TypeProps} from './Type';
 
 interface HTMLProps {
   emojis: Emoji[];
@@ -36,6 +37,8 @@ export const HTMLView = ({value, emojis}: HTMLProps) => {
       value={contentWithEmojis({content: value, emojis})}
       stylesheet={htmlStylesCreator(styles)}
       renderNode={renderNode(styles)}
+      TextComponent={Type}
+      textComponentProps={{scale: 'S'} as TypeProps}
     />
   );
 };

@@ -29,7 +29,7 @@ const CollapsedStatus = (props: TStatus) => {
       <TouchableOpacity
         onPress={() => setCollapsed(!collapsed)}
         style={styles.collapsedButton}>
-        <Type style={styles.buttonLabel}>
+        <Type style={styles.buttonLabel} scale="XS">
           {collapsed ? 'Show more' : 'Show less'}
         </Type>
       </TouchableOpacity>

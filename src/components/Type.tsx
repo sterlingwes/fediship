@@ -14,7 +14,7 @@ const fontScales = Object.freeze({
 
 type FontScale = keyof typeof fontScales;
 
-interface TypeProps extends TextProps {
+export interface TypeProps extends TextProps {
   scale?: FontScale;
   bold?: boolean;
   semiBold?: boolean;
