@@ -1,8 +1,10 @@
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {useColorScheme} from 'react-native';
 import {Profile} from './profile';
+import {Explore} from './explore';
 import {
   ThemeProvider,
   darkNavigationTheme,
@@ -12,7 +14,15 @@ import {Thread} from './thread';
 import {Timeline} from './timeline';
 import {RootStackParamList} from './types';
 
+const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const TabbedHome = () => (
+  <Tab.Navigator>
+    <Tab.Screen name="Timeline" component={Timeline} />
+    <Tab.Screen name="Explore" component={Explore} />
+  </Tab.Navigator>
+);
 
 export const App = () => {
   const scheme = useColorScheme();
@@ -22,7 +32,11 @@ export const App = () => {
       <NavigationContainer
         theme={scheme === 'dark' ? darkNavigationTheme : lightNavigationTheme}>
         <Stack.Navigator>
-          <Stack.Screen name="Timeline" component={Timeline} />
+          <Stack.Screen
+            name="Home"
+            component={TabbedHome}
+            options={{headerShown: false}}
+          />
           <Stack.Screen
             name="Profile"
             component={Profile}

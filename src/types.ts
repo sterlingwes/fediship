@@ -72,6 +72,7 @@ export interface Emoji {
 }
 
 export type RootStackParamList = {
+  Home: undefined;
   Timeline: undefined;
   Profile: {statusUrl: string};
   Thread: {statusUrl: string};
@@ -102,4 +103,25 @@ export interface TPoll {
   // "own_votes": [],
   options: TPollOption[];
   // "emojis": []
+}
+
+export interface TPeerInfo {
+  uri: string; // peer host
+  title: string;
+  short_description: string;
+  description: string;
+  email: string; // contact email
+  version: string; // mastodon version
+  urls: {
+    streaming_api: string; // wss url
+  };
+  stats: {
+    user_count: number;
+    status_count: number;
+    domain_count: number;
+  };
+  thumbnail: string; // url
+  languages: string[]; // locale like 'en'
+  registrations: boolean;
+  approval_required: boolean;
 }

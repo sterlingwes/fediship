@@ -1,7 +1,8 @@
 import {useState} from 'react';
 import {mastoBearerToken} from './constants';
-import {TAccount, TStatus, TThread} from './types';
+import {TAccount, TPeerInfo, TStatus, TThread} from './types';
 import {useMount} from './utils/hooks';
+import {getPeerStorageKeys, savePeerInfo} from './utils/peer-storage';
 
 const timelineUris = Object.freeze({
   personal: 'https://swj.io/api/v1/accounts/2/statuses',
@@ -10,6 +11,95 @@ const timelineUris = Object.freeze({
 });
 
 type Timeline = keyof typeof timelineUris;
+
+export const getPeers = async () => {
+  const response = await fetch('https://swj.io/api/v1/instance/peers');
+  const json = await response.json();
+  return json as string[];
+};
+
+export const getPeerInfo = async (peer: string) => {
+  try {
+    const abortControl = new AbortController();
+    const abortTimeout = setTimeout(() => abortControl.abort(), 2500);
+    const response = await fetch(`https://${peer}/api/v1/instance`, {
+      signal: abortControl.signal,
+    });
+    clearTimeout(abortTimeout);
+    const json = await response.json();
+    return json as TPeerInfo;
+  } catch {
+    return null;
+  }
+};
+
+export const getPeerInfos = async (
+  peers: string[],
+  updateProgress: (count: number, of: number) => void,
+  savePeer: (peer: string, info: TPeerInfo | null) => void,
+) => {
+  let fetchCount = 0;
+  const existingPeerInfo = getPeerStorageKeys();
+  const filteredPeers = peers.filter(
+    peer => existingPeerInfo.includes(peer) === false,
+  );
+  return filteredPeers.reduce(async (chain, peer) => {
+    await chain;
+    const result = await getPeerInfo(peer);
+    fetchCount++;
+    updateProgress(fetchCount, filteredPeers.length);
+    savePeer(peer, result);
+  }, Promise.resolve() as unknown);
+};
+
+export const usePeers = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [peers, setPeers] = useState<string[]>([]);
+  const [peerInfoFetchProgress, setProgress] = useState(0);
+  const [peersToFetch, setPeersToFetch] = useState(0);
+
+  const progressCallback = (count: number, total: number) => {
+    setProgress(count);
+    if (total !== peersToFetch) {
+      setPeersToFetch(total);
+    }
+  };
+
+  const fetchPeers = async () => {
+    setLoading(true);
+    try {
+      const peerList = await getPeers();
+      setPeers(peerList);
+      await getPeerInfos(peerList, progressCallback, savePeerInfo);
+    } catch (e: unknown) {
+      console.error(e);
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+      setProgress(0);
+    }
+  };
+
+  useMount(() => {
+    fetchPeers();
+  });
+
+  let progressMessage = '';
+  if (loading) {
+    if (peersToFetch) {
+      progressMessage = `Found ${peersToFetch} new peer instances`;
+    } else {
+      progressMessage = 'Fetching peers...';
+    }
+
+    if (peerInfoFetchProgress) {
+      progressMessage = `Fetching peer info ${peerInfoFetchProgress} of ${peersToFetch}`;
+    }
+  }
+
+  return {peers, fetchPeers, error, loading, progressMessage};
+};
 
 export const getTimeline = async (timeline: Timeline) => {
   const uri = timelineUris[timeline];
@@ -110,7 +200,7 @@ export const useProfile = (statusUrl: string) => {
 
 /**
  * returns post surrounding selected status by its GUI url
- * @param statusUrl ie: https://mstdn.social/@Skiinglles/108235334317391891
+ * @param statusUrl ie: https://mstdn.social/@username/108235334317391891
  */
 export const getThread = async (statusUrl: string) => {
   const detailUri = statusUrlToApiUrl(statusUrl);

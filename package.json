@@ -15,12 +15,14 @@
     "gather-licenses": "license-report --only=prod --output=json --config=scripts/license-report-config.json > scripts/out/licenses.json"
   },
   "dependencies": {
+    "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
     "date-fns": "^2.28.0",
     "react": "17.0.2",
     "react-native": "0.68.1",
     "react-native-htmlview": "^0.16.0",
+    "react-native-mmkv": "^2.3.3",
     "react-native-safe-area-context": "^4.2.5",
     "react-native-screens": "^3.13.1",
     "react-native-svg": "^12.3.0"
