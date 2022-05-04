@@ -4,7 +4,7 @@ import {RefreshControl, ScrollView, StyleSheet} from 'react-native';
 import {useThread} from './api';
 import {Status} from './components/Status';
 import {RootStackParamList} from './types';
-import {useBackHandler} from './utils';
+import {useBackHandler} from './utils/hooks';
 
 export const Thread = ({
   navigation,

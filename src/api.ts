@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {mastoBearerToken} from './constants';
 import {TAccount, TStatus, TThread} from './types';
-import {useMount} from './utils';
+import {useMount} from './utils/hooks';
 
 const timelineUris = Object.freeze({
   personal: 'https://swj.io/api/v1/accounts/2/statuses',
@@ -64,7 +64,6 @@ const statusUrlToApiUrl = (url: string): string => {
 const fetchStatus = async (statusApiUrl: string) => {
   const detailResponse = await fetch(statusApiUrl);
   const statusDetail = await detailResponse.json();
-  console.log('detail:', statusDetail);
   return statusDetail as TStatus;
 };
 
@@ -119,7 +118,6 @@ export const getThread = async (statusUrl: string) => {
 
   const contextResponse = await fetch(`${detailUri}/context`);
   const statusContext = await contextResponse.json();
-  console.log('context:', statusContext);
 
   return {
     status: statusDetail,

@@ -19,11 +19,16 @@ import {screenHeight} from './dimensions';
 import {StyleCreator} from './theme';
 import {useThemeStyle} from './theme/utils';
 import {RootStackParamList, TAccount, TStatus} from './types';
-import {useBackHandler} from './utils';
+import {useBackHandler} from './utils/hooks';
 
 interface ProfileHeaderProps {
   profile: TAccount | undefined;
 }
+
+const instanceHostName = (url: string) => {
+  const [, , host] = url.split('/');
+  return host;
+};
 
 const ProfileHeader = (props: ProfileHeaderProps) => {
   const {top} = useSafeAreaInsets();
@@ -38,7 +43,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
     );
   }
 
-  const {display_name, note, emojis} = props.profile;
+  const {display_name, note, emojis, username, url} = props.profile;
 
   return (
     <View style={styles.header}>
@@ -53,6 +58,9 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
         />
         <Type scale="L" semiBold style={styles.headerDisplayName}>
           {display_name}
+        </Type>
+        <Type scale="S" medium style={styles.headerUsername}>
+          @{username}@{instanceHostName(url)}
         </Type>
         <HTMLView value={note} emojis={emojis} />
       </View>
@@ -125,6 +133,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     alignItems: 'center',
   },
   header: {
+    overflow: 'hidden',
     minHeight: screenHeight / 2 - 50,
     backgroundColor: getColor('baseAccent'),
   },
@@ -134,6 +143,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   headerBgImage: {
     flex: 1,
+    minHeight: 170,
     resizeMode: 'cover',
   },
   headerAvatar: {
@@ -145,6 +155,9 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     borderRadius: 5,
   },
   headerDisplayName: {
+    marginBottom: 5,
+  },
+  headerUsername: {
     marginBottom: 10,
   },
   headerBio: {

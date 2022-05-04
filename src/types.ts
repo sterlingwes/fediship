@@ -27,7 +27,9 @@ export interface TStatus {
   created_at: string;
   content: string; // html
   account: TAccount;
+  favourited: boolean;
   reblog: TStatus | null;
+  reblogged: boolean;
   url: string;
   in_reply_to_id: string; // ?
   poll?: TPoll;

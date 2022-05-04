@@ -1,22 +1,22 @@
-import {formatDuration, intervalToDuration} from 'date-fns';
 import React, {useState} from 'react';
 import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
 
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {TMediaAttachment, TStatus} from '../types';
+import {timeAgo} from '../utils/dates';
 import {HTMLView} from './HTMLView';
 import {Poll} from './Poll';
 import {Type} from './Type';
 
 const getType = (props: TStatus) => {
   if (props.in_reply_to_id) {
-    return 'reply';
+    return 'replied';
   }
   if (props.reblog) {
-    return 'reblog';
+    return 'boosted';
   }
-  return 'toot';
+  return '';
 };
 
 const CollapsedStatus = (props: TStatus) => {
@@ -84,10 +84,25 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
   );
 };
 
-const timeAgo = (props: TStatus) => {
-  const time = new Date(props.created_at);
-  const duration = intervalToDuration({start: time, end: new Date()});
-  return formatDuration(duration, {format: ['hours', 'minutes']});
+interface StatusHeaderProps {
+  username: string;
+  sendDate: Date;
+  tootTypeMessage: string;
+}
+
+const StatusHeader = (props: StatusHeaderProps) => {
+  const styles = useThemeStyle(styleCreator);
+  return (
+    <View style={styles.statusHeader}>
+      <Type scale="XS" semiBold>
+        {props.username}{' '}
+        <Type scale="XS" style={styles.statusHeaderType}>
+          {props.tootTypeMessage}
+        </Type>
+      </Type>
+      <Type scale="XS">{timeAgo(props.sendDate)}</Type>
+    </View>
+  );
 };
 
 export const Status = (
@@ -109,6 +124,11 @@ export const Status = (
           />
         </TouchableOpacity>
         <View style={styles.statusMessage}>
+          <StatusHeader
+            username={mainStatus.account.display_name}
+            sendDate={new Date(mainStatus.created_at)}
+            tootTypeMessage={getType(mainStatus)}
+          />
           {mainStatus.sensitive ? (
             <CollapsedStatus {...mainStatus} />
           ) : (
@@ -120,10 +140,6 @@ export const Status = (
               )}
             </>
           )}
-
-          <Type style={styles.statusUser} scale="XS">
-            {timeAgo(props)} • @{mainStatus.account.username}({getType(props)})
-          </Type>
         </View>
       </View>
     </TouchableOpacity>
@@ -189,5 +205,13 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   statusMessage: {
     flex: 1,
+  },
+  statusHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  statusHeaderType: {
+    color: getColor('primary'),
   },
 });
