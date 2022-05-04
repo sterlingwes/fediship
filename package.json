@@ -12,7 +12,8 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "types": "tsc --noEmit",
-    "gather-licenses": "license-report --only=prod --output=json --config=scripts/license-report-config.json > scripts/out/licenses.json"
+    "gather-licenses": "license-report --only=prod --output=json --config=scripts/license-report-config.json > scripts/out/licenses.json",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^6.3.1",
@@ -42,6 +43,7 @@
     "jest": "^26.6.3",
     "license-report": "^5.0.2",
     "metro-react-native-babel-preset": "^0.67.0",
+    "patch-package": "^6.4.7",
     "react-test-renderer": "17.0.2",
     "typescript": "^4.4.4"
   },
