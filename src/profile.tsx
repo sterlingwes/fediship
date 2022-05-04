@@ -153,6 +153,15 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     width: 100,
     height: 100,
     borderRadius: 5,
+    borderWidth: 2,
+    borderColor: getColor('secondary'),
+    shadowColor: getColor('base'),
+    shadowOpacity: 0.05,
+    shadowRadius: 18,
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
   },
   headerDisplayName: {
     marginBottom: 5,
