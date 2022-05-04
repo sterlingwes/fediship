@@ -19,7 +19,6 @@ import {screenHeight} from './dimensions';
 import {StyleCreator} from './theme';
 import {useThemeStyle} from './theme/utils';
 import {RootStackParamList, TAccount, TStatus} from './types';
-import {useBackHandler} from './utils/hooks';
 
 interface ProfileHeaderProps {
   profile: TAccount | undefined;
@@ -98,11 +97,6 @@ export const Profile = ({
   const {statusUrl} = route.params;
   const styles = useThemeStyle(styleCreator);
   const {profile, statuses, loading, fetchTimeline} = useProfile(statusUrl);
-
-  useBackHandler(() => {
-    navigation.navigate('Timeline');
-    return true;
-  });
 
   const renderItem = useMemo(
     () => createProfileTimelineRenderer(navigation),

@@ -4,7 +4,6 @@ import {RefreshControl, ScrollView, StyleSheet} from 'react-native';
 import {useThread} from './api';
 import {Status} from './components/Status';
 import {RootStackParamList} from './types';
-import {useBackHandler} from './utils/hooks';
 
 export const Thread = ({
   navigation,
@@ -12,11 +11,6 @@ export const Thread = ({
 }: NativeStackScreenProps<RootStackParamList, 'Thread'>) => {
   const {statusUrl} = route.params;
   const {thread, loading, fetchThread} = useThread(statusUrl);
-
-  useBackHandler(() => {
-    navigation.navigate('Timeline');
-    return true;
-  });
 
   return (
     <ScrollView
