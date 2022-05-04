@@ -1,5 +1,5 @@
 import {MMKV} from 'react-native-mmkv';
-import {TPeerInfo} from '../types';
+import {TPeerInfo} from '../../types';
 
 const storage = new MMKV({id: 'peerInstanceInfo'});
 

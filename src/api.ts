@@ -2,7 +2,7 @@ import {useState} from 'react';
 import {mastoBearerToken} from './constants';
 import {TAccount, TPeerInfo, TStatus, TThread} from './types';
 import {useMount} from './utils/hooks';
-import {getPeerStorageKeys, savePeerInfo} from './utils/peer-storage';
+import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
 
 const timelineUris = Object.freeze({
   personal: 'https://swj.io/api/v1/accounts/2/statuses',
