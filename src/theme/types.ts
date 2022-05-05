@@ -13,6 +13,7 @@ export interface TThemeContext {
     success: ColorValue;
 
     baseTextColor: ColorValue;
+    contrastTextColor: ColorValue;
   };
 }
 

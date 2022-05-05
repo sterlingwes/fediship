@@ -15,7 +15,6 @@ import {BackButton} from '../components/BackButton';
 import {HTMLView} from '../components/HTMLView';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
-import {screenHeight} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TAccount, TStatus} from '../types';
@@ -128,7 +127,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   header: {
     overflow: 'hidden',
-    minHeight: screenHeight / 2 - 50,
     backgroundColor: getColor('baseAccent'),
   },
   headerBackBtn: {

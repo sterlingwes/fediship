@@ -13,7 +13,12 @@ export const BackButton = (props: BackButtonProps) => {
   return (
     <TouchableOpacity {...props}>
       <View style={styles.container}>
-        <Chevron color={getColor('base')} width={'50'} height={'50'} />
+        <Chevron
+          color={getColor('contrastTextColor')}
+          width={'50'}
+          height={'50'}
+          style={styles.icon}
+        />
       </View>
     </TouchableOpacity>
   );
@@ -24,5 +29,8 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     backgroundColor: getColor('baseTextColor'),
     opacity: 0.7,
     borderRadius: 10,
+  },
+  icon: {
+    left: -2,
   },
 });

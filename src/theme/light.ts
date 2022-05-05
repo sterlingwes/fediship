@@ -14,6 +14,7 @@ export const lightPalette: TThemeContext['palette'] = Object.freeze({
   success: '#418054',
 
   baseTextColor: '#0F1014',
+  contrastTextColor: '#E6EEF6',
 });
 
 export const lightNavigationTheme: NavTheme = Object.freeze({
