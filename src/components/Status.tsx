@@ -3,9 +3,10 @@ import {Image, StyleSheet, Pressable, View} from 'react-native';
 
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
-import {TMediaAttachment, TStatus} from '../types';
+import {TStatus} from '../types';
 import {timeAgo} from '../utils/dates';
 import {HTMLView} from './HTMLView';
+import {MediaAttachments} from './MediaAttachments';
 import {Poll} from './Poll';
 import {Type} from './Type';
 
@@ -44,44 +45,6 @@ const CollapsedStatus = (props: TStatus) => {
           )}
         </>
       )}
-    </View>
-  );
-};
-
-const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
-  width,
-  height,
-});
-
-const Media = (props: TMediaAttachment) => {
-  const styles = useThemeStyle(styleCreator);
-  return (
-    <View>
-      {props.type === 'image' ? (
-        <Image
-          source={{uri: props.preview_url, ...dimensProps(props.meta.small)}}
-          style={[
-            styles.mediaImg,
-            {
-              ...dimensProps(props.meta.small),
-              aspectRatio: props.meta.small.aspect,
-            },
-          ]}
-        />
-      ) : (
-        <Type>?</Type>
-      )}
-    </View>
-  );
-};
-
-export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
-  const styles = useThemeStyle(styleCreator);
-  return (
-    <View style={styles.media}>
-      {props.media.map(attachment => (
-        <Media key={attachment.id} {...attachment} />
-      ))}
     </View>
   );
 };
@@ -175,15 +138,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   emoji: {
     width: 20,
     height: 20,
-  },
-  media: {
-    marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  mediaImg: {
-    resizeMode: 'cover',
-    maxWidth: '100%',
   },
   collapsedButton: {
     borderColor: getColor('baseAccent'),

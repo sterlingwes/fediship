@@ -39,9 +39,10 @@ export interface TStatus {
   media_attachments?: TMediaAttachment[];
 }
 
+// https://docs.joinmastodon.org/entities/attachment/
 export interface TMediaAttachment {
   id: string;
-  type: 'image';
+  type: 'image' | 'gifv' | 'video' | 'audio';
   url: string;
   preview_url: string;
   remote_url: string;

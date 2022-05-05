@@ -108,6 +108,7 @@ export const Profile = ({
         data={statuses}
         renderItem={renderItem}
         style={styles.container}
+        contentInset={{bottom: 40}}
         ListHeaderComponent={() => <ProfileHeader profile={profile} />}
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={fetchTimeline} />
