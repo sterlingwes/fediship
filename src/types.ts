@@ -72,8 +72,8 @@ export interface Emoji {
 }
 
 export type RootStackParamList = {
+  Tabs: undefined;
   Home: undefined;
-  Timeline: undefined;
   Explore: undefined;
   Profile: {statusUrl: string};
   Thread: {statusUrl: string};

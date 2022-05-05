@@ -1,17 +1,16 @@
 import React from 'react';
 import {ColorValue} from 'react-native';
-import {Svg, Polyline, SvgProps} from 'react-native-svg';
+import {Svg, Polyline, Path} from 'react-native-svg';
 
-interface ChevronProps extends SvgProps {
+interface HomeIconProps {
   width?: string;
   height?: string;
   color?: ColorValue;
 }
 
-export const Chevron = ({width, height, color, ...svgProps}: ChevronProps) => {
+export const HomeIcon = ({width, height, color}: HomeIconProps) => {
   return (
     <Svg
-      {...svgProps}
       width={width ?? '24'}
       height={height ?? '24'}
       viewBox="0 0 24 24"
@@ -20,7 +19,8 @@ export const Chevron = ({width, height, color, ...svgProps}: ChevronProps) => {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round">
-      <Polyline points="15 18 9 12 15 6" />
+      <Path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <Polyline points="9 22 9 12 15 12 15 22" />
     </Svg>
   );
 };

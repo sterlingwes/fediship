@@ -14,14 +14,47 @@ import {Thread} from './screens/thread';
 import {Timeline} from './screens/timeline';
 import {RootStackParamList} from './types';
 import {PeerProfile} from './screens/peer-profile';
+import {useThemeGetters} from './theme/utils';
+import {HomeIcon} from './components/icons/HomeIcon';
+import {MapIcon} from './components/icons/MapIcon';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+const iconForTab =
+  (tab: 'home' | 'explore') =>
+  ({focused}: {focused: boolean}) => {
+    const {getColor} = useThemeGetters();
+    switch (tab) {
+      case 'home':
+        return (
+          <HomeIcon
+            color={focused ? getColor('blueAccent') : getColor('primary')}
+          />
+        );
+      case 'explore':
+        return (
+          <MapIcon
+            color={focused ? getColor('blueAccent') : getColor('primary')}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
 const TabbedHome = () => (
-  <Tab.Navigator>
-    <Tab.Screen name="Timeline" component={Timeline} />
-    <Tab.Screen name="Explore" component={Explore} />
+  <Tab.Navigator screenOptions={{tabBarStyle: {height: 55}}}>
+    <Tab.Screen
+      name="Home"
+      component={Timeline}
+      options={{tabBarIcon: iconForTab('home'), tabBarShowLabel: false}}
+    />
+    <Tab.Screen
+      name="Explore"
+      component={Explore}
+      options={{tabBarIcon: iconForTab('explore'), tabBarShowLabel: false}}
+    />
   </Tab.Navigator>
 );
 
@@ -34,7 +67,7 @@ export const App = () => {
         theme={scheme === 'dark' ? darkNavigationTheme : lightNavigationTheme}>
         <Stack.Navigator>
           <Stack.Screen
-            name="Home"
+            name="Tabs"
             component={TabbedHome}
             options={{headerShown: false}}
           />

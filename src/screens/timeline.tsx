@@ -9,7 +9,7 @@ import {RootStackParamList} from '../types';
 
 export const Timeline = ({
   navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Timeline'>) => {
+}: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
   const styles = useThemeStyle(styleCreator);
   const {statuses, loading, fetchTimeline} = useTimeline('home');
 
