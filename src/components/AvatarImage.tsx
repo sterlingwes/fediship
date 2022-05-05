@@ -16,6 +16,7 @@ export const AvatarImage = ({
 
 const styleCreator: StyleCreator = ({getColor}) => ({
   headerAvatar: {
+    backgroundColor: getColor('base'),
     width: 100,
     height: 100,
     borderRadius: 5,

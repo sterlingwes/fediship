@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useProfile} from '../api';
+import {AvatarImage} from '../components/AvatarImage';
 import {BackButton} from '../components/BackButton';
 import {HTMLView} from '../components/HTMLView';
 import {Status} from '../components/Status';
@@ -50,10 +51,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
         style={styles.headerBgImage}
       />
       <View style={styles.headerBio}>
-        <Image
-          source={{uri: props.profile.avatar}}
-          style={styles.headerAvatar}
-        />
+        <AvatarImage uri={props.profile.avatar} style={styles.headerAvatar} />
         <Type scale="L" semiBold style={styles.headerDisplayName}>
           {display_name}
         </Type>
@@ -148,18 +146,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     position: 'absolute',
     top: -50,
     left: 15,
-    width: 100,
-    height: 100,
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: getColor('secondary'),
-    shadowColor: getColor('base'),
-    shadowOpacity: 0.05,
-    shadowRadius: 18,
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
   },
   headerDisplayName: {
     marginBottom: 5,
