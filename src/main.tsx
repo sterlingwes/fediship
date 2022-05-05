@@ -17,12 +17,14 @@ import {PeerProfile} from './screens/peer-profile';
 import {useThemeGetters} from './theme/utils';
 import {HomeIcon} from './components/icons/HomeIcon';
 import {MapIcon} from './components/icons/MapIcon';
+import {UserIcon} from './components/icons/UserIcon';
+import {User} from './screens/user';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const iconForTab =
-  (tab: 'home' | 'explore') =>
+  (tab: 'home' | 'explore' | 'user') =>
   ({focused}: {focused: boolean}) => {
     const {getColor} = useThemeGetters();
     switch (tab) {
@@ -38,13 +40,19 @@ const iconForTab =
             color={focused ? getColor('blueAccent') : getColor('primary')}
           />
         );
+      case 'user':
+        return (
+          <UserIcon
+            color={focused ? getColor('blueAccent') : getColor('primary')}
+          />
+        );
       default:
         return null;
     }
   };
 
 const TabbedHome = () => (
-  <Tab.Navigator screenOptions={{tabBarStyle: {height: 55}}}>
+  <Tab.Navigator screenOptions={{tabBarStyle: {height: 85}}}>
     <Tab.Screen
       name="Home"
       component={Timeline}
@@ -54,6 +62,11 @@ const TabbedHome = () => (
       name="Explore"
       component={Explore}
       options={{tabBarIcon: iconForTab('explore'), tabBarShowLabel: false}}
+    />
+    <Tab.Screen
+      name="User"
+      component={User}
+      options={{tabBarIcon: iconForTab('user'), tabBarShowLabel: false}}
     />
   </Tab.Navigator>
 );

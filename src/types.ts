@@ -76,7 +76,8 @@ export type RootStackParamList = {
   Tabs: undefined;
   Home: undefined;
   Explore: undefined;
-  Profile: {statusUrl: string; account?: TAccount};
+  User: undefined;
+  Profile: {statusUrl?: string; account?: TAccount};
   Thread: {statusUrl: string};
   PeerProfile: TPeerInfo;
 };

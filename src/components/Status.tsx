@@ -88,7 +88,7 @@ const EmojiName = ({
       {splitParts.map((part, i) => {
         if (typeof part === 'string') {
           return (
-            <Type key={i} scale="XS">
+            <Type key={i} scale="S">
               {part}
             </Type>
           );
@@ -123,12 +123,12 @@ const StatusHeader = (props: StatusHeaderProps) => {
             </Type>
           </Type>
         )}
-        <Type scale="XS" semiBold numberOfLines={1}>
+        <Type scale="S" semiBold numberOfLines={1}>
           <EmojiName
             name={props.displayName || props.username || ''}
             emojis={props.userEmojis}
           />{' '}
-          <Type scale="XS" style={styles.statusHeaderType}>
+          <Type scale="S" style={styles.statusHeaderType}>
             {props.tootTypeMessage}
           </Type>
         </Type>

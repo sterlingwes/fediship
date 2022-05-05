@@ -12,6 +12,87 @@ const timelineUris = Object.freeze({
 
 type Timeline = keyof typeof timelineUris;
 
+/**
+ * parses strings in the format of:
+ * <https://swj.io/api/v1/accounts/2/following?max_id=6>; rel="next", <https://swj.io/api/v1/accounts/2/following?since_id=61>; rel="prev"
+ */
+const parseLink = (linkHeaderValue: string | undefined | null) => {
+  if (!linkHeaderValue) {
+    return {};
+  }
+
+  const parts = linkHeaderValue.split(/[<>,;\s]+/);
+  parts.shift(); // blank string
+  if (parts.length === 4) {
+    const [next, , prev] = parts;
+    return {
+      next,
+      prev,
+    };
+  }
+
+  return {
+    prev: parts[0],
+  };
+};
+
+export const getFollowers = async (nextPage?: string | boolean) => {
+  const url =
+    typeof nextPage === 'string'
+      ? nextPage
+      : 'https://swj.io/api/v1/accounts/2/following';
+  console.log('fetching', url);
+  const response = await fetch(url, {
+    headers: {Authorization: `Bearer ${mastoBearerToken}`},
+  });
+  const linkHeader = response.headers.get('link');
+  const json = await response.json();
+  return {
+    followers: json,
+    pageInfo: parseLink(linkHeader),
+  };
+};
+
+export const useFollowers = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [accounts, setAccounts] = useState<TAccount[]>([]);
+  const [nextPage, setNextPage] = useState<string | false>();
+
+  const fetchFollowers = async (reset?: boolean) => {
+    if (nextPage === false || loading) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await getFollowers(nextPage);
+      if (reset) {
+        setAccounts(result.followers);
+      } else {
+        setAccounts([...accounts, ...result.followers]);
+      }
+      setNextPage(result.pageInfo.next ?? false);
+    } catch (e: unknown) {
+      console.error(e);
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const reloadFollowers = () => {
+    setNextPage(undefined);
+    return fetchFollowers(true);
+  };
+
+  useMount(() => {
+    fetchFollowers(true);
+  });
+
+  return {accounts, fetchFollowers, reloadFollowers, error, loading};
+};
+
 export const getPeers = async () => {
   const response = await fetch('https://swj.io/api/v1/instance/peers');
   const json = await response.json();
@@ -171,7 +252,7 @@ export const getProfile = async (url: string) => {
   return {account, timeline} as {account: TAccount; timeline: TStatus[]};
 };
 
-export const useProfile = (statusUrl: string) => {
+export const useProfile = (statusUrl: string | undefined) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
@@ -179,6 +260,11 @@ export const useProfile = (statusUrl: string) => {
   const [statuses, setStatuses] = useState<TStatus[]>([]);
 
   const fetchTimeline = async () => {
+    if (!statusUrl) {
+      setLoading(false);
+      return;
+    }
+
     if (profile) {
       setRefreshing(true);
     }
