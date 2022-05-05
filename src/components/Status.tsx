@@ -90,18 +90,33 @@ interface StatusHeaderProps {
   username: string;
   sendDate: Date;
   tootTypeMessage: string;
+  booster: string | undefined;
 }
 
 const StatusHeader = (props: StatusHeaderProps) => {
   const styles = useThemeStyle(styleCreator);
   return (
     <View style={styles.statusHeader}>
-      <Type scale="XS" semiBold>
-        {props.username}{' '}
-        <Type scale="XS" style={styles.statusHeaderType}>
-          {props.tootTypeMessage}
+      <View style={styles.statusHeaderActorsLabels}>
+        {props.booster && (
+          <Type
+            scale="XS"
+            semiBold
+            style={styles.statusHeaderBooster}
+            numberOfLines={1}>
+            {props.booster}{' '}
+            <Type scale="XS" style={styles.statusHeaderType}>
+              boosted
+            </Type>
+          </Type>
+        )}
+        <Type scale="XS" semiBold numberOfLines={1}>
+          {props.username}{' '}
+          <Type scale="XS" style={styles.statusHeaderType}>
+            {props.tootTypeMessage}
+          </Type>
         </Type>
-      </Type>
+      </View>
       <Type scale="XS">{timeAgo(props.sendDate)}</Type>
     </View>
   );
@@ -130,6 +145,7 @@ export const Status = (
             username={mainStatus.account.display_name}
             sendDate={new Date(mainStatus.created_at)}
             tootTypeMessage={getType(mainStatus)}
+            booster={props.reblog ? props.account.display_name : undefined}
           />
           {mainStatus.sensitive ? (
             <CollapsedStatus {...mainStatus} />
@@ -213,7 +229,14 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     justifyContent: 'space-between',
     marginBottom: 10,
   },
+  statusHeaderActorsLabels: {
+    paddingRight: 10,
+  },
   statusHeaderType: {
+    color: getColor('primary'),
+  },
+  statusHeaderBooster: {
+    marginBottom: 4,
     color: getColor('primary'),
   },
 });
