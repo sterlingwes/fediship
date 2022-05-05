@@ -65,7 +65,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
       </View>
       <BackButton
         onPress={() => navigation.goBack()}
-        style={[styles.headerBackBtn, {top}]}
+        style={[styles.headerBackBtn, {top: top || 20}]}
       />
     </View>
   );
@@ -105,11 +105,11 @@ export const Profile = ({
 
   return (
     <View style={styles.container}>
-      <ProfileHeader profile={profile} />
       <FlatList
         data={statuses}
         renderItem={renderItem}
         style={styles.container}
+        ListHeaderComponent={() => <ProfileHeader profile={profile} />}
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={fetchTimeline} />
         }
