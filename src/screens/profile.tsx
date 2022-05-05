@@ -82,8 +82,11 @@ const createProfileTimelineRenderer =
         onPress={() => {
           navigation.navigate('Thread', {statusUrl: nextStatusUrl});
         }}
-        onPressAvatar={() => {
-          navigation.navigate('Profile', {statusUrl: nextStatusUrl});
+        onPressAvatar={account => {
+          navigation.navigate('Profile', {
+            statusUrl: nextStatusUrl,
+            account,
+          });
         }}
       />
     );
@@ -93,9 +96,9 @@ export const Profile = ({
   navigation,
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Profile'>) => {
-  const {statusUrl} = route.params;
+  const {statusUrl, account} = route.params;
   const styles = useThemeStyle(styleCreator);
-  const {profile, statuses, loading, fetchTimeline} = useProfile(statusUrl);
+  const {profile, statuses, refreshing, fetchTimeline} = useProfile(statusUrl);
 
   const renderItem = useMemo(
     () => createProfileTimelineRenderer(navigation),
@@ -109,9 +112,11 @@ export const Profile = ({
         renderItem={renderItem}
         style={styles.container}
         contentInset={{bottom: 40}}
-        ListHeaderComponent={() => <ProfileHeader profile={profile} />}
+        ListHeaderComponent={() => (
+          <ProfileHeader profile={profile ?? account} />
+        )}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={fetchTimeline} />
+          <RefreshControl refreshing={refreshing} onRefresh={fetchTimeline} />
         }
       />
     </View>

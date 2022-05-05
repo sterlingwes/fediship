@@ -3,7 +3,7 @@ import {Image, StyleSheet, Pressable, View} from 'react-native';
 
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
-import {TStatus} from '../types';
+import {TAccount, TStatus} from '../types';
 import {timeAgo} from '../utils/dates';
 import {HTMLView} from './HTMLView';
 import {MediaAttachments} from './MediaAttachments';
@@ -86,16 +86,23 @@ const StatusHeader = (props: StatusHeaderProps) => {
 };
 
 export const Status = (
-  props: TStatus & {onPress: () => void; onPressAvatar?: () => void},
+  props: TStatus & {
+    onPress: () => void;
+    onPressAvatar?: (account: TAccount) => void;
+  },
 ) => {
   const styles = useThemeStyle(styleCreator);
 
   const mainStatus = props.reblog ? props.reblog : props;
+  const onPressAvatar =
+    typeof props.onPressAvatar === 'function'
+      ? () => props.onPressAvatar!(mainStatus.account)
+      : undefined;
 
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
       <View style={styles.statusContainer}>
-        <Pressable onPress={props.onPressAvatar}>
+        <Pressable onPress={onPressAvatar}>
           <Image
             source={{
               uri: mainStatus.account.avatar,

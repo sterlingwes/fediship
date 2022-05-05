@@ -173,11 +173,15 @@ export const getProfile = async (url: string) => {
 
 export const useProfile = (statusUrl: string) => {
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [profile, setProfile] = useState<TAccount>();
   const [statuses, setStatuses] = useState<TStatus[]>([]);
 
   const fetchTimeline = async () => {
+    if (profile) {
+      setRefreshing(true);
+    }
     setLoading(true);
     try {
       const result = await getProfile(statusUrl);
@@ -187,6 +191,7 @@ export const useProfile = (statusUrl: string) => {
       console.error(e);
       setError((e as Error).message);
     } finally {
+      setRefreshing(false);
       setLoading(false);
     }
   };
@@ -195,7 +200,7 @@ export const useProfile = (statusUrl: string) => {
     fetchTimeline();
   });
 
-  return {profile, statuses, fetchTimeline, error, loading};
+  return {profile, statuses, fetchTimeline, error, loading, refreshing};
 };
 
 /**

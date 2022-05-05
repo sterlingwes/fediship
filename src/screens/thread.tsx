@@ -25,10 +25,27 @@ export const Thread = ({
           onPress={() =>
             navigation.navigate('Thread', {statusUrl: childStatus.url})
           }
+          onPressAvatar={account => {
+            navigation.navigate('Profile', {
+              statusUrl: childStatus.url,
+              account,
+            });
+          }}
         />
       ))}
 
-      {thread?.status && <Status {...thread?.status} onPress={() => {}} />}
+      {thread?.status && (
+        <Status
+          {...thread?.status}
+          onPress={() => {}}
+          onPressAvatar={account => {
+            navigation.navigate('Profile', {
+              statusUrl: thread.status.url,
+              account,
+            });
+          }}
+        />
+      )}
 
       {thread?.descendants.map(childStatus => (
         <Status
@@ -37,6 +54,12 @@ export const Thread = ({
           onPress={() =>
             navigation.navigate('Thread', {statusUrl: childStatus.url})
           }
+          onPressAvatar={account => {
+            navigation.navigate('Profile', {
+              statusUrl: childStatus.url,
+              account,
+            });
+          }}
         />
       ))}
     </ScrollView>

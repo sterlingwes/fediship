@@ -27,9 +27,12 @@ export const Timeline = ({
             const statusUrl = status.reblog ? status.reblog.url : status.url;
             navigation.navigate('Thread', {statusUrl});
           }}
-          onPressAvatar={() => {
+          onPressAvatar={account => {
             const statusUrl = status.reblog ? status.reblog.url : status.url;
-            navigation.navigate('Profile', {statusUrl});
+            navigation.navigate('Profile', {
+              statusUrl,
+              account,
+            });
           }}
         />
       ))}
