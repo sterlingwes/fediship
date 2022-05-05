@@ -18,7 +18,13 @@ const htmlStylesCreator = (styles: ReturnType<typeof styleCreator>) => ({
 
 const renderNode = (imageStyle: ImageStyle) => (node: HTMLViewNode) => {
   if (node.name === 'emoji') {
-    return <Image source={{uri: node.attribs.src}} style={imageStyle} />;
+    return (
+      <Image
+        source={{uri: node.attribs.src, width: 18, height: 18}}
+        style={imageStyle}
+        onError={e => console.error(e)}
+      />
+    );
   }
 };
 
@@ -32,11 +38,12 @@ const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) =>
 
 export const HTMLView = ({value, emojis}: HTMLProps) => {
   const styles = useThemeStyle(styleCreator);
+  const emojifiedValue = contentWithEmojis({content: value, emojis});
   return (
     <RNHtmlView
-      value={contentWithEmojis({content: value, emojis})}
+      value={emojifiedValue}
       stylesheet={htmlStylesCreator(styles)}
-      renderNode={renderNode(styles)}
+      renderNode={renderNode(styles.emoji)}
       TextComponent={Type}
       textComponentProps={{scale: 'S'} as TypeProps}
     />
@@ -51,7 +58,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     color: getColor('primary'),
   },
   emoji: {
-    width: 20,
-    height: 20,
+    width: 18,
+    height: 18,
   },
 });
