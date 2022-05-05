@@ -47,16 +47,4 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  statusContainer: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderBottomColor: 'grey',
-    borderBottomWidth: 1,
-  },
-  statusUser: {
-    color: 'grey',
-    fontWeight: 'bold',
-    marginTop: 5,
-    textAlign: 'right',
-  },
 });
