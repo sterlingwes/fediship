@@ -12,8 +12,8 @@ interface HTMLProps {
 }
 
 const htmlStylesCreator = (styles: ReturnType<typeof styleCreator>) => ({
+  a: styles.linkColor,
   p: styles.textColor,
-  span: styles.textColor,
 });
 
 const renderNode = (imageStyle: ImageStyle) => (node: HTMLViewNode) => {
@@ -46,6 +46,9 @@ export const HTMLView = ({value, emojis}: HTMLProps) => {
 const styleCreator: StyleCreator = ({getColor}) => ({
   textColor: {
     color: getColor('baseTextColor'),
+  },
+  linkColor: {
+    color: getColor('primary'),
   },
   emoji: {
     width: 20,
