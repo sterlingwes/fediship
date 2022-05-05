@@ -3,6 +3,7 @@ import {ColorValue, StyleSheet} from 'react-native';
 export interface TThemeContext {
   palette: {
     base: ColorValue;
+    baseHighlight: ColorValue;
     baseAccent: ColorValue;
     primary: ColorValue;
     secondary: ColorValue;

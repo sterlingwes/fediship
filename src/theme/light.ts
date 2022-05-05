@@ -4,6 +4,7 @@ import {TThemeContext} from './types';
 
 export const lightPalette: TThemeContext['palette'] = Object.freeze({
   base: '#d9e1e8',
+  baseHighlight: '#C8DAEB',
   baseAccent: '#b0c0cf',
   primary: '#9bcbed',
   secondary: '#282c37',

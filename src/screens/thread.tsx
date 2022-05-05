@@ -1,9 +1,14 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React from 'react';
-import {RefreshControl, ScrollView, StyleSheet} from 'react-native';
+import React, {useMemo} from 'react';
+import {
+  FlatList,
+  ListRenderItem,
+  RefreshControl,
+  StyleSheet,
+} from 'react-native';
 import {useThread} from '../api';
 import {Status} from '../components/Status';
-import {RootStackParamList} from '../types';
+import {RootStackParamList, TStatus} from '../types';
 
 export const Thread = ({
   navigation,
@@ -12,57 +17,43 @@ export const Thread = ({
   const {statusUrl} = route.params;
   const {thread, loading, fetchThread} = useThread(statusUrl);
 
+  const statuses = useMemo(() => {
+    return [
+      ...(thread?.ancestors ?? []),
+      ...(thread?.status ? [thread.status] : []),
+      ...(thread?.descendants ?? []),
+    ];
+  }, [thread]);
+
+  const renderItem: ListRenderItem<TStatus> = ({item, index}) => {
+    return (
+      <Status
+        key={item.id}
+        focused={thread?.status.id === item.id}
+        {...item}
+        hasReplies={!!statuses[index + 1]}
+        lastStatus={statuses.length - 1 === index}
+        onPress={() => navigation.navigate('Thread', {statusUrl: item.url})}
+        onPressAvatar={account => {
+          navigation.navigate('Profile', {
+            statusUrl: item.url,
+            account,
+          });
+        }}
+      />
+    );
+  };
+
   return (
-    <ScrollView
+    <FlatList
+      data={statuses}
+      renderItem={renderItem}
       style={styles.container}
+      contentInset={{bottom: 40}}
       refreshControl={
         <RefreshControl refreshing={loading} onRefresh={fetchThread} />
-      }>
-      {thread?.ancestors.map(childStatus => (
-        <Status
-          key={childStatus.id}
-          {...childStatus}
-          onPress={() =>
-            navigation.navigate('Thread', {statusUrl: childStatus.url})
-          }
-          onPressAvatar={account => {
-            navigation.navigate('Profile', {
-              statusUrl: childStatus.url,
-              account,
-            });
-          }}
-        />
-      ))}
-
-      {thread?.status && (
-        <Status
-          {...thread?.status}
-          onPress={() => {}}
-          onPressAvatar={account => {
-            navigation.navigate('Profile', {
-              statusUrl: thread.status.url,
-              account,
-            });
-          }}
-        />
-      )}
-
-      {thread?.descendants.map(childStatus => (
-        <Status
-          key={childStatus.id}
-          {...childStatus}
-          onPress={() =>
-            navigation.navigate('Thread', {statusUrl: childStatus.url})
-          }
-          onPressAvatar={account => {
-            navigation.navigate('Profile', {
-              statusUrl: childStatus.url,
-              account,
-            });
-          }}
-        />
-      ))}
-    </ScrollView>
+      }
+    />
   );
 };
 

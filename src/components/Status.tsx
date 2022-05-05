@@ -50,7 +50,8 @@ const CollapsedStatus = (props: TStatus) => {
 };
 
 interface StatusHeaderProps {
-  username: string;
+  username: string | undefined;
+  displayName: string | undefined;
   userEmojis: Emoji[] | undefined;
   sendDate: Date;
   tootTypeMessage: string;
@@ -87,7 +88,7 @@ const EmojiName = ({
       {splitParts.map((part, i) => {
         if (typeof part === 'string') {
           return (
-            <Type key={i} scale="S">
+            <Type key={i} scale="XS">
               {part}
             </Type>
           );
@@ -123,7 +124,10 @@ const StatusHeader = (props: StatusHeaderProps) => {
           </Type>
         )}
         <Type scale="XS" semiBold numberOfLines={1}>
-          <EmojiName name={props.username} emojis={props.userEmojis} />{' '}
+          <EmojiName
+            name={props.displayName || props.username || ''}
+            emojis={props.userEmojis}
+          />{' '}
           <Type scale="XS" style={styles.statusHeaderType}>
             {props.tootTypeMessage}
           </Type>
@@ -134,8 +138,34 @@ const StatusHeader = (props: StatusHeaderProps) => {
   );
 };
 
+const ReplyLine = ({
+  stretch,
+  height,
+  visible,
+}: {
+  height?: number;
+  stretch?: boolean;
+  visible?: boolean;
+}) => {
+  const styles = useThemeStyle(styleCreator);
+
+  return (
+    <View
+      style={[
+        styles.replyLineContainer,
+        stretch && styles.replyLineStretch,
+        height && {height},
+      ]}>
+      {visible && <View style={styles.replyLine} />}
+    </View>
+  );
+};
+
 export const Status = (
   props: TStatus & {
+    focused?: boolean;
+    hasReplies?: boolean;
+    lastStatus?: boolean;
     onPress: () => void;
     onPressAvatar?: (account: TAccount) => void;
   },
@@ -148,20 +178,32 @@ export const Status = (
       ? () => props.onPressAvatar!(mainStatus.account)
       : undefined;
 
+  const replying = props.hasReplies || !!props.in_reply_to_id;
+
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
-      <View style={styles.statusContainer}>
-        <Pressable onPress={onPressAvatar}>
-          <Image
-            source={{
-              uri: mainStatus.account.avatar,
-            }}
-            style={styles.avatar}
-          />
-        </Pressable>
+      <View
+        style={[
+          styles.statusContainer,
+          props.lastStatus !== false && styles.statusThreadTerminated,
+          props.focused && styles.statusFocused,
+        ]}>
+        <View style={styles.statusLeftColumn}>
+          <ReplyLine height={15} visible={replying} />
+          <Pressable onPress={onPressAvatar}>
+            <Image
+              source={{
+                uri: mainStatus.account.avatar,
+              }}
+              style={[styles.avatar, props.focused && styles.avatarFocused]}
+            />
+          </Pressable>
+          <ReplyLine stretch visible={replying && !props.lastStatus} />
+        </View>
         <View style={styles.statusMessage}>
           <StatusHeader
-            username={mainStatus.account.display_name}
+            username={mainStatus.account.username || mainStatus.account.acct}
+            displayName={mainStatus.account.display_name}
             userEmojis={mainStatus.account.emojis}
             sendDate={new Date(mainStatus.created_at)}
             tootTypeMessage={getType(mainStatus)}
@@ -214,9 +256,13 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   statusContainer: {
     flex: 1,
     flexDirection: 'row',
-    paddingVertical: 10,
     paddingHorizontal: 20,
     paddingLeft: 15,
+  },
+  statusFocused: {
+    backgroundColor: getColor('baseHighlight'),
+  },
+  statusThreadTerminated: {
     borderBottomColor: getColor('baseAccent'),
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
@@ -229,11 +275,15 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     height: 60,
     resizeMode: 'cover',
     marginRight: 15,
-    marginTop: 5,
     borderRadius: 5,
+  },
+  avatarFocused: {
+    borderWidth: 2,
+    borderColor: getColor('secondary'),
   },
   statusMessage: {
     flex: 1,
+    paddingVertical: 10,
   },
   statusHeader: {
     flexDirection: 'row',
@@ -249,5 +299,20 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   statusHeaderBooster: {
     marginBottom: 4,
     color: getColor('primary'),
+  },
+  statusLeftColumn: {
+    flexDirection: 'column',
+  },
+  replyLineContainer: {
+    alignItems: 'center',
+    paddingRight: 15,
+  },
+  replyLineStretch: {
+    flex: 1,
+  },
+  replyLine: {
+    width: StyleSheet.hairlineWidth,
+    flex: 1,
+    backgroundColor: getColor('baseAccent'),
   },
 });
