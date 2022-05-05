@@ -13,6 +13,7 @@ import {
 import {Thread} from './screens/thread';
 import {Timeline} from './screens/timeline';
 import {RootStackParamList} from './types';
+import {PeerProfile} from './screens/peer-profile';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -43,6 +44,7 @@ export const App = () => {
             options={{headerShown: false}}
           />
           <Stack.Screen name="Thread" component={Thread} />
+          <Stack.Screen name="PeerProfile" component={PeerProfile} />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>

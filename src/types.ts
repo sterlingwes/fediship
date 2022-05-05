@@ -74,8 +74,10 @@ export interface Emoji {
 export type RootStackParamList = {
   Home: undefined;
   Timeline: undefined;
+  Explore: undefined;
   Profile: {statusUrl: string};
   Thread: {statusUrl: string};
+  PeerProfile: TPeerInfo;
 };
 
 interface TStatusContext {
