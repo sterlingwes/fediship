@@ -1,10 +1,17 @@
 import React from 'react';
-import {TouchableOpacity, TouchableOpacityProps, View} from 'react-native';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {Chevron} from './icons/Chevron';
 
-interface BackButtonProps extends TouchableOpacityProps {}
+interface BackButtonProps extends TouchableOpacityProps {
+  transparent?: boolean;
+}
 
 export const BackButton = (props: BackButtonProps) => {
   const {getColor} = useThemeGetters();
@@ -12,11 +19,18 @@ export const BackButton = (props: BackButtonProps) => {
 
   return (
     <TouchableOpacity {...props}>
-      <View style={styles.container}>
+      <View>
+        <View
+          style={[styles.container, !props.transparent && styles.transparent]}
+        />
         <Chevron
-          color={getColor('contrastTextColor')}
-          width={'50'}
-          height={'50'}
+          color={
+            props.transparent
+              ? getColor('contrastTextColor')
+              : getColor('primary')
+          }
+          width={'40'}
+          height={'40'}
           style={styles.icon}
         />
       </View>
@@ -26,9 +40,13 @@ export const BackButton = (props: BackButtonProps) => {
 
 const styleCreator: StyleCreator = ({getColor}) => ({
   container: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: getColor('baseTextColor'),
     opacity: 0.7,
     borderRadius: 10,
+  },
+  transparent: {
+    backgroundColor: 'transparent',
   },
   icon: {
     left: -2,

@@ -1,6 +1,6 @@
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {NavigationProp} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   RefreshControl,
   FlatList,
@@ -9,10 +9,9 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useProfile} from '../api';
 import {AvatarImage} from '../components/AvatarImage';
-import {BackButton} from '../components/BackButton';
+import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
@@ -30,9 +29,7 @@ const instanceHostName = (url: string) => {
 };
 
 const ProfileHeader = (props: ProfileHeaderProps) => {
-  const {top} = useSafeAreaInsets();
   const styles = useThemeStyle(styleCreator);
-  const navigation = useNavigation();
 
   if (!props.profile) {
     return (
@@ -60,10 +57,6 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
         </Type>
         <HTMLView value={note} emojis={emojis} />
       </View>
-      <BackButton
-        onPress={() => navigation.goBack()}
-        style={[styles.headerBackBtn, {top: top || 20}]}
-      />
     </View>
   );
 };
@@ -90,10 +83,13 @@ const createProfileTimelineRenderer =
     );
   };
 
+const headerOpacityVerticalBreakpoint = 120;
+
 export const Profile = ({
   navigation,
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Profile'>) => {
+  const [headerOpaque, setHeaderOpaque] = useState(false);
   const {statusUrl, account} = route.params;
   const styles = useThemeStyle(styleCreator);
   const {profile, statuses, refreshing, fetchTimeline} = useProfile(statusUrl);
@@ -110,12 +106,30 @@ export const Profile = ({
         renderItem={renderItem}
         style={styles.container}
         contentInset={{bottom: 40}}
+        onScroll={event => {
+          const aboveBreakpoint =
+            event.nativeEvent.contentOffset.y <=
+            headerOpacityVerticalBreakpoint;
+          if (aboveBreakpoint && headerOpaque) {
+            setHeaderOpaque(false);
+          }
+          if (aboveBreakpoint) {
+            return;
+          }
+          if (headerOpaque) {
+            return;
+          }
+          setHeaderOpaque(true);
+        }}
         ListHeaderComponent={() => (
           <ProfileHeader profile={profile ?? account} />
         )}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={fetchTimeline} />
         }
+      />
+      <FloatingHeader
+        {...{navigation, title: '', transparent: !headerOpaque}}
       />
     </View>
   );
@@ -132,10 +146,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   header: {
     overflow: 'hidden',
     backgroundColor: getColor('baseAccent'),
-  },
-  headerBackBtn: {
-    position: 'absolute',
-    left: 20,
   },
   headerBgImage: {
     flex: 1,
