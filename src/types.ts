@@ -39,6 +39,36 @@ export interface TStatus {
   media_attachments?: TMediaAttachment[];
 }
 
+// misskey "status"
+export interface TNote {
+  id: string;
+  createdAt: string;
+  userId: string;
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    host: string | null;
+    avatarUrl: string;
+    avatarBlurhash: string;
+    avatarColor: string | null;
+    isAdmin: boolean;
+    emojis: [];
+    onlineStatus: string;
+  };
+  text: string;
+  cw: null;
+  visibility: string;
+  renoteCount: number;
+  repliesCount: number;
+  reactions: Record<string, number>;
+  emojis: [];
+  fileIds: [];
+  files: [];
+  replyId: string;
+  renoteId: string;
+}
+
 // https://docs.joinmastodon.org/entities/attachment/
 export interface TMediaAttachment {
   id: string;

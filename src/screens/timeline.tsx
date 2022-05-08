@@ -3,7 +3,7 @@ import {
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 import React, {useMemo} from 'react';
-import {FlatList, ListRenderItem, RefreshControl} from 'react-native';
+import {Alert, FlatList, ListRenderItem, RefreshControl} from 'react-native';
 import {useTimeline} from '../api';
 import {Status} from '../components/Status';
 import {StyleCreator} from '../theme';
@@ -22,9 +22,22 @@ const createTimelineRenderer =
         key={status.id}
         {...status}
         onPress={() => {
+          if (nextStatusUrl.includes('/notes/')) {
+            Alert.alert(
+              '',
+              'Viewing threads on Misskey posts is not yet supported.',
+            );
+            return;
+          }
+
           navigation.navigate('Thread', {statusUrl: nextStatusUrl});
         }}
         onPressAvatar={account => {
+          if (nextStatusUrl.includes('/notes/')) {
+            Alert.alert('', 'Viewing Misskey profiles is not yet supported.');
+            return;
+          }
+
           navigation.push('Profile', {
             statusUrl: nextStatusUrl,
             account,
