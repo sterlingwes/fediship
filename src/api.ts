@@ -326,12 +326,30 @@ export const getThread = async (statusUrl: string) => {
   const statusDetail = await fetchStatus(detailUri);
 
   const contextResponse = await fetch(`${detailUri}/context`);
+  if (!contextResponse.ok) {
+    let errorMessage = 'unknown';
+    try {
+      const jsonError = await contextResponse.json();
+      if (jsonError.error) {
+        errorMessage = jsonError.error;
+      }
+    } catch (_) {
+      errorMessage = `response status ${contextResponse.status}`;
+    }
+    return {
+      type: 'error',
+      error: `getThread error: ${errorMessage}`,
+    };
+  }
   const statusContext = await contextResponse.json();
 
   return {
-    status: statusDetail,
-    ...statusContext,
-  } as TThread;
+    type: 'success',
+    response: {
+      status: statusDetail,
+      ...statusContext,
+    } as TThread,
+  };
 };
 
 export const useThread = (statusUrl: string) => {
@@ -343,7 +361,11 @@ export const useThread = (statusUrl: string) => {
     setLoading(true);
     try {
       const result = await getThread(statusUrl);
-      setThread(result);
+      if (result.type === 'error' && result.error) {
+        setError(result.error);
+      } else {
+        setThread(result.response);
+      }
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);

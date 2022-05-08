@@ -5,9 +5,11 @@ import {
   ListRenderItem,
   RefreshControl,
   StyleSheet,
+  View,
 } from 'react-native';
 import {useThread} from '../api';
 import {Status} from '../components/Status';
+import {Type} from '../components/Type';
 import {RootStackParamList, TStatus} from '../types';
 
 export const Thread = ({
@@ -15,7 +17,7 @@ export const Thread = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Thread'>) => {
   const {statusUrl} = route.params;
-  const {thread, loading, fetchThread} = useThread(statusUrl);
+  const {thread, loading, fetchThread, error} = useThread(statusUrl);
 
   const statuses = useMemo(() => {
     return [
@@ -43,6 +45,14 @@ export const Thread = ({
       />
     );
   };
+
+  if (error) {
+    return (
+      <View>
+        <Type>Error! {error}</Type>
+      </View>
+    );
+  }
 
   return (
     <FlatList
