@@ -28,7 +28,16 @@ const instanceHostName = (url: string) => {
   return host;
 };
 
+interface ProfileImages {
+  header?: string;
+  avatar?: string;
+}
+
 const ProfileHeader = (props: ProfileHeaderProps) => {
+  const [profileImages] = useState<ProfileImages>({
+    header: props.profile?.header,
+    avatar: props.profile?.avatar,
+  });
   const styles = useThemeStyle(styleCreator);
 
   if (!props.profile) {
@@ -44,11 +53,13 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
   return (
     <View style={styles.header}>
       <Image
-        source={{uri: props.profile.header}}
+        source={{uri: profileImages.header}}
         style={styles.headerBgImage}
       />
       <View style={styles.headerBio}>
-        <AvatarImage uri={props.profile.avatar} style={styles.headerAvatar} />
+        {profileImages.avatar && (
+          <AvatarImage uri={profileImages.avatar} style={styles.headerAvatar} />
+        )}
         <Type scale="L" semiBold style={styles.headerDisplayName}>
           {display_name}
         </Type>
@@ -99,6 +110,11 @@ export const Profile = ({
     [navigation],
   );
 
+  const headerComponent = useMemo(
+    () => <ProfileHeader profile={profile ?? account} />,
+    [profile, account],
+  );
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -121,9 +137,7 @@ export const Profile = ({
           }
           setHeaderOpaque(true);
         }}
-        ListHeaderComponent={() => (
-          <ProfileHeader profile={profile ?? account} />
-        )}
+        ListHeaderComponent={headerComponent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={fetchTimeline} />
         }
