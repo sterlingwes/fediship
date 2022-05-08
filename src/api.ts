@@ -188,9 +188,9 @@ export const getTimeline = async (timeline: Timeline) => {
     headers: {Authorization: `Bearer ${mastoBearerToken}`},
   });
   const json = await response.json();
-  return json.sort((a: TStatus, b: TStatus) =>
-    b.id.localeCompare(a.id),
-  ) as TStatus[];
+  return json
+    .filter((status: TStatus) => !status.in_reply_to_id)
+    .sort((a: TStatus, b: TStatus) => b.id.localeCompare(a.id)) as TStatus[];
 };
 
 export const useTimeline = (timeline: Timeline) => {
