@@ -1,42 +1,61 @@
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React from 'react';
-import {RefreshControl, ScrollView} from 'react-native';
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
+import React, {useMemo} from 'react';
+import {FlatList, ListRenderItem, RefreshControl} from 'react-native';
 import {useTimeline} from '../api';
 import {Status} from '../components/Status';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
-import {RootStackParamList} from '../types';
+import {RootStackParamList, TStatus} from '../types';
+
+const createTimelineRenderer =
+  (
+    navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>,
+  ): ListRenderItem<TStatus> =>
+  row => {
+    const status = row.item;
+    const nextStatusUrl = status.reblog ? status.reblog.url : status.url;
+    return (
+      <Status
+        key={status.id}
+        {...status}
+        onPress={() => {
+          navigation.navigate('Thread', {statusUrl: nextStatusUrl});
+        }}
+        onPressAvatar={account => {
+          navigation.push('Profile', {
+            statusUrl: nextStatusUrl,
+            account,
+          });
+        }}
+      />
+    );
+  };
 
 export const Timeline = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
   const styles = useThemeStyle(styleCreator);
-  const {statuses, loading, fetchTimeline} = useTimeline('home');
+  const {statuses, loading, fetchTimeline, reloadTimeline} =
+    useTimeline('home');
+
+  const renderItem = useMemo(
+    () => createTimelineRenderer(navigation),
+    [navigation],
+  );
 
   return (
-    <ScrollView
+    <FlatList
+      data={statuses}
+      renderItem={renderItem}
       style={styles.container}
       refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={fetchTimeline} />
-      }>
-      {statuses.map(status => (
-        <Status
-          key={status.id}
-          {...status}
-          onPress={() => {
-            const statusUrl = status.reblog ? status.reblog.url : status.url;
-            navigation.navigate('Thread', {statusUrl});
-          }}
-          onPressAvatar={account => {
-            const statusUrl = status.reblog ? status.reblog.url : status.url;
-            navigation.navigate('Profile', {
-              statusUrl,
-              account,
-            });
-          }}
-        />
-      ))}
-    </ScrollView>
+        <RefreshControl refreshing={loading} onRefresh={reloadTimeline} />
+      }
+      onEndReached={() => fetchTimeline()}
+    />
   );
 };
 

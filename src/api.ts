@@ -41,7 +41,6 @@ export const getFollowers = async (nextPage?: string | boolean) => {
     typeof nextPage === 'string'
       ? nextPage
       : 'https://swj.io/api/v1/accounts/2/following';
-  console.log('fetching', url);
   const response = await fetch(url, {
     headers: {Authorization: `Bearer ${mastoBearerToken}`},
   });
@@ -182,27 +181,46 @@ export const usePeers = () => {
   return {peers, fetchPeers, error, loading, progressMessage};
 };
 
-export const getTimeline = async (timeline: Timeline) => {
-  const uri = timelineUris[timeline];
-  const response = await fetch(uri, {
+export const getTimeline = async (
+  timeline: Timeline,
+  nextPage?: string | boolean,
+) => {
+  const url = typeof nextPage === 'string' ? nextPage : timelineUris[timeline];
+  const response = await fetch(url, {
     headers: {Authorization: `Bearer ${mastoBearerToken}`},
   });
+  const linkHeader = response.headers.get('link');
   const json = await response.json();
-  return json
+  const list = json
     .filter((status: TStatus) => !status.in_reply_to_id)
     .sort((a: TStatus, b: TStatus) => b.id.localeCompare(a.id)) as TStatus[];
+
+  return {
+    list,
+    pageInfo: parseLink(linkHeader),
+  };
 };
 
 export const useTimeline = (timeline: Timeline) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [statuses, setStatuses] = useState<TStatus[]>([]);
+  const [nextPage, setNextPage] = useState<string | false>();
 
-  const fetchTimeline = async () => {
+  const fetchTimeline = async (reset?: boolean) => {
+    if (nextPage === false || loading) {
+      return;
+    }
+
     setLoading(true);
     try {
-      const list = await getTimeline(timeline);
-      setStatuses(list);
+      const result = await getTimeline(timeline, nextPage);
+      if (reset) {
+        setStatuses(result.list);
+      } else {
+        setStatuses(statuses.concat(result.list));
+      }
+      setNextPage(result.pageInfo.next ?? false);
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);
@@ -211,11 +229,16 @@ export const useTimeline = (timeline: Timeline) => {
     }
   };
 
+  const reloadTimeline = () => {
+    setNextPage(undefined);
+    return fetchTimeline(true);
+  };
+
   useMount(() => {
-    fetchTimeline();
+    fetchTimeline(true);
   });
 
-  return {statuses, fetchTimeline, error, loading};
+  return {statuses, fetchTimeline, reloadTimeline, error, loading};
 };
 
 const parseStatusUrl = (url: string) => {

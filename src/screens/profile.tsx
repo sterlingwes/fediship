@@ -76,7 +76,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
 
 const createProfileTimelineRenderer =
   (
-    navigation: NativeStackNavigationProp<RootStackParamList>,
+    navigation: NativeStackNavigationProp<RootStackParamList, 'Profile'>,
   ): ListRenderItem<TStatus> =>
   row => {
     const status = row.item;
