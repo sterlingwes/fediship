@@ -1,5 +1,7 @@
-import {NavigationProp} from '@react-navigation/native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 import React, {useMemo, useState} from 'react';
 import {
   RefreshControl,
@@ -73,7 +75,9 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
 };
 
 const createProfileTimelineRenderer =
-  (navigation: NavigationProp<RootStackParamList>): ListRenderItem<TStatus> =>
+  (
+    navigation: NativeStackNavigationProp<RootStackParamList>,
+  ): ListRenderItem<TStatus> =>
   row => {
     const status = row.item;
     const nextStatusUrl = status.reblog ? status.reblog.url : status.url;
@@ -85,7 +89,7 @@ const createProfileTimelineRenderer =
           navigation.navigate('Thread', {statusUrl: nextStatusUrl});
         }}
         onPressAvatar={account => {
-          navigation.navigate('Profile', {
+          navigation.push('Profile', {
             statusUrl: nextStatusUrl,
             account,
           });
@@ -103,7 +107,10 @@ export const Profile = ({
   const [headerOpaque, setHeaderOpaque] = useState(false);
   const {statusUrl, account} = route.params;
   const styles = useThemeStyle(styleCreator);
-  const {profile, statuses, refreshing, fetchTimeline} = useProfile(statusUrl);
+  const {profile, statuses, refreshing, fetchTimeline} = useProfile(
+    statusUrl,
+    account?.id,
+  );
 
   const renderItem = useMemo(
     () => createProfileTimelineRenderer(navigation),

@@ -35,7 +35,7 @@ export const Thread = ({
         lastStatus={statuses.length - 1 === index}
         onPress={() => navigation.navigate('Thread', {statusUrl: item.url})}
         onPressAvatar={account => {
-          navigation.navigate('Profile', {
+          navigation.push('Profile', {
             statusUrl: item.url,
             account,
           });

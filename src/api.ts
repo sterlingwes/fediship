@@ -238,7 +238,12 @@ const fetchStatus = async (statusApiUrl: string) => {
   return statusDetail as TStatus;
 };
 
-export const getProfile = async (url: string) => {
+interface ProfileResult {
+  account: TAccount;
+  timeline: TStatus[];
+}
+
+const getProfileByStatusUrl = async (url: string) => {
   const {host, protocol, statusId} = parseStatusUrl(url);
   const detailUrl = `${protocol}//${host}/api/v1/statuses/${statusId}`;
   const statusDetail = await fetchStatus(detailUrl);
@@ -249,10 +254,23 @@ export const getProfile = async (url: string) => {
   const accountUrl = `${protocol}//${host}/api/v1/accounts/${accountId}`;
   const accountResponse = await fetch(accountUrl);
   const account = await accountResponse.json();
-  return {account, timeline} as {account: TAccount; timeline: TStatus[]};
+  return {account, timeline} as ProfileResult;
 };
 
-export const useProfile = (statusUrl: string | undefined) => {
+const getProfileByAccountId = async (accountId: string) => {
+  const accountTimelineUrl = `https://swj.io/api/v1/accounts/${accountId}/statuses`;
+  const timelineResponse = await fetch(accountTimelineUrl);
+  const timeline = await timelineResponse.json();
+  const accountUrl = `https://swj.io/api/v1/accounts/${accountId}`;
+  const accountResponse = await fetch(accountUrl);
+  const account = await accountResponse.json();
+  return {account, timeline} as ProfileResult;
+};
+
+export const useProfile = (
+  statusUrl: string | undefined,
+  accountId: string | undefined,
+) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
@@ -260,7 +278,7 @@ export const useProfile = (statusUrl: string | undefined) => {
   const [statuses, setStatuses] = useState<TStatus[]>([]);
 
   const fetchTimeline = async () => {
-    if (!statusUrl) {
+    if (!statusUrl && !accountId) {
       setLoading(false);
       return;
     }
@@ -270,7 +288,17 @@ export const useProfile = (statusUrl: string | undefined) => {
     }
     setLoading(true);
     try {
-      const result = await getProfile(statusUrl);
+      let result: ProfileResult | undefined;
+      if (statusUrl) {
+        result = await getProfileByStatusUrl(statusUrl);
+      }
+      if (!result && accountId) {
+        result = await getProfileByAccountId(accountId);
+      }
+      if (!result) {
+        setLoading(false);
+        return;
+      }
       setStatuses(result.timeline);
       setProfile(result.account);
     } catch (e: unknown) {
