@@ -198,7 +198,7 @@ export const Status = (
               style={[styles.avatar, props.focused && styles.avatarFocused]}
             />
           </Pressable>
-          <ReplyLine stretch visible={replying && !props.lastStatus} />
+          <ReplyLine stretch visible={replying && props.lastStatus === false} />
         </View>
         <View style={styles.statusMessage}>
           <StatusHeader
