@@ -26,9 +26,11 @@ const CollapsedStatus = (props: TStatus) => {
 
   return (
     <View>
-      <Type style={styles.spoilerText} scale="S">
-        {props.spoiler_text}
-      </Type>
+      {!!props.spoiler_text.trim() && (
+        <Type style={styles.spoilerText} scale="S">
+          {props.spoiler_text}
+        </Type>
+      )}
       <Pressable
         onPress={() => setCollapsed(!collapsed)}
         style={styles.collapsedButton}>
