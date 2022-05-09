@@ -1,11 +1,20 @@
 import React, {useMemo, useState} from 'react';
-import {Image, StyleSheet, Pressable, View, ImageStyle} from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Pressable,
+  View,
+  ImageStyle,
+  ViewStyle,
+} from 'react-native';
+import {favourite} from '../api';
 
 import {StyleCreator} from '../theme';
-import {useThemeStyle} from '../theme/utils';
+import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {Emoji, TAccount, TStatus} from '../types';
 import {timeAgo} from '../utils/dates';
 import {HTMLView} from './HTMLView';
+import {StarIcon} from './icons/StarIcon';
 import {MediaAttachments} from './MediaAttachments';
 import {Poll} from './Poll';
 import {Type} from './Type';
@@ -144,10 +153,12 @@ const ReplyLine = ({
   stretch,
   height,
   visible,
+  style,
 }: {
   height?: number;
   stretch?: boolean;
   visible?: boolean;
+  style?: ViewStyle;
 }) => {
   const styles = useThemeStyle(styleCreator);
 
@@ -157,6 +168,7 @@ const ReplyLine = ({
         styles.replyLineContainer,
         stretch && styles.replyLineStretch,
         height && {height},
+        style,
       ]}>
       {visible && <View style={styles.replyLine} />}
     </View>
@@ -172,7 +184,9 @@ export const Status = (
     onPressAvatar?: (account: TAccount) => void;
   },
 ) => {
+  const [faved, setFaved] = useState(props.favourited);
   const styles = useThemeStyle(styleCreator);
+  const {getColor} = useThemeGetters();
 
   const mainStatus = props.reblog ? props.reblog : props;
   const onPressAvatar =
@@ -181,6 +195,13 @@ export const Status = (
       : undefined;
 
   const replying = props.hasReplies || !!props.in_reply_to_id;
+
+  const onFavourite = async () => {
+    const success = await favourite(props.id, faved);
+    if (success) {
+      setFaved(!faved);
+    }
+  };
 
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
@@ -191,7 +212,11 @@ export const Status = (
           props.focused && styles.statusFocused,
         ]}>
         <View style={styles.statusLeftColumn}>
-          <ReplyLine height={15} visible={replying} />
+          <ReplyLine
+            height={15}
+            visible={replying}
+            style={styles.replyLineLeader}
+          />
           <Pressable onPress={onPressAvatar}>
             <Image
               source={{
@@ -200,7 +225,22 @@ export const Status = (
               style={[styles.avatar, props.focused && styles.avatarFocused]}
             />
           </Pressable>
-          <ReplyLine stretch visible={replying && props.lastStatus === false} />
+          <View style={styles.statusLeftButtons}>
+            <ReplyLine
+              stretch
+              visible={replying && props.lastStatus === false}
+            />
+            <Pressable
+              onPress={onFavourite}
+              style={[styles.starButton, faved && styles.starButtonFaved]}>
+              <StarIcon
+                width="18"
+                height="18"
+                stroke={faved ? 'transparent' : getColor('baseAccent')}
+                fill={faved ? getColor('goldAccent') : undefined}
+              />
+            </Pressable>
+          </View>
         </View>
         <View style={styles.statusMessage}>
           <StatusHeader
@@ -305,15 +345,35 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   statusLeftColumn: {
     flexDirection: 'column',
   },
+  statusLeftButtons: {
+    flex: 1,
+    alignItems: 'center',
+    marginRight: 15,
+    minHeight: 50,
+  },
+  starButton: {
+    position: 'absolute',
+    top: 8,
+    padding: 4,
+    backgroundColor: getColor('base'),
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: getColor('baseAccent'),
+  },
+  starButtonFaved: {
+    borderColor: getColor('goldAccent'),
+  },
   replyLineContainer: {
     alignItems: 'center',
-    paddingRight: 15,
+  },
+  replyLineLeader: {
+    marginRight: 15,
   },
   replyLineStretch: {
     flex: 1,
   },
   replyLine: {
-    width: StyleSheet.hairlineWidth,
+    width: 1,
     flex: 1,
     backgroundColor: getColor('baseAccent'),
   },

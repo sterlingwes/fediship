@@ -4,6 +4,22 @@ import {TAccount, TPeerInfo, TStatus, TThread} from './types';
 import {useMount} from './utils/hooks';
 import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
 
+export const favourite = async (statusId: string, currentState: boolean) => {
+  const url = currentState
+    ? `https://swj.io/api/v1/statuses/${statusId}/unfavourite`
+    : `https://swj.io/api/v1/statuses/${statusId}/favourite`;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: {Authorization: `Bearer ${mastoBearerToken}`},
+    });
+    return true;
+  } catch (e) {
+    console.error('Failed to change favourite state', e);
+    return false;
+  }
+};
+
 const timelineUris = Object.freeze({
   personal: 'https://swj.io/api/v1/accounts/2/statuses',
   public: 'https://swj.io/api/v1/timelines/public',
