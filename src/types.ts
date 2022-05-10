@@ -112,7 +112,7 @@ export type RootStackParamList = {
   PeerProfile: TPeerInfo;
 };
 
-interface TStatusContext {
+export interface TStatusContext {
   ancestors: TStatus[];
   descendants: TStatus[];
 }

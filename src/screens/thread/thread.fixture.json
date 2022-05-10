@@ -1,0 +1,125 @@
+{
+  "ancestors": [],
+  "descendants": [
+    {
+      "id": "108244244447225688",
+      "created_at": "2022-05-04T14:54:53.256Z",
+      "in_reply_to_id": "108243893500830435",
+      "in_reply_to_account_id": "117",
+      "replies_count": 2,
+      "reblogs_count": 1,
+      "favourites_count": 4,
+      "content": "Author self-reply",
+      "reblog": null,
+      "account": {
+        "id": "117"
+      },
+      "media_attachments": [],
+      "mentions": [],
+      "tags": [],
+      "emojis": [],
+      "card": null,
+      "poll": null
+    },
+    {
+      "id": "108246418403442299",
+      "created_at": "2022-05-05T00:07:44.000Z",
+      "in_reply_to_id": "108244244447225688",
+      "in_reply_to_account_id": "117",
+      "replies_count": 0,
+      "reblogs_count": 0,
+      "favourites_count": 0,
+      "content": "@author reply 1",
+      "reblog": null,
+      "account": {
+        "id": "65352"
+      },
+      "media_attachments": [],
+      "mentions": [],
+      "tags": [],
+      "emojis": [],
+      "card": null,
+      "poll": null
+    },
+    {
+      "id": "108273968481741974",
+      "created_at": "2022-05-09T20:54:05.000Z",
+      "in_reply_to_id": "108244244447225688",
+      "in_reply_to_account_id": "117",
+      "replies_count": 0,
+      "reblogs_count": 0,
+      "favourites_count": 0,
+      "content": "@author reply 2",
+      "reblog": null,
+      "account": {
+        "id": "108198940707846150"
+      },
+      "media_attachments": [],
+      "mentions": [],
+      "tags": [],
+      "emojis": [],
+      "card": null,
+      "poll": null
+    },
+    {
+      "id": "108273952271365334",
+      "created_at": "2022-05-09T20:49:56.000Z",
+      "in_reply_to_id": "108243893500830435",
+      "in_reply_to_account_id": "117",
+      "replies_count": 0,
+      "reblogs_count": 0,
+      "favourites_count": 0,
+      "content": "@author reply to main post",
+      "reblog": null,
+      "account": {
+        "id": "107714105288831372"
+      },
+      "media_attachments": [],
+      "mentions": [],
+      "tags": [],
+      "emojis": [],
+      "card": null,
+      "poll": null
+    },
+    {
+      "id": "108274750128667885",
+      "created_at": "2022-05-10T00:12:52.000Z",
+      "in_reply_to_id": "108243893500830435",
+      "in_reply_to_account_id": "117",
+      "replies_count": 0,
+      "reblogs_count": 0,
+      "favourites_count": 0,
+      "content": "@author another reply to main post",
+      "reblog": null,
+      "account": {
+        "id": "108199952343950320"
+      },
+      "media_attachments": [],
+      "mentions": [],
+      "tags": [],
+      "emojis": [],
+      "card": null,
+      "poll": null
+    },
+    {
+      "id": "108274750128667900",
+      "created_at": "2022-05-10T00:14:52.000Z",
+      "in_reply_to_id": "108274750128667885",
+      "in_reply_to_account_id": "108199952343950320",
+      "replies_count": 0,
+      "reblogs_count": 0,
+      "favourites_count": 0,
+      "content": "reply to the reply to main post",
+      "reblog": null,
+      "account": {
+        "id": "108199952343950000"
+      },
+      "media_attachments": [],
+      "mentions": [],
+      "tags": [],
+      "emojis": [],
+      "card": null,
+      "poll": null
+    }
+  ]
+}

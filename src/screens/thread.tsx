@@ -11,6 +11,7 @@ import {useThread} from '../api';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
 import {RootStackParamList, TStatus} from '../types';
+import {resolveTerminatingTootIds} from './thread/thread.util';
 
 export const Thread = ({
   navigation,
@@ -18,6 +19,13 @@ export const Thread = ({
 }: NativeStackScreenProps<RootStackParamList, 'Thread'>) => {
   const {statusUrl} = route.params;
   const {thread, loading, fetchThread, error} = useThread(statusUrl);
+
+  const terminatingIds = useMemo(() => {
+    if (!thread?.descendants || !thread.status) {
+      return [];
+    }
+    return resolveTerminatingTootIds(thread.descendants, thread.status.id);
+  }, [thread]);
 
   const statuses = useMemo(() => {
     return [
@@ -34,8 +42,10 @@ export const Thread = ({
         focused={thread?.status.id === item.id}
         {...item}
         hasReplies={!!statuses[index + 1]}
-        lastStatus={statuses.length - 1 === index}
-        onPress={() => navigation.navigate('Thread', {statusUrl: item.url})}
+        lastStatus={
+          terminatingIds.includes(item.id) || statuses.length - 1 === index
+        }
+        onPress={() => navigation.push('Thread', {statusUrl: item.url})}
         onPressAvatar={account => {
           navigation.push('Profile', {
             statusUrl: item.url,
