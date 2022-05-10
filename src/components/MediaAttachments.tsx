@@ -28,10 +28,7 @@ const Media = (props: TMediaAttachment) => {
               }}
               style={[
                 styles.previewImage,
-                {
-                  ...dimensProps(props.meta.small),
-                  aspectRatio: props.meta.small.aspect,
-                },
+                {aspectRatio: props.meta.small.aspect},
               ]}
             />
           </Pressable>
@@ -45,13 +42,7 @@ const Media = (props: TMediaAttachment) => {
                 uri: props.preview_url,
                 ...dimensProps(props.meta.small),
               }}
-              style={[
-                styles.previewImage,
-                {
-                  ...dimensProps(props.meta.small),
-                  aspectRatio: props.meta.small.aspect,
-                },
-              ]}
+              style={[styles.previewImage]}
             />
             <View style={styles.mediaPlayableIcon}>
               <PlayCircleIcon color={getColor('contrastTextColor')} />
@@ -82,17 +73,21 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     overflow: 'hidden',
     marginTop: 10,
     flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   previewImage: {
+    height: 150,
     resizeMode: 'cover',
   },
   mediaThumbnail: {
     flex: 1,
-    maxWidth: '100%',
-    height: 150,
     overflow: 'hidden',
+    maxWidth: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 2,
+    marginBottom: 2,
+    borderRadius: 2,
   },
   mediaPlayableIcon: {
     position: 'absolute',
