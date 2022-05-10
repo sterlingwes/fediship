@@ -194,7 +194,7 @@ export const Status = (
       ? () => props.onPressAvatar!(mainStatus.account)
       : undefined;
 
-  const replying = props.hasReplies || !!props.in_reply_to_id;
+  const replying = !!props.in_reply_to_id;
 
   const onFavourite = async () => {
     const success = await favourite(props.id, faved);
@@ -228,7 +228,9 @@ export const Status = (
           <View style={styles.statusLeftButtons}>
             <ReplyLine
               stretch
-              visible={replying && props.lastStatus === false}
+              visible={
+                props.hasReplies || (replying && props.lastStatus === false)
+              }
             />
             <Pressable
               onPress={onFavourite}
@@ -318,6 +320,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     resizeMode: 'cover',
     marginRight: 15,
     borderRadius: 5,
+    backgroundColor: getColor('baseAccent'),
   },
   avatarFocused: {
     borderWidth: 2,
