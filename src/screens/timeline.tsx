@@ -2,10 +2,18 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import React, {useMemo} from 'react';
-import {Alert, FlatList, ListRenderItem, RefreshControl} from 'react-native';
+import React, {useEffect, useMemo, useRef} from 'react';
+import {
+  Alert,
+  FlatList,
+  InteractionManager,
+  ListRenderItem,
+  RefreshControl,
+  View,
+} from 'react-native';
 import {useTimeline} from '../api';
 import {Status} from '../components/Status';
+import {Type} from '../components/Type';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatus} from '../types';
@@ -50,8 +58,11 @@ const createTimelineRenderer =
 export const Timeline = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
+  const scrollOffsetRef = useRef(0);
+  const scrollRef = React.createRef<FlatList<TStatus>>();
+  const lastStatusLenRef = useRef(0);
   const styles = useThemeStyle(styleCreator);
-  const {statuses, loading, fetchTimeline, reloadTimeline} =
+  const {statuses, loading, loadingMore, fetchTimeline, reloadTimeline} =
     useTimeline('home');
 
   const renderItem = useMemo(
@@ -59,22 +70,67 @@ export const Timeline = ({
     [navigation],
   );
 
+  useEffect(() => {
+    if (
+      lastStatusLenRef.current > 0 &&
+      statuses.length > lastStatusLenRef.current
+    ) {
+      setTimeout(
+        () =>
+          InteractionManager.runAfterInteractions(() =>
+            scrollRef.current?.scrollToOffset({
+              animated: true,
+              offset: scrollOffsetRef.current + 200,
+            }),
+          ),
+        100,
+      );
+    }
+
+    lastStatusLenRef.current = statuses.length;
+  }, [lastStatusLenRef, scrollRef, statuses]);
+
   return (
-    <FlatList
-      data={statuses}
-      renderItem={renderItem}
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={reloadTimeline} />
-      }
-      onEndReached={() => fetchTimeline()}
-    />
+    <View style={styles.screen}>
+      <FlatList
+        ref={scrollRef}
+        data={statuses}
+        renderItem={renderItem}
+        style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={reloadTimeline} />
+        }
+        onScroll={event => {
+          scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
+        }}
+        onEndReached={() => fetchTimeline()}
+      />
+      {loadingMore && (
+        <View style={styles.loadingMoreBar}>
+          <Type scale="S" medium>
+            Loading More...
+          </Type>
+        </View>
+      )}
+    </View>
   );
 };
 
 const styleCreator: StyleCreator = ({getColor}) => ({
+  screen: {
+    flex: 1,
+  },
   container: {
     flex: 1,
+  },
+  loadingMoreBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingVertical: 5,
+    alignItems: 'center',
+    backgroundColor: getColor('contrastTextColor'),
   },
   statusContainer: {
     paddingVertical: 10,

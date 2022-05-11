@@ -254,7 +254,9 @@ export const useTimeline = (timeline: Timeline) => {
     fetchTimeline(true);
   });
 
-  return {statuses, fetchTimeline, reloadTimeline, error, loading};
+  const loadingMore = !!nextPage && loading;
+
+  return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
 };
 
 const parseStatusUrl = (url: string) => {
