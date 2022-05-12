@@ -17,8 +17,8 @@ export const Thread = ({
   navigation,
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Thread'>) => {
-  const {statusUrl} = route.params;
-  const {thread, loading, fetchThread, error} = useThread(statusUrl);
+  const {statusUrl, id} = route.params;
+  const {thread, loading, fetchThread, error} = useThread(statusUrl, id);
 
   const terminatingIds = useMemo(() => {
     if (!thread?.descendants || !thread.status) {
@@ -36,19 +36,24 @@ export const Thread = ({
   }, [thread]);
 
   const renderItem: ListRenderItem<TStatus> = ({item, index}) => {
+    const localStatus = thread?.localStatuses?.[item.uri];
+
     return (
       <Status
         key={item.id}
+        isLocal={!!localStatus}
         focused={thread?.status.id === item.id}
-        {...item}
+        {...(localStatus ?? item)}
         hasReplies={!!statuses[index + 1]}
         lastStatus={
           terminatingIds.includes(item.id) || statuses.length - 1 === index
         }
-        onPress={() => navigation.push('Thread', {statusUrl: item.url})}
+        onPress={() =>
+          navigation.push('Thread', {statusUrl: item.uri, id: item.id})
+        }
         onPressAvatar={account => {
           navigation.push('Profile', {
-            statusUrl: item.url,
+            statusUrl: item.uri,
             account,
           });
         }}

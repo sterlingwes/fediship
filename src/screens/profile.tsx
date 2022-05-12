@@ -80,13 +80,14 @@ const createProfileTimelineRenderer =
   ): ListRenderItem<TStatus> =>
   row => {
     const status = row.item;
-    const nextStatusUrl = status.reblog ? status.reblog.url : status.url;
+    const nextStatusUrl = status.reblog ? status.reblog.uri : status.uri;
     return (
       <Status
+        isLocal={false}
         key={status.id}
         {...status}
         onPress={() => {
-          navigation.navigate('Thread', {statusUrl: nextStatusUrl});
+          navigation.push('Thread', {statusUrl: nextStatusUrl, id: status.id});
         }}
         onPressAvatar={account => {
           navigation.push('Profile', {

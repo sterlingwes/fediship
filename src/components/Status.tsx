@@ -17,17 +17,8 @@ import {HTMLView} from './HTMLView';
 import {StarIcon} from './icons/StarIcon';
 import {MediaAttachments} from './MediaAttachments';
 import {Poll} from './Poll';
+import {getType} from './status.util';
 import {Type} from './Type';
-
-const getType = (props: TStatus) => {
-  if (props.in_reply_to_id) {
-    return 'replied';
-  }
-  if (props.reblog) {
-    return 'boosted';
-  }
-  return '';
-};
 
 const CollapsedStatus = (props: TStatus) => {
   const styles = useThemeStyle(styleCreator);
@@ -177,6 +168,7 @@ const ReplyLine = ({
 
 export const Status = (
   props: TStatus & {
+    isLocal: boolean;
     focused?: boolean;
     hasReplies?: boolean;
     lastStatus?: boolean;
@@ -232,16 +224,18 @@ export const Status = (
                 props.hasReplies || (replying && props.lastStatus === false)
               }
             />
-            <Pressable
-              onPress={onFavourite}
-              style={[styles.starButton, faved && styles.starButtonFaved]}>
-              <StarIcon
-                width="18"
-                height="18"
-                stroke={faved ? 'transparent' : getColor('baseAccent')}
-                fill={faved ? getColor('goldAccent') : undefined}
-              />
-            </Pressable>
+            {props.isLocal && (
+              <Pressable
+                onPress={onFavourite}
+                style={[styles.starButton, faved && styles.starButtonFaved]}>
+                <StarIcon
+                  width="18"
+                  height="18"
+                  stroke={faved ? 'transparent' : getColor('baseAccent')}
+                  fill={faved ? getColor('goldAccent') : undefined}
+                />
+              </Pressable>
+            )}
           </View>
         </View>
         <View style={styles.statusMessage}>

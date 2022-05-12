@@ -30,7 +30,8 @@ export interface TStatus {
   favourited: boolean;
   reblog: TStatus | null;
   reblogged: boolean;
-  url: string;
+  url: string | null;
+  uri: string;
   in_reply_to_id: string; // ?
   poll?: TPoll;
   sensitive: boolean;
@@ -108,7 +109,7 @@ export type RootStackParamList = {
   Explore: undefined;
   User: undefined;
   Profile: {statusUrl?: string; account?: TAccount};
-  Thread: {statusUrl: string};
+  Thread: {statusUrl: string; id: string};
   PeerProfile: TPeerInfo;
 };
 
@@ -119,6 +120,7 @@ export interface TStatusContext {
 
 export interface TThread extends TStatusContext {
   status: TStatus;
+  localStatuses: Record<string, TStatus>;
 }
 
 interface TPollOption {

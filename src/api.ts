@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {mastoBearerToken} from './constants';
-import {TAccount, TPeerInfo, TStatus, TThread} from './types';
+import {TAccount, TPeerInfo, TStatus, TStatusContext, TThread} from './types';
 import {useMount} from './utils/hooks';
 import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
 
@@ -25,6 +25,8 @@ const timelineUris = Object.freeze({
   public: 'https://swj.io/api/v1/timelines/public',
   home: 'https://swj.io/api/v1/timelines/home',
 });
+
+const localBase = 'https://swj.io/api/v1';
 
 type Timeline = keyof typeof timelineUris;
 
@@ -362,9 +364,23 @@ export const useProfile = (
  * returns post surrounding selected status by its GUI url
  * @param statusUrl ie: https://mstdn.social/@username/108235334317391891
  */
-export const getThread = async (statusUrl: string) => {
+const getThread = async (statusUrl: string, localId: string) => {
   const detailUri = statusUrlToApiUrl(statusUrl);
   const statusDetail = await fetchStatus(detailUri);
+
+  const localStatuses: Record<string, TStatus> = {};
+  try {
+    const localContextResponse = await fetch(
+      `${localBase}/statuses/${localId}/context`,
+    );
+    const {ancestors, descendants}: TStatusContext =
+      await localContextResponse.json();
+    [...ancestors, ...descendants].forEach(status => {
+      localStatuses[status.uri] = status;
+    });
+  } catch (e) {
+    console.error('localContext fetch error', e);
+  }
 
   const contextResponse = await fetch(`${detailUri}/context`);
   if (!contextResponse.ok) {
@@ -388,12 +404,13 @@ export const getThread = async (statusUrl: string) => {
     type: 'success',
     response: {
       status: statusDetail,
+      localStatuses,
       ...statusContext,
     } as TThread,
   };
 };
 
-export const useThread = (statusUrl: string) => {
+export const useThread = (statusUrl: string, localId: string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [thread, setThread] = useState<TThread>();
@@ -401,7 +418,7 @@ export const useThread = (statusUrl: string) => {
   const fetchThread = async () => {
     setLoading(true);
     try {
-      const result = await getThread(statusUrl);
+      const result = await getThread(statusUrl, localId);
       if (result.type === 'error' && result.error) {
         setError(result.error);
       } else {
