@@ -1,10 +1,11 @@
-import {TStatus} from '../types';
+import {TAccount, TStatus, TThread} from '../types';
 import {ApiResponse} from './response';
 
 interface ClientOptions {
   host: string;
   token?: string;
   apiVersion?: number;
+  actorId?: string;
 }
 
 export class MastodonApiClient {
@@ -27,6 +28,71 @@ export class MastodonApiClient {
 
     return {
       list,
+      pageInfo: response.pageInfo,
+    };
+  }
+
+  async getStatus(statusId: string) {
+    const response = await this.get(`statuses/${statusId}`);
+    return response.ok ? response.body : undefined;
+  }
+
+  async getThread(statusId: string, options?: {skipTargetStatus: boolean}) {
+    const statusDetail = !options?.skipTargetStatus
+      ? await this.getStatus(statusId)
+      : undefined;
+
+    const contextResponse = await this.get(`statuses/${statusId}/context`);
+    if (!contextResponse.ok) {
+      const errorMessage = await contextResponse.getError();
+      return {
+        type: 'error',
+        error: `getThread error: ${errorMessage}`,
+      };
+    }
+    const statusContext = await contextResponse.parseBody();
+
+    return {
+      type: 'success',
+      response: {
+        ...statusContext,
+        status: statusDetail,
+      } as Omit<TThread, 'localStatuses'>,
+    };
+  }
+
+  async getFollowers(nextPage?: string) {
+    const {actorId} = this.options;
+    if (!actorId) {
+      throw new Error('Cannot get followers with no actorId');
+    }
+    const response = await this.authedGet(
+      nextPage ?? `accounts/${actorId}/followers`,
+    );
+    if (!response.body) {
+      throw new Error('Failed to fetch followers');
+    }
+
+    return {
+      list: response.body as TAccount[],
+      pageInfo: response.pageInfo,
+    };
+  }
+
+  async getFollowing(nextPage?: string) {
+    const {actorId} = this.options;
+    if (!actorId) {
+      throw new Error('Cannot get following with no actorId');
+    }
+    const response = await this.authedGet(
+      nextPage ?? `accounts/${actorId}/following`,
+    );
+    if (!response.body) {
+      throw new Error('Failed to fetch following');
+    }
+
+    return {
+      list: response.body as TAccount[],
       pageInfo: response.pageInfo,
     };
   }

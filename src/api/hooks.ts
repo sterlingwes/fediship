@@ -1,11 +1,21 @@
 import {useRef} from 'react';
-import {mastoBearerToken, mastoHost} from '../constants';
+import {mastoActorId, mastoBearerToken, mastoHost} from '../constants';
 import {MastodonApiClient} from './mastodon';
 
 export const useMyMastodonInstance = () => {
   const api = useRef(
-    new MastodonApiClient({host: mastoHost, token: mastoBearerToken}),
+    new MastodonApiClient({
+      host: mastoHost,
+      token: mastoBearerToken,
+      actorId: mastoActorId,
+    }),
   );
 
   return api.current;
+};
+
+export const useRemoteMastodonInstance = () => {
+  return (host: string) => {
+    return new MastodonApiClient({host});
+  };
 };

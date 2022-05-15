@@ -20,7 +20,7 @@ export const groupReplies = (
   parentStatusId: string,
 ) => {
   const grouped: GroupedReplies = {topReplyIds: [], replyList: {}};
-  descendants.forEach(child => {
+  (descendants ?? []).forEach(child => {
     if (child.in_reply_to_id === parentStatusId) {
       grouped.topReplyIds.push(child.id);
       grouped.replyList[child.id] = {status: child};

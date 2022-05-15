@@ -1,53 +1,12 @@
 import {useState} from 'react';
-import {mastoBearerToken} from './constants';
-import {TAccount, TPeerInfo, TStatus, TStatusContext, TThread} from './types';
+import {TAccount, TPeerInfo, TStatus, TThread} from './types';
 import {useMount} from './utils/hooks';
 import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
-import {useMyMastodonInstance} from './api/hooks';
-
-const localBase = 'https://swj.io/api/v1';
-
-/**
- * parses strings in the format of:
- * <https://swj.io/api/v1/accounts/2/following?max_id=6>; rel="next", <https://swj.io/api/v1/accounts/2/following?since_id=61>; rel="prev"
- */
-const parseLink = (linkHeaderValue: string | undefined | null) => {
-  if (!linkHeaderValue) {
-    return {};
-  }
-
-  const parts = linkHeaderValue.split(/[<>,;\s]+/);
-  parts.shift(); // blank string
-  if (parts.length === 4) {
-    const [next, , prev] = parts;
-    return {
-      next,
-      prev,
-    };
-  }
-
-  return {
-    prev: parts[0],
-  };
-};
-
-export const getFollowers = async (nextPage?: string | boolean) => {
-  const url =
-    typeof nextPage === 'string'
-      ? nextPage
-      : 'https://swj.io/api/v1/accounts/2/following';
-  const response = await fetch(url, {
-    headers: {Authorization: `Bearer ${mastoBearerToken}`},
-  });
-  const linkHeader = response.headers.get('link');
-  const json = await response.json();
-  return {
-    followers: json,
-    pageInfo: parseLink(linkHeader),
-  };
-};
+import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
+import {parseStatusUrl} from './api/api.utils';
 
 export const useFollowers = () => {
+  const api = useMyMastodonInstance();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [accounts, setAccounts] = useState<TAccount[]>([]);
@@ -60,13 +19,13 @@ export const useFollowers = () => {
 
     setLoading(true);
     try {
-      const result = await getFollowers(nextPage);
+      const result = await api.getFollowers(nextPage);
       if (reset) {
-        setAccounts(result.followers);
+        setAccounts(result.list);
       } else {
-        setAccounts([...accounts, ...result.followers]);
+        setAccounts([...accounts, ...result.list]);
       }
-      setNextPage(result.pageInfo.next ?? false);
+      setNextPage(result?.pageInfo?.next ?? false);
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);
@@ -219,20 +178,6 @@ export const useTimeline = (timeline: 'home' | 'public') => {
   return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
 };
 
-const parseStatusUrl = (url: string) => {
-  const uriParts = url.split('/');
-  const statusId = uriParts.pop();
-  const protocol = uriParts.shift();
-  uriParts.shift(); // empty string
-  const host = uriParts.shift();
-  return {host, statusId, protocol};
-};
-
-const statusUrlToApiUrl = (url: string): string => {
-  const {host, protocol, statusId} = parseStatusUrl(url);
-  return `${protocol}//${host}/api/v1/statuses/${statusId}`;
-};
-
 const fetchStatus = async (statusApiUrl: string) => {
   const detailResponse = await fetch(statusApiUrl);
   const statusDetail = await detailResponse.json();
@@ -318,70 +263,53 @@ export const useProfile = (
   return {profile, statuses, fetchTimeline, error, loading, refreshing};
 };
 
-/**
- * returns post surrounding selected status by its GUI url
- * @param statusUrl ie: https://mstdn.social/@username/108235334317391891
- */
-const getThread = async (statusUrl: string, localId: string) => {
-  const detailUri = statusUrlToApiUrl(statusUrl);
-  const statusDetail = await fetchStatus(detailUri);
-
-  const localStatuses: Record<string, TStatus> = {};
-  try {
-    const localContextResponse = await fetch(
-      `${localBase}/statuses/${localId}/context`,
-    );
-    const {ancestors, descendants}: TStatusContext =
-      await localContextResponse.json();
-    [...ancestors, ...descendants].forEach(status => {
-      localStatuses[status.uri] = status;
-    });
-  } catch (e) {
-    console.error('localContext fetch error', e);
-  }
-
-  const contextResponse = await fetch(`${detailUri}/context`);
-  if (!contextResponse.ok) {
-    let errorMessage = 'unknown';
-    try {
-      const jsonError = await contextResponse.json();
-      if (jsonError.error) {
-        errorMessage = jsonError.error;
-      }
-    } catch (_) {
-      errorMessage = `response status ${contextResponse.status}`;
-    }
-    return {
-      type: 'error',
-      error: `getThread error: ${errorMessage}`,
-    };
-  }
-  const statusContext = await contextResponse.json();
-
-  return {
-    type: 'success',
-    response: {
-      status: statusDetail,
-      localStatuses,
-      ...statusContext,
-    } as TThread,
-  };
-};
-
 export const useThread = (statusUrl: string, localId: string) => {
+  const api = useMyMastodonInstance();
+  const getRemoteMasto = useRemoteMastodonInstance();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [thread, setThread] = useState<TThread>();
 
   const fetchThread = async () => {
+    const {host, statusId} = parseStatusUrl(statusUrl);
+    if (!host || !statusId) {
+      throw new Error('Cannot fetch thread with missing host & statusId');
+    }
     setLoading(true);
     try {
-      const result = await getThread(statusUrl, localId);
-      if (result.type === 'error' && result.error) {
-        setError(result.error);
-      } else {
-        setThread(result.response);
+      const remoteResult = await getRemoteMasto(host).getThread(statusId, {
+        skipTargetStatus: true,
+      });
+
+      if (remoteResult.type === 'error' && remoteResult.error) {
+        setError(remoteResult.error);
+        return;
       }
+
+      const localResult = await api.getThread(localId);
+      const localStatuses: Record<string, TStatus> = {};
+      if (localResult.response) {
+        const {ancestors, descendants} = localResult.response;
+        [...(ancestors ?? []), ...(descendants ?? [])].forEach(status => {
+          localStatuses[status.uri] = status;
+        });
+      }
+
+      if (localResult.type === 'error' && localResult.error) {
+        setError(localResult.error);
+        return;
+      }
+
+      const result = {
+        ...remoteResult,
+        response: {
+          ...remoteResult.response,
+          status: localResult.response?.status,
+          localStatuses,
+        },
+      };
+
+      setThread(result.response);
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);

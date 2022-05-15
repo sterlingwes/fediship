@@ -114,12 +114,12 @@ export type RootStackParamList = {
 };
 
 export interface TStatusContext {
-  ancestors: TStatus[];
-  descendants: TStatus[];
+  ancestors?: TStatus[] | undefined;
+  descendants?: TStatus[] | undefined;
 }
 
 export interface TThread extends TStatusContext {
-  status: TStatus;
+  status?: TStatus | undefined;
   localStatuses: Record<string, TStatus>;
 }
 

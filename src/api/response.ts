@@ -34,6 +34,16 @@ export class ApiResponse {
   }
 
   async hasError(errorMessage: string) {
+    const body = await this.parseAndAssertStandardJsonError();
+    return body.error.includes(errorMessage);
+  }
+
+  async getError() {
+    const body = await this.parseAndAssertStandardJsonError();
+    return body.error;
+  }
+
+  private async parseAndAssertStandardJsonError() {
     if (!this.body && !this.jsonParseFailed) {
       await this.parseBody();
     }
@@ -52,7 +62,7 @@ export class ApiResponse {
       throw new Error('Unexpected error response');
     }
 
-    return this.body.error.includes(errorMessage);
+    return this.body;
   }
 
   /**

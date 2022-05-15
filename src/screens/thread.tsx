@@ -42,7 +42,7 @@ export const Thread = ({
       <Status
         key={item.id}
         isLocal={!!localStatus}
-        focused={thread?.status.id === item.id}
+        focused={thread?.status?.id === item.id}
         {...(localStatus ?? item)}
         hasReplies={!!statuses[index + 1]}
         lastStatus={
