@@ -1,3 +1,4 @@
+import {TStatus} from '../types';
 import {ApiResponse} from './response';
 
 interface ClientOptions {
@@ -13,17 +14,30 @@ export class MastodonApiClient {
     this.options = options;
   }
 
+  async getTimeline(timeline: 'home' | 'public', nextPage?: string) {
+    const method = timeline === 'home' ? 'authedGet' : 'get';
+    const response = await this[method](nextPage ?? `timelines/${timeline}`);
+    if (!response.body) {
+      throw new Error('Failed to fetch timeline');
+    }
+
+    const list = response.body
+      .filter((status: TStatus) => !status.in_reply_to_id)
+      .sort((a: TStatus, b: TStatus) => b.id.localeCompare(a.id)) as TStatus[];
+
+    return {
+      list,
+      pageInfo: response.pageInfo,
+    };
+  }
+
   async unfavourite(statusId: string) {
-    const response = await this.authedPost(
-      this.url(`statuses/${statusId}/unfavourite`),
-    );
+    const response = await this.authedPost(`statuses/${statusId}/unfavourite`);
     return response.ok;
   }
 
   async favourite(statusId: string) {
-    const response = await this.authedPost(
-      this.url(`statuses/${statusId}/favourite`),
-    );
+    const response = await this.authedPost(`statuses/${statusId}/favourite`);
 
     if (
       !response.ok &&
@@ -37,9 +51,16 @@ export class MastodonApiClient {
 
   private async authedPost(info: RequestInfo, extra?: RequestInit) {
     this.assertToken();
-    return this.req(info, {
+    return this.post(info, {
       ...extra,
-      method: 'POST',
+      headers: {Authorization: `Bearer ${this.options.token}`},
+    });
+  }
+
+  private async authedGet(info: RequestInfo, extra?: RequestInit) {
+    this.assertToken();
+    return this.get(info, {
+      ...extra,
       headers: {Authorization: `Bearer ${this.options.token}`},
     });
   }
@@ -53,7 +74,8 @@ export class MastodonApiClient {
   }
 
   private async req(info: RequestInfo, extra?: RequestInit) {
-    const response = await fetch(info, extra);
+    const urlOrRequest = typeof info === 'string' ? this.url(info) : info;
+    const response = await fetch(urlOrRequest, extra);
     const apiResponse = new ApiResponse(response);
     await apiResponse.parseBody();
     return apiResponse;
@@ -66,11 +88,16 @@ export class MastodonApiClient {
   }
 
   private url(path: string) {
+    const {host, apiVersion} = this.options;
+
+    if (path.startsWith(`https://${host}`)) {
+      return path;
+    }
+
     let usedPath = path;
     if (usedPath[0] === '/') {
       usedPath = path.substring(1);
     }
-    const {host, apiVersion} = this.options;
     return `https://${host}/api/v${apiVersion ?? 1}/${path}`;
   }
 }

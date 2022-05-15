@@ -15,6 +15,15 @@ export class ApiResponse {
     return this.json;
   }
 
+  get pageInfo() {
+    const linkHeader = this.response.headers.get('link');
+    if (!linkHeader) {
+      return;
+    }
+
+    return this.parseHeaderLink(linkHeader);
+  }
+
   async parseBody() {
     try {
       this.json = await this.response.json();
@@ -44,5 +53,29 @@ export class ApiResponse {
     }
 
     return this.body.error.includes(errorMessage);
+  }
+
+  /**
+   * parses strings in the format of:
+   * <https://example.com/api/v1/accounts/2/following?max_id=6>; rel="next", <https://example.com/api/v1/accounts/2/following?since_id=61>; rel="prev"
+   */
+  private parseHeaderLink(linkHeaderValue: string | undefined | null) {
+    if (!linkHeaderValue) {
+      return {};
+    }
+
+    const parts = linkHeaderValue.split(/[<>,;\s]+/);
+    parts.shift(); // blank string
+    if (parts.length === 4) {
+      const [next, , prev] = parts;
+      return {
+        next,
+        prev,
+      };
+    }
+
+    return {
+      prev: parts[0],
+    };
   }
 }

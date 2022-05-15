@@ -3,16 +3,9 @@ import {mastoBearerToken} from './constants';
 import {TAccount, TPeerInfo, TStatus, TStatusContext, TThread} from './types';
 import {useMount} from './utils/hooks';
 import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
-
-const timelineUris = Object.freeze({
-  personal: 'https://swj.io/api/v1/accounts/2/statuses',
-  public: 'https://swj.io/api/v1/timelines/public',
-  home: 'https://swj.io/api/v1/timelines/home',
-});
+import {useMyMastodonInstance} from './api/hooks';
 
 const localBase = 'https://swj.io/api/v1';
-
-type Timeline = keyof typeof timelineUris;
 
 /**
  * parses strings in the format of:
@@ -183,27 +176,8 @@ export const usePeers = () => {
   return {peers, fetchPeers, error, loading, progressMessage};
 };
 
-export const getTimeline = async (
-  timeline: Timeline,
-  nextPage?: string | boolean,
-) => {
-  const url = typeof nextPage === 'string' ? nextPage : timelineUris[timeline];
-  const response = await fetch(url, {
-    headers: {Authorization: `Bearer ${mastoBearerToken}`},
-  });
-  const linkHeader = response.headers.get('link');
-  const json = await response.json();
-  const list = json
-    .filter((status: TStatus) => !status.in_reply_to_id)
-    .sort((a: TStatus, b: TStatus) => b.id.localeCompare(a.id)) as TStatus[];
-
-  return {
-    list,
-    pageInfo: parseLink(linkHeader),
-  };
-};
-
-export const useTimeline = (timeline: Timeline) => {
+export const useTimeline = (timeline: 'home' | 'public') => {
+  const api = useMyMastodonInstance();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [statuses, setStatuses] = useState<TStatus[]>([]);
@@ -216,13 +190,13 @@ export const useTimeline = (timeline: Timeline) => {
 
     setLoading(true);
     try {
-      const result = await getTimeline(timeline, nextPage);
+      const result = await api.getTimeline(timeline, nextPage);
       if (reset) {
         setStatuses(result.list);
       } else {
         setStatuses(statuses.concat(result.list));
       }
-      setNextPage(result.pageInfo.next ?? false);
+      setNextPage(result?.pageInfo?.next ?? false);
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);
