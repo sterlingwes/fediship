@@ -136,7 +136,7 @@ export interface TPoll {
   votes_count: number;
   voters_count: number;
   voted: boolean;
-  // "own_votes": [],
+  own_votes: number[];
   options: TPollOption[];
   // "emojis": []
 }

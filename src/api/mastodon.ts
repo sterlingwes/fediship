@@ -115,6 +115,10 @@ export class MastodonApiClient {
     return response.ok;
   }
 
+  async vote(pollId: string, choices: number[]) {
+    return this.authedPost(`polls/${pollId}/votes`, this.form({choices}));
+  }
+
   private async authedPost(info: RequestInfo, extra?: RequestInit) {
     this.assertToken();
     return this.post(info, {
@@ -165,5 +169,27 @@ export class MastodonApiClient {
       usedPath = path.substring(1);
     }
     return `https://${host}/api/v${apiVersion ?? 1}/${path}`;
+  }
+
+  private json(body: Record<string, any>) {
+    return {
+      body: JSON.stringify(body),
+    };
+  }
+
+  private form(data: Record<string, any>) {
+    const body = new FormData();
+    Object.keys(data).forEach((key: string) => {
+      const value = data[key];
+      if (Array.isArray(value)) {
+        value.forEach(val => body.append(`${key}[]`, val));
+      } else {
+        body.append(key, value);
+      }
+    });
+
+    return {
+      body,
+    };
   }
 }
