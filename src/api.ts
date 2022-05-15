@@ -290,7 +290,11 @@ export const useThread = (statusUrl: string, localId: string) => {
       const localStatuses: Record<string, TStatus> = {};
       if (localResult.response) {
         const {ancestors, descendants} = localResult.response;
-        [...(ancestors ?? []), ...(descendants ?? [])].forEach(status => {
+        [
+          ...(localResult.response.status ? [localResult.response.status] : []),
+          ...(ancestors ?? []),
+          ...(descendants ?? []),
+        ].forEach(status => {
           localStatuses[status.uri] = status;
         });
       }
