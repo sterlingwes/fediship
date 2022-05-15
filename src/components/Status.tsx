@@ -6,8 +6,9 @@ import {
   View,
   ImageStyle,
   ViewStyle,
+  ActivityIndicator,
 } from 'react-native';
-import {favourite} from '../api';
+import {useMyMastodonInstance} from '../api/hooks';
 
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
@@ -176,11 +177,13 @@ export const Status = (
     onPressAvatar?: (account: TAccount) => void;
   },
 ) => {
-  const [faved, setFaved] = useState(props.favourited);
+  const api = useMyMastodonInstance();
+  const mainStatus = props.reblog ? props.reblog : props;
+  const [faved, setFaved] = useState(mainStatus.favourited);
+  const [loadingFav, setLoadingFav] = useState(false);
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
 
-  const mainStatus = props.reblog ? props.reblog : props;
   const onPressAvatar =
     typeof props.onPressAvatar === 'function'
       ? () => props.onPressAvatar!(mainStatus.account)
@@ -189,10 +192,14 @@ export const Status = (
   const replying = !!props.in_reply_to_id;
 
   const onFavourite = async () => {
-    const success = await favourite(props.id, faved);
+    setLoadingFav(true);
+    const success = faved
+      ? await api.unfavourite(mainStatus.id)
+      : await api.favourite(mainStatus.id);
     if (success) {
       setFaved(!faved);
     }
+    setLoadingFav(false);
   };
 
   return (
@@ -226,14 +233,19 @@ export const Status = (
             />
             {props.isLocal && (
               <Pressable
+                disabled={loadingFav}
                 onPress={onFavourite}
                 style={[styles.starButton, faved && styles.starButtonFaved]}>
-                <StarIcon
-                  width="18"
-                  height="18"
-                  stroke={faved ? 'transparent' : getColor('baseAccent')}
-                  fill={faved ? getColor('goldAccent') : undefined}
-                />
+                {loadingFav ? (
+                  <ActivityIndicator />
+                ) : (
+                  <StarIcon
+                    width="18"
+                    height="18"
+                    stroke={faved ? 'transparent' : getColor('baseAccent')}
+                    fill={faved ? getColor('goldAccent') : undefined}
+                  />
+                )}
               </Pressable>
             )}
           </View>
