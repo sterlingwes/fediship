@@ -1,8 +1,10 @@
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React from 'react';
 import {Image, Linking, Pressable, View} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
-import {TMediaAttachment} from '../types';
+import {RootStackParamList, TMediaAttachment} from '../types';
 import {PlayCircleIcon} from './icons/PlayCircleIcon';
 
 const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
@@ -11,16 +13,23 @@ const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
 });
 
 const Media = (props: TMediaAttachment) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
 
   const onOpen = () => Linking.openURL(props.url);
 
+  const onOpenImage = (attachment: TMediaAttachment) =>
+    navigation.navigate('ImageViewer', attachment);
+
   const componentForType = (type: TMediaAttachment['type']) => {
     switch (type) {
       case 'image':
         return (
-          <Pressable style={styles.mediaThumbnail} onPress={onOpen}>
+          <Pressable
+            style={styles.mediaThumbnail}
+            onPress={() => onOpenImage(props)}>
             <Image
               source={{
                 uri: props.preview_url,

@@ -111,6 +111,7 @@ export type RootStackParamList = {
   Profile: {statusUrl?: string; account?: TAccount};
   Thread: {statusUrl: string; id: string};
   PeerProfile: TPeerInfo;
+  ImageViewer: TMediaAttachment;
 };
 
 export interface TStatusContext {

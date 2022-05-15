@@ -19,6 +19,7 @@ import {HomeIcon} from './components/icons/HomeIcon';
 import {MapIcon} from './components/icons/MapIcon';
 import {UserIcon} from './components/icons/UserIcon';
 import {User} from './screens/user';
+import {ImageViewer} from './screens/image-viewer';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -91,6 +92,14 @@ export const App = () => {
           />
           <Stack.Screen name="Thread" component={Thread} />
           <Stack.Screen name="PeerProfile" component={PeerProfile} />
+          <Stack.Screen
+            name="ImageViewer"
+            component={ImageViewer}
+            options={{
+              presentation: 'containedTransparentModal',
+              headerShown: false,
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
