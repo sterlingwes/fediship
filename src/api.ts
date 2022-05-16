@@ -174,12 +174,6 @@ export const useTimeline = (timeline: 'home' | 'public') => {
   return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
 };
 
-const fetchStatus = async (statusApiUrl: string) => {
-  const detailResponse = await fetch(statusApiUrl);
-  const statusDetail = await detailResponse.json();
-  return statusDetail as TStatus;
-};
-
 const getProfileByStatusUrl = async (
   url: string,
   getRemoteInstance: (host: string) => MastodonApiClient,
@@ -193,7 +187,7 @@ const getProfileByStatusUrl = async (
   if (!statusDetail) {
     return;
   }
-  const accountId = statusDetail.body.account.id;
+  const accountId = statusDetail.account.id;
   return api.getProfile(accountId);
 };
 
