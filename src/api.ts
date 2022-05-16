@@ -83,7 +83,7 @@ export const getPeerInfos = async (
 
 export const usePeers = () => {
   const api = useMyMastodonInstance();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [peers, setPeers] = useState<string[]>([]);
   const [peerInfoFetchProgress, setProgress] = useState(0);
@@ -110,10 +110,6 @@ export const usePeers = () => {
       setProgress(0);
     }
   };
-
-  useMount(() => {
-    fetchPeers();
-  });
 
   let progressMessage = '';
   if (loading) {

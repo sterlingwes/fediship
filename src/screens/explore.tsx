@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   FlatList,
   ListRenderItem,
+  RefreshControl,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -34,7 +35,7 @@ export const Explore = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Explore'>) => {
   const styles = useThemeStyle(styleCreator);
-  const {loading, progressMessage} = usePeers();
+  const {loading, progressMessage, fetchPeers} = usePeers();
 
   if (loading) {
     return (
@@ -64,6 +65,9 @@ export const Explore = ({
       <FlatList
         data={getRankedPeers()}
         renderItem={renderItem}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={fetchPeers} />
+        }
         ListHeaderComponent={PeerListHeader}
       />
     </View>
