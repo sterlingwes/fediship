@@ -119,6 +119,14 @@ export class MastodonApiClient {
     return this.authedPost(`polls/${pollId}/votes`, this.form({choices}));
   }
 
+  async getInstancePeers() {
+    const response = await this.get('instance/peers');
+    if (!response.ok) {
+      return [];
+    }
+    return response.body as string[];
+  }
+
   private async authedPost(info: RequestInfo, extra?: RequestInit) {
     this.assertToken();
     return this.post(info, {

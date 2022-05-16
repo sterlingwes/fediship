@@ -46,12 +46,6 @@ export const useFollowers = () => {
   return {accounts, fetchFollowers, reloadFollowers, error, loading};
 };
 
-export const getPeers = async () => {
-  const response = await fetch('https://swj.io/api/v1/instance/peers');
-  const json = await response.json();
-  return json as string[];
-};
-
 export const getPeerInfo = async (peer: string) => {
   try {
     const abortControl = new AbortController();
@@ -87,6 +81,7 @@ export const getPeerInfos = async (
 };
 
 export const usePeers = () => {
+  const api = useMyMastodonInstance();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [peers, setPeers] = useState<string[]>([]);
@@ -103,7 +98,7 @@ export const usePeers = () => {
   const fetchPeers = async () => {
     setLoading(true);
     try {
-      const peerList = await getPeers();
+      const peerList = await api.getInstancePeers();
       setPeers(peerList);
       await getPeerInfos(peerList, progressCallback, savePeerInfo);
     } catch (e: unknown) {
