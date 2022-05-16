@@ -162,3 +162,8 @@ export interface TPeerInfo {
   registrations: boolean;
   approval_required: boolean;
 }
+
+export interface TProfileResult {
+  account: TAccount;
+  timeline: TStatus[];
+}

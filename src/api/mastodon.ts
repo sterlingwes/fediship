@@ -1,4 +1,4 @@
-import {TAccount, TStatus, TThread} from '../types';
+import {TAccount, TProfileResult, TStatus, TThread} from '../types';
 import {ApiResponse} from './response';
 
 interface ClientOptions {
@@ -95,6 +95,15 @@ export class MastodonApiClient {
       list: response.body as TAccount[],
       pageInfo: response.pageInfo,
     };
+  }
+
+  async getProfile(accountId: string) {
+    const accountTimeline = await this.get(`accounts/${accountId}/statuses`);
+    const accountProfile = await this.get(`accounts/${accountId}`);
+    return {
+      account: accountProfile.body,
+      timeline: accountTimeline.body,
+    } as TProfileResult;
   }
 
   async unfavourite(statusId: string) {

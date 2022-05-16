@@ -1,9 +1,10 @@
 import {useState} from 'react';
-import {TAccount, TPeerInfo, TStatus, TThread} from './types';
+import {TAccount, TPeerInfo, TProfileResult, TStatus, TThread} from './types';
 import {useMount} from './utils/hooks';
 import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
 import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
 import {parseStatusUrl} from './api/api.utils';
+import {MastodonApiClient} from './api/mastodon';
 
 export const useFollowers = () => {
   const api = useMyMastodonInstance();
@@ -179,39 +180,29 @@ const fetchStatus = async (statusApiUrl: string) => {
   return statusDetail as TStatus;
 };
 
-interface ProfileResult {
-  account: TAccount;
-  timeline: TStatus[];
-}
-
-const getProfileByStatusUrl = async (url: string) => {
-  const {host, protocol, statusId} = parseStatusUrl(url);
-  const detailUrl = `${protocol}//${host}/api/v1/statuses/${statusId}`;
-  const statusDetail = await fetchStatus(detailUrl);
-  const accountId = statusDetail.account.id;
-  const accountTimelineUrl = `${protocol}//${host}/api/v1/accounts/${accountId}/statuses`;
-  const timelineResponse = await fetch(accountTimelineUrl);
-  const timeline = await timelineResponse.json();
-  const accountUrl = `${protocol}//${host}/api/v1/accounts/${accountId}`;
-  const accountResponse = await fetch(accountUrl);
-  const account = await accountResponse.json();
-  return {account, timeline} as ProfileResult;
-};
-
-const getProfileByAccountId = async (accountId: string) => {
-  const accountTimelineUrl = `https://swj.io/api/v1/accounts/${accountId}/statuses`;
-  const timelineResponse = await fetch(accountTimelineUrl);
-  const timeline = await timelineResponse.json();
-  const accountUrl = `https://swj.io/api/v1/accounts/${accountId}`;
-  const accountResponse = await fetch(accountUrl);
-  const account = await accountResponse.json();
-  return {account, timeline} as ProfileResult;
+const getProfileByStatusUrl = async (
+  url: string,
+  getRemoteInstance: (host: string) => MastodonApiClient,
+) => {
+  const {host, statusId} = parseStatusUrl(url);
+  if (!host || !statusId) {
+    return;
+  }
+  const api = getRemoteInstance(host);
+  const statusDetail = await api.getStatus(statusId);
+  if (!statusDetail) {
+    return;
+  }
+  const accountId = statusDetail.body.account.id;
+  return api.getProfile(accountId);
 };
 
 export const useProfile = (
   statusUrl: string | undefined,
   accountId: string | undefined,
 ) => {
+  const api = useMyMastodonInstance();
+  const getRemoteInstance = useRemoteMastodonInstance();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
@@ -229,12 +220,12 @@ export const useProfile = (
     }
     setLoading(true);
     try {
-      let result: ProfileResult | undefined;
+      let result: TProfileResult | undefined;
       if (statusUrl) {
-        result = await getProfileByStatusUrl(statusUrl);
+        result = await getProfileByStatusUrl(statusUrl, getRemoteInstance);
       }
       if (!result && accountId) {
-        result = await getProfileByAccountId(accountId);
+        result = await api.getProfile(accountId);
       }
       if (!result) {
         setLoading(false);
