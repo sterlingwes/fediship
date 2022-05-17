@@ -1,4 +1,10 @@
-import {TAccount, TProfileResult, TStatus, TThread} from '../types';
+import {
+  TAccount,
+  TPeerTagTrend,
+  TProfileResult,
+  TStatus,
+  TThread,
+} from '../types';
 import {ApiResponse} from './response';
 
 interface ClientOptions {
@@ -20,6 +26,22 @@ export class MastodonApiClient {
     const response = await this[method](nextPage ?? `timelines/${timeline}`);
     if (!response.body) {
       throw new Error('Failed to fetch timeline');
+    }
+
+    const list = response.body
+      .filter((status: TStatus) => !status.in_reply_to_id)
+      .sort((a: TStatus, b: TStatus) => b.id.localeCompare(a.id)) as TStatus[];
+
+    return {
+      list,
+      pageInfo: response.pageInfo,
+    };
+  }
+
+  async getTagTimeline(tag: string, nextPage?: string) {
+    const response = await this.get(nextPage ?? `timelines/tag/${tag}`);
+    if (!response.body) {
+      throw new Error('Failed to fetch tag timeline for: ' + tag);
     }
 
     const list = response.body
@@ -134,6 +156,14 @@ export class MastodonApiClient {
       return [];
     }
     return response.body as string[];
+  }
+
+  async getInstanceTrends() {
+    const response = await this.get('trends');
+    if (!response.ok) {
+      return [];
+    }
+    return response.body as TPeerTagTrend[];
   }
 
   private async authedPost(info: RequestInfo, extra?: RequestInit) {

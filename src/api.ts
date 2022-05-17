@@ -170,6 +170,50 @@ export const useTimeline = (timeline: 'home' | 'public') => {
   return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
 };
 
+export const useTagTimeline = (host: string, tag: string) => {
+  const getRemote = useRemoteMastodonInstance();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [statuses, setStatuses] = useState<TStatus[]>([]);
+  const [nextPage, setNextPage] = useState<string | false>();
+
+  const fetchTimeline = async (reset?: boolean) => {
+    if (nextPage === false || loading) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const api = getRemote(host);
+      const result = await api.getTagTimeline(tag, nextPage);
+      if (reset) {
+        setStatuses(result.list);
+      } else {
+        setStatuses(statuses.concat(result.list));
+      }
+      setNextPage(result?.pageInfo?.next ?? false);
+    } catch (e: unknown) {
+      console.error(e);
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const reloadTimeline = () => {
+    setNextPage(undefined);
+    return fetchTimeline(true);
+  };
+
+  useMount(() => {
+    fetchTimeline(true);
+  });
+
+  const loadingMore = !!nextPage && loading;
+
+  return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
+};
+
 const getProfileByStatusUrl = async (
   url: string,
   getRemoteInstance: (host: string) => MastodonApiClient,
@@ -253,15 +297,6 @@ export const useThread = (statusUrl: string, localId: string) => {
     }
     setLoading(true);
     try {
-      const remoteResult = await getRemoteMasto(host).getThread(statusId, {
-        skipTargetStatus: true,
-      });
-
-      if (remoteResult.type === 'error' && remoteResult.error) {
-        setError(remoteResult.error);
-        return;
-      }
-
       const localResult = await api.getThread(localId);
       const localStatuses: Record<string, TStatus> = {};
       if (localResult.response) {
@@ -275,8 +310,12 @@ export const useThread = (statusUrl: string, localId: string) => {
         });
       }
 
-      if (localResult.type === 'error' && localResult.error) {
-        setError(localResult.error);
+      const remoteResult = await getRemoteMasto(host).getThread(statusId, {
+        skipTargetStatus: localResult.type === 'error' ? false : true,
+      });
+
+      if (remoteResult.type === 'error' && remoteResult.error) {
+        setError(remoteResult.error);
         return;
       }
 
@@ -284,7 +323,9 @@ export const useThread = (statusUrl: string, localId: string) => {
         ...remoteResult,
         response: {
           ...remoteResult.response,
-          status: localResult.response?.status,
+          ...(localResult.response?.status
+            ? {status: localResult.response?.status}
+            : undefined),
           localStatuses,
         },
       };

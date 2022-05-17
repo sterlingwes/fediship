@@ -108,6 +108,7 @@ export type RootStackParamList = {
   Home: undefined;
   Explore: undefined;
   User: undefined;
+  TagTimeline: {host: string; tag: string};
   Profile: {statusUrl?: string; account?: TAccount};
   Thread: {statusUrl: string; id: string};
   PeerProfile: TPeerInfo;
@@ -161,6 +162,18 @@ export interface TPeerInfo {
   languages: string[]; // locale like 'en'
   registrations: boolean;
   approval_required: boolean;
+}
+
+export interface TPeerTagTrend {
+  name: string; // tag name without #
+  url: string; // local instance ref (html site)
+  history: TagTrendStat[];
+}
+
+interface TagTrendStat {
+  day: string; // numeric timestamp
+  uses: string; // number of uses
+  accounts: string; // number of accounts mentioning
 }
 
 export interface TProfileResult {

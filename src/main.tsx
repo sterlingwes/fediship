@@ -20,6 +20,7 @@ import {MapIcon} from './components/icons/MapIcon';
 import {UserIcon} from './components/icons/UserIcon';
 import {User} from './screens/user';
 import {ImageViewer} from './screens/image-viewer';
+import {TagTimeline} from './screens/tag-timeline';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -92,6 +93,7 @@ export const App = () => {
           />
           <Stack.Screen name="Thread" component={Thread} />
           <Stack.Screen name="PeerProfile" component={PeerProfile} />
+          <Stack.Screen name="TagTimeline" component={TagTimeline} />
           <Stack.Screen
             name="ImageViewer"
             component={ImageViewer}
