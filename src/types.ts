@@ -143,6 +143,11 @@ export interface TPoll {
   // "emojis": []
 }
 
+export interface TAccountRelationship {
+  id: string;
+  following: boolean;
+}
+
 export interface TPeerInfo {
   uri: string; // peer host
   title: string;

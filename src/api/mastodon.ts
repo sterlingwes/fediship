@@ -1,5 +1,6 @@
 import {
   TAccount,
+  TAccountRelationship,
   TPeerTagTrend,
   TProfileResult,
   TStatus,
@@ -81,6 +82,32 @@ export class MastodonApiClient {
         status: statusDetail,
       } as Omit<TThread, 'localStatuses'>,
     };
+  }
+
+  async findAccount(acct: string) {
+    const response = await this.authedGet(`accounts/search?q=${acct}`);
+    if (response.ok && response.body.length > 0) {
+      return response.body[0] as TAccount;
+    }
+  }
+
+  async getRelationship(accountId: string) {
+    const response = await this.authedGet(
+      `accounts/relationships?id=${accountId}`,
+    );
+    if (response.ok && response.body.length > 0) {
+      return response.body[0] as TAccountRelationship;
+    }
+  }
+
+  async follow(accountId: string) {
+    const response = await this.authedPost(`accounts/${accountId}/follow`);
+    return response.ok;
+  }
+
+  async unfollow(accountId: string) {
+    const response = await this.authedPost(`accounts/${accountId}/unfollow`);
+    return response.ok;
   }
 
   async getFollowers(nextPage?: string) {

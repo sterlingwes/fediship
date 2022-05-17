@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import {TAccount, TPeerInfo, TProfileResult, TStatus, TThread} from './types';
 import {useMount} from './utils/hooks';
 import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
@@ -239,11 +239,14 @@ export const useProfile = (
   const getRemoteInstance = useRemoteMastodonInstance();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [localId, setLocalId] = useState(accountId);
+  const [followLoading, setFollowLoading] = useState(false);
+  const [following, setFollowing] = useState<boolean | undefined>();
   const [error, setError] = useState('');
   const [profile, setProfile] = useState<TAccount>();
   const [statuses, setStatuses] = useState<TStatus[]>([]);
 
-  const fetchTimeline = async () => {
+  const fetchAccountAndTimeline = async () => {
     if (!statusUrl && !accountId) {
       setLoading(false);
       return;
@@ -257,9 +260,22 @@ export const useProfile = (
       let result: TProfileResult | undefined;
       if (statusUrl) {
         result = await getProfileByStatusUrl(statusUrl, getRemoteInstance);
+        if (result) {
+          const localAccount = await api.findAccount(result?.account.acct);
+          if (localAccount?.id) {
+            const relationship = await api.getRelationship(localAccount.id);
+            setLocalId(localAccount.id);
+            setFollowing(relationship?.following);
+          }
+        }
       }
       if (!result && accountId) {
         result = await api.getProfile(accountId);
+        if (result?.account.id) {
+          const relationship = await api.getRelationship(result.account.id);
+          setLocalId(result.account.id);
+          setFollowing(relationship?.following);
+        }
       }
       if (!result) {
         setLoading(false);
@@ -276,11 +292,41 @@ export const useProfile = (
     }
   };
 
+  const onToggleFollow = useCallback(async () => {
+    if (!localId) {
+      return;
+    }
+    setFollowLoading(true);
+    if (following) {
+      const ok = await api.unfollow(localId);
+      if (ok) {
+        setFollowing(false);
+      }
+    } else {
+      const ok = await api.follow(localId);
+      if (ok) {
+        setFollowing(true);
+      }
+    }
+    setFollowLoading(false);
+  }, [setFollowLoading, following, setFollowing, localId, api]);
+
   useMount(() => {
-    fetchTimeline();
+    fetchAccountAndTimeline();
   });
 
-  return {profile, statuses, fetchTimeline, error, loading, refreshing};
+  return {
+    profile,
+    statuses,
+    fetchAccountAndTimeline,
+    error,
+    loading,
+    refreshing,
+    localId,
+    following,
+    followLoading,
+    onToggleFollow,
+  };
 };
 
 export const useThread = (statusUrl: string, localId: string) => {

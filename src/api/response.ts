@@ -1,6 +1,6 @@
 export class ApiResponse {
   private response: Response;
-  private json: Record<string, any> | undefined;
+  private json: any;
   private jsonParseFailed = false;
 
   constructor(response: Response) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable} from 'react-native';
+import {Pressable, ViewStyle} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {Type} from './Type';
@@ -8,12 +8,15 @@ interface ButtonProps {
   disabled?: boolean;
   onPress: () => any;
   children: string;
+  style?: ViewStyle;
 }
 
 export const OutlineButton = (props: ButtonProps) => {
   const styles = useThemeStyle(styleCreator);
   return (
-    <Pressable style={styles.buttonContainer} onPress={props.onPress}>
+    <Pressable
+      style={[styles.buttonContainer, props.style]}
+      onPress={props.onPress}>
       <Type
         scale="S"
         style={[

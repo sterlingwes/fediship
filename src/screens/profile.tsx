@@ -15,6 +15,7 @@ import {useProfile} from '../api';
 import {AvatarImage} from '../components/AvatarImage';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
+import {OutlineButton} from '../components/OutlineButton';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
 import {StyleCreator} from '../theme';
@@ -23,6 +24,9 @@ import {RootStackParamList, TAccount, TStatus} from '../types';
 
 interface ProfileHeaderProps {
   profile: TAccount | undefined;
+  following?: boolean | undefined;
+  followToggleLoading?: boolean;
+  onToggleFollow: () => any;
 }
 
 const instanceHostName = (url: string) => {
@@ -61,6 +65,14 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
       <View style={styles.headerBio}>
         {profileImages.avatar && (
           <AvatarImage uri={profileImages.avatar} style={styles.headerAvatar} />
+        )}
+        {typeof props.following === 'boolean' && (
+          <OutlineButton
+            style={styles.followBtn}
+            disabled={props.followToggleLoading}
+            onPress={props.onToggleFollow}>
+            {props.following ? 'Unfollow' : 'Follow'}
+          </OutlineButton>
         )}
         <Type scale="L" semiBold style={styles.headerDisplayName}>
           {display_name}
@@ -108,10 +120,15 @@ export const Profile = ({
   const [headerOpaque, setHeaderOpaque] = useState(false);
   const {statusUrl, account} = route.params;
   const styles = useThemeStyle(styleCreator);
-  const {profile, statuses, refreshing, fetchTimeline} = useProfile(
-    statusUrl,
-    account?.id,
-  );
+  const {
+    profile,
+    statuses,
+    refreshing,
+    fetchAccountAndTimeline,
+    following,
+    followLoading,
+    onToggleFollow,
+  } = useProfile(statusUrl, account?.id);
 
   const renderItem = useMemo(
     () => createProfileTimelineRenderer(navigation),
@@ -119,8 +136,15 @@ export const Profile = ({
   );
 
   const headerComponent = useMemo(
-    () => <ProfileHeader profile={profile ?? account} />,
-    [profile, account],
+    () => (
+      <ProfileHeader
+        profile={profile ?? account}
+        following={following}
+        followToggleLoading={followLoading}
+        onToggleFollow={onToggleFollow}
+      />
+    ),
+    [profile, account, following, followLoading, onToggleFollow],
   );
 
   return (
@@ -147,11 +171,18 @@ export const Profile = ({
         }}
         ListHeaderComponent={headerComponent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={fetchTimeline} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={fetchAccountAndTimeline}
+          />
         }
       />
       <FloatingHeader
-        {...{navigation, title: '', transparent: !headerOpaque}}
+        {...{
+          navigation,
+          title: '',
+          transparent: !headerOpaque,
+        }}
       />
     </View>
   );
@@ -188,5 +219,9 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   headerBio: {
     padding: 15,
     paddingTop: 60,
+  },
+  followBtn: {
+    position: 'absolute',
+    right: 10,
   },
 });
