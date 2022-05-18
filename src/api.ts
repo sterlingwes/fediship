@@ -234,6 +234,8 @@ const getProfileByStatusUrl = async (
 export const useProfile = (
   statusUrl: string | undefined,
   accountId: string | undefined,
+  host: string | undefined,
+  accountHandle: string | undefined,
 ) => {
   const api = useMyMastodonInstance();
   const getRemoteInstance = useRemoteMastodonInstance();
@@ -247,7 +249,7 @@ export const useProfile = (
   const [statuses, setStatuses] = useState<TStatus[]>([]);
 
   const fetchAccountAndTimeline = async () => {
-    if (!statusUrl && !accountId) {
+    if (!statusUrl && !accountId && !host) {
       setLoading(false);
       return;
     }
@@ -263,6 +265,19 @@ export const useProfile = (
         if (result) {
           const localAccount = await api.findAccount(result?.account.acct);
           if (localAccount?.id) {
+            const relationship = await api.getRelationship(localAccount.id);
+            setLocalId(localAccount.id);
+            setFollowing(relationship?.following);
+          }
+        }
+      }
+      if (host && accountHandle) {
+        const remoteApi = getRemoteInstance(host);
+        result = await remoteApi.getProfileByHandle(host, accountHandle);
+        if (result) {
+          const localAccount = await api.findAccount(result?.account.acct);
+          if (localAccount?.id) {
+            result = await api.getProfile(localAccount.id);
             const relationship = await api.getRelationship(localAccount.id);
             setLocalId(localAccount.id);
             setFollowing(relationship?.following);

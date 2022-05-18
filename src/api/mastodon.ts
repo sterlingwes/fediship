@@ -1,11 +1,14 @@
 import {
+  APPerson,
   TAccount,
   TAccountRelationship,
   TPeerTagTrend,
   TProfileResult,
   TStatus,
   TThread,
+  Webfinger,
 } from '../types';
+import {transformPerson} from '../utils/activitypub';
 import {ApiResponse} from './response';
 
 interface ClientOptions {
@@ -146,6 +149,34 @@ export class MastodonApiClient {
     };
   }
 
+  // TODO: move to an ActivityPub class
+  async getWebfinger(host: string, accountHandle: string) {
+    const response = await this.get(
+      `https://${host}/.well-known/webfinger?resource=acct:${accountHandle}@${host}`,
+    );
+    if (!response.ok) {
+      return;
+    }
+    return response.body as Webfinger;
+  }
+
+  async getProfileByHandle(host: string, handle: string) {
+    const webfinger = await this.getWebfinger(host, handle);
+    if (!webfinger) {
+      return;
+    }
+    const profileLink = webfinger.links.find(
+      link => link.rel === 'self' && link.type.includes('json'),
+    );
+    if (profileLink) {
+      const result = await this.get(profileLink.href);
+      return {
+        account: transformPerson(profileLink.href, result.body as APPerson),
+        timeline: [],
+      };
+    }
+  }
+
   async getProfile(accountId: string) {
     const accountTimeline = await this.get(`accounts/${accountId}/statuses`);
     const accountProfile = await this.get(`accounts/${accountId}`);
@@ -219,7 +250,10 @@ export class MastodonApiClient {
 
   private async req(info: RequestInfo, extra?: RequestInit) {
     const urlOrRequest = typeof info === 'string' ? this.url(info) : info;
-    const response = await fetch(urlOrRequest, extra);
+    const response = await fetch(urlOrRequest, {
+      ...extra,
+      headers: {Accept: 'application/json', ...extra?.headers},
+    });
     const apiResponse = new ApiResponse(response);
     await apiResponse.parseBody();
     return apiResponse;

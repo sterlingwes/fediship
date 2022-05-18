@@ -118,7 +118,7 @@ export const Profile = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Profile'>) => {
   const [headerOpaque, setHeaderOpaque] = useState(false);
-  const {statusUrl, account} = route.params;
+  const {statusUrl, account, host, accountHandle} = route.params;
   const styles = useThemeStyle(styleCreator);
   const {
     profile,
@@ -128,7 +128,7 @@ export const Profile = ({
     following,
     followLoading,
     onToggleFollow,
-  } = useProfile(statusUrl, account?.id);
+  } = useProfile(statusUrl, account?.id, host, accountHandle);
 
   const renderItem = useMemo(
     () => createProfileTimelineRenderer(navigation),

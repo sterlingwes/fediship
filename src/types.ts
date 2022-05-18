@@ -109,11 +109,66 @@ export type RootStackParamList = {
   Explore: undefined;
   User: undefined;
   TagTimeline: {host: string; tag: string};
-  Profile: {statusUrl?: string; account?: TAccount};
+  Profile: {
+    statusUrl?: string;
+    account?: TAccount;
+    host?: string;
+    accountHandle?: string;
+  };
   Thread: {statusUrl: string; id: string};
   PeerProfile: TPeerInfo;
   ImageViewer: TMediaAttachment;
 };
+
+export interface Webfinger {
+  subject: string; // acct
+  aliases: string[];
+  links: {rel: string; type: string; href: string}[];
+}
+
+export interface APObject {
+  '@context': any[];
+  id: string;
+}
+
+type Url = string;
+
+export interface APPerson extends APObject {
+  type: 'Person';
+  following: Url;
+  followers: Url;
+  inbox: Url;
+  outbox: Url;
+  featured: Url;
+  preferredUsername: string;
+  name: string;
+  summary: string;
+  url?: Url;
+  manuallyApprovesFollowers: boolean;
+  discoverable: boolean;
+  publicKey: {
+    id: string;
+    owner: Url;
+    publicKeyPem: string;
+  };
+  // tag: any[]
+  // attachment: any[]
+  endpoints: {
+    sharedInbox: Url;
+  };
+  icon: {
+    // avatar
+    type: 'Image';
+    mediaType: string;
+    url: Url;
+  };
+  image?: {
+    // banner
+    type: 'Image';
+    mediaType: string;
+    url: Url;
+  };
+}
 
 export interface TStatusContext {
   ancestors?: TStatus[] | undefined;

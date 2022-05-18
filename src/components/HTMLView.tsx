@@ -1,10 +1,15 @@
 import React from 'react';
-import {Image, ImageStyle} from 'react-native';
-import RNHtmlView, {HTMLViewNode} from 'react-native-htmlview';
+import {Image, ImageStyle, Linking, TextStyle} from 'react-native';
+import RNHtmlView, {
+  HTMLViewNode,
+  HTMLViewNodeRenderer,
+} from 'react-native-htmlview';
 import {StyleCreator} from '../theme';
-import {Emoji} from '../types';
+import {Emoji, RootStackParamList} from '../types';
 import {useThemeStyle} from '../theme/utils';
 import {Type, TypeProps} from './Type';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 interface HTMLProps {
   emojis: Emoji[];
@@ -16,17 +21,44 @@ const htmlStylesCreator = (styles: ReturnType<typeof styleCreator>) => ({
   p: styles.textColor,
 });
 
-const renderNode = (imageStyle: ImageStyle) => (node: HTMLViewNode) => {
-  if (node.name === 'emoji') {
-    return (
-      <Image
-        source={{uri: node.attribs.src, width: 18, height: 18}}
-        style={imageStyle}
-        onError={e => console.error(e)}
-      />
-    );
-  }
-};
+const renderNode =
+  ({
+    imageStyle,
+    linkStyle,
+    onLinkPress,
+  }: {
+    imageStyle: ImageStyle;
+    linkStyle: TextStyle;
+    onLinkPress: (attribs: Record<string, any>) => void;
+  }) =>
+  (
+    node: HTMLViewNode,
+    _index: number,
+    _siblings: HTMLViewNode[],
+    parent: HTMLViewNode,
+    defaultRenderer: HTMLViewNodeRenderer,
+  ) => {
+    if (node.name === 'emoji') {
+      return (
+        <Image
+          source={{uri: node.attribs.src, width: 18, height: 18}}
+          style={imageStyle}
+          onError={e => console.error(e)}
+        />
+      );
+    }
+
+    if (node.name === 'a') {
+      return (
+        <Type
+          style={linkStyle}
+          scale="S"
+          onPress={() => onLinkPress(node.attribs)}>
+          {defaultRenderer(node.children as HTMLViewNode[], parent)}
+        </Type>
+      );
+    }
+  };
 
 const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) =>
   props.emojis.reduce((content, emoji) => {
@@ -37,13 +69,46 @@ const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) =>
   }, props.content);
 
 export const HTMLView = ({value, emojis}: HTMLProps) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const styles = useThemeStyle(styleCreator);
   const emojifiedValue = contentWithEmojis({content: value, emojis});
+
+  const onLinkPress = (attribs: Record<string, any>) => {
+    // handle hashtag links
+    const [origin, tag] = attribs.href.split('/tags/');
+    if (tag) {
+      const [, host] = origin.split('//');
+      navigation.push('TagTimeline', {host, tag});
+      return;
+    }
+
+    // handle username links
+    if (attribs.class && attribs.class.includes('u-url')) {
+      const urlParts = attribs.href.split('/');
+      const host = urlParts[2];
+      let accountHandle = urlParts.pop();
+      if (host && accountHandle) {
+        if (accountHandle[0] === '@') {
+          accountHandle = accountHandle.substr(1);
+        }
+        navigation.push('Profile', {host, accountHandle});
+        return;
+      }
+    }
+
+    Linking.openURL(attribs.href);
+  };
+
   return (
     <RNHtmlView
       value={emojifiedValue}
       stylesheet={htmlStylesCreator(styles)}
-      renderNode={renderNode(styles.emoji)}
+      renderNode={renderNode({
+        imageStyle: styles.emoji,
+        linkStyle: styles.linkColor,
+        onLinkPress,
+      })}
       TextComponent={Type}
       textComponentProps={{scale: 'S'} as TypeProps}
     />
