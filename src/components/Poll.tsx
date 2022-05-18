@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Pressable, View} from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
+import {StyleCreator} from '../theme';
+import {useThemeStyle} from '../theme/utils';
 import {TPoll} from '../types';
 import {OutlineButton} from './OutlineButton';
 import {Type} from './Type';
@@ -8,44 +10,71 @@ import {Type} from './Type';
 const widthPct = (value: number, total: number) =>
   `${Math.round((value / total) * 100) || 1}%`;
 
-const VoteAmountLine = (props: {value: number; total: number}) => (
-  <View style={styles.amountLineContainer}>
-    <View
-      style={[styles.amountLine, {width: widthPct(props.value, props.total)}]}
-    />
-  </View>
-);
+const VoteAmountLine = (props: {
+  value: number;
+  total: number;
+  selected: boolean;
+}) => {
+  const styles = useThemeStyle(styleCreator);
+  return (
+    <View style={styles.amountLineContainer}>
+      <View
+        style={[
+          styles.amountLine,
+          {width: widthPct(props.value, props.total)},
+          props.selected && styles.pollOptionVoteLine,
+        ]}
+      />
+    </View>
+  );
+};
 
-const PollOptionReadOnly = (props: TPoll['options'][0] & {total: number}) => (
-  <View style={styles.pollOption}>
-    <Type>{props.title}</Type>
-    <VoteAmountLine value={props.votes_count} total={props.total} />
-  </View>
-);
+const PollOptionReadOnly = (
+  props: TPoll['options'][0] & {total: number; selected: boolean},
+) => {
+  const styles = useThemeStyle(styleCreator);
+  return (
+    <View style={styles.pollOptionReadOnly}>
+      <Type style={props.selected && styles.pollOptionVote}>{props.title}</Type>
+      <VoteAmountLine
+        value={props.votes_count}
+        total={props.total}
+        selected={props.selected}
+      />
+    </View>
+  );
+};
 
 const PollOption = (
   props: TPoll['options'][0] & {total: number; selected: boolean},
-) => (
-  <View style={styles.pollOption}>
-    <View style={styles.pollOptionIcon}>
-      <Type>{props.selected ? '✅' : '🔘'}</Type>
+) => {
+  const styles = useThemeStyle(styleCreator);
+  return (
+    <View style={styles.pollOption}>
+      <View style={styles.pollOptionIcon}>
+        <Type>{props.selected ? '✅' : '🔘'}</Type>
+      </View>
+      <View style={styles.pollOptionDetail}>
+        <Type>{props.title}</Type>
+      </View>
     </View>
-    <View style={styles.pollOptionDetail}>
-      <Type>{props.title}</Type>
-      <VoteAmountLine value={props.votes_count} total={props.total} />
-    </View>
-  </View>
-);
+  );
+};
 
 export const Poll = (props: TPoll) => {
   const api = useMyMastodonInstance();
+  const styles = useThemeStyle(styleCreator);
   const [voted, setVoted] = useState(props.voted);
   const [voting, setVoting] = useState(false);
+  const [voteResult, setVoteResult] = useState<TPoll>();
   const [selections, setSelections] = useState<number[]>(props.own_votes || []);
-  const PollItem = props.expired ? PollOptionReadOnly : PollOption;
+
+  const poll = voteResult ?? props;
+
+  const PollItem = poll.expired || poll.voted ? PollOptionReadOnly : PollOption;
 
   const onSelect = (optionIndex: number) => {
-    if (!props.multiple) {
+    if (!poll.multiple) {
       setSelections([optionIndex]);
       return;
     }
@@ -68,31 +97,36 @@ export const Poll = (props: TPoll) => {
     setVoting(false);
     if (response.ok) {
       setVoted(true);
+      setVoteResult(response.body);
+      setSelections([]);
     }
   };
 
   return (
     <View style={styles.pollContainer}>
-      {props.options.map((option, optionIndex) => (
+      {poll.options.map((option, optionIndex) => (
         <Pressable
-          disabled={props.expired}
+          disabled={poll.expired}
           onPress={() => onSelect(optionIndex)}>
           <PollItem
             key={option.title}
             {...option}
-            selected={selections.includes(optionIndex)}
-            total={props.votes_count}
+            selected={
+              selections.includes(optionIndex) ||
+              poll.own_votes.includes(optionIndex)
+            }
+            total={poll.votes_count}
           />
         </Pressable>
       ))}
-      {!voted && !props.expired && (
+      {!voted && !poll.expired && (
         <OutlineButton onPress={onVote}>Vote!</OutlineButton>
       )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const styleCreator: StyleCreator = ({getColor}) => ({
   amountLineContainer: {
     flex: 1,
     marginTop: 5,
@@ -106,8 +140,17 @@ const styles = StyleSheet.create({
   pollOption: {
     flexDirection: 'row',
   },
+  pollOptionReadOnly: {
+    flexDirection: 'column',
+  },
   pollOptionIcon: {
     marginRight: 10,
+  },
+  pollOptionVote: {
+    color: getColor('primary'),
+  },
+  pollOptionVoteLine: {
+    backgroundColor: getColor('primary'),
   },
   pollOptionDetail: {
     flex: 1,
