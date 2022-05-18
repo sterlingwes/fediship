@@ -2,7 +2,7 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   RefreshControl,
   FlatList,
@@ -40,11 +40,17 @@ interface ProfileImages {
 }
 
 const ProfileHeader = (props: ProfileHeaderProps) => {
-  const [profileImages] = useState<ProfileImages>({
+  const [profileImages, setImages] = useState<ProfileImages>({
     header: props.profile?.header,
     avatar: props.profile?.avatar,
   });
   const styles = useThemeStyle(styleCreator);
+
+  useEffect(() => {
+    if (!profileImages.avatar && props.profile?.avatar) {
+      setImages({header: props.profile.header, avatar: props.profile.avatar});
+    }
+  }, [props.profile, profileImages]);
 
   if (!props.profile) {
     return (
