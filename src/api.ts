@@ -20,7 +20,7 @@ export const useFollowers = () => {
 
     setLoading(true);
     try {
-      const result = await api.getFollowers(nextPage);
+      const result = await api.getFollowers(reset ? undefined : nextPage);
       if (reset) {
         setAccounts(result.list);
       } else {
@@ -141,7 +141,10 @@ export const useTimeline = (timeline: 'home' | 'public') => {
 
     setLoading(true);
     try {
-      const result = await api.getTimeline(timeline, nextPage);
+      const result = await api.getTimeline(
+        timeline,
+        reset ? undefined : nextPage,
+      );
       if (reset) {
         setStatuses(result.list);
       } else {
@@ -157,7 +160,6 @@ export const useTimeline = (timeline: 'home' | 'public') => {
   };
 
   const reloadTimeline = () => {
-    setNextPage(undefined);
     return fetchTimeline(true);
   };
 
@@ -185,7 +187,10 @@ export const useTagTimeline = (host: string, tag: string) => {
     setLoading(true);
     try {
       const api = getRemote(host);
-      const result = await api.getTagTimeline(tag, nextPage);
+      const result = await api.getTagTimeline(
+        tag,
+        reset ? undefined : nextPage,
+      );
       if (reset) {
         setStatuses(result.list);
       } else {
