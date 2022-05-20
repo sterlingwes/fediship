@@ -29,7 +29,10 @@ interface ProfileHeaderProps {
   onToggleFollow: () => any;
 }
 
-const instanceHostName = (url: string) => {
+const instanceHostName = (url: string | undefined) => {
+  if (!url) {
+    return '?';
+  }
   const [, , host] = url.split('/');
   return host;
 };
