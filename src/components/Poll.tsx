@@ -113,7 +113,8 @@ export const Poll = (props: TPoll) => {
             {...option}
             selected={
               selections.includes(optionIndex) ||
-              poll.own_votes.includes(optionIndex)
+              poll.own_votes?.includes(optionIndex) ||
+              false
             }
             total={poll.votes_count}
           />
