@@ -1,3 +1,4 @@
+import {useScrollToTop} from '@react-navigation/native';
 import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
@@ -65,6 +66,8 @@ export const Timeline = ({
   const styles = useThemeStyle(styleCreator);
   const {statuses, loading, loadingMore, fetchTimeline, reloadTimeline} =
     useTimeline('home');
+
+  useScrollToTop(scrollRef);
 
   const renderItem = useMemo(
     () => createTimelineRenderer(navigation),
