@@ -55,7 +55,7 @@ const iconForTab =
   };
 
 const TabbedHome = () => (
-  <Tab.Navigator screenOptions={{tabBarStyle: {height: 85}}}>
+  <Tab.Navigator screenOptions={{tabBarStyle: {height: 60}}}>
     <Tab.Screen
       name="Home"
       component={Timeline}
