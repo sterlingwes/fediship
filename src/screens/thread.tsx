@@ -48,9 +48,12 @@ export const Thread = ({
         lastStatus={
           terminatingIds.includes(item.id) || statuses.length - 1 === index
         }
-        onPress={() =>
-          navigation.push('Thread', {statusUrl: item.uri, id: item.id})
-        }
+        onPress={() => {
+          if (statusUrl === item.uri || item.id === id) {
+            return;
+          }
+          navigation.push('Thread', {statusUrl: item.uri, id: item.id});
+        }}
         onPressAvatar={account => {
           navigation.push('Profile', {
             statusUrl: item.uri,
