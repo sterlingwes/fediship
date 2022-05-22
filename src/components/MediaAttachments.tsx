@@ -1,11 +1,19 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React from 'react';
-import {Image, ImageStyle, Linking, Pressable, View} from 'react-native';
+import {
+  Image,
+  ImageStyle,
+  Linking,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TMediaAttachment} from '../types';
 import {PlayCircleIcon} from './icons/PlayCircleIcon';
+import {Type} from './Type';
 
 const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
   width,
@@ -113,7 +121,7 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
     );
   }
 
-  if (props.media.length === 4) {
+  if (props.media.length >= 4) {
     const [first, second, third, fourth] = props.media;
     return (
       <View style={styles.mediaCluster}>
@@ -125,9 +133,15 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
           ))}
         </View>
         <View style={styles.mediaRow}>
-          {[third, fourth].map(attachment => (
+          {[third, fourth].map((attachment, i) => (
             <View key={attachment.id} style={styles.flexColumn}>
               <Media {...attachment} imageStyle={styles.previewImageTwoRows} />
+              {props.media.length > 4 && i === 1 && (
+                <View style={styles.moreCount}>
+                  <View style={styles.moreCountOverlay} />
+                  <Type scale="XL">{`+${props.media.length - 4}`}</Type>
+                </View>
+              )}
             </View>
           ))}
         </View>
@@ -193,5 +207,15 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     position: 'absolute',
     backgroundColor: getColor('baseTextColor'),
     borderRadius: 24 / 2,
+  },
+  moreCount: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  moreCountOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'black',
+    opacity: 0.4,
   },
 });

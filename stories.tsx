@@ -26,6 +26,7 @@ import statusOneImage from './fixtures/status-one-image.json';
 import statusThreeImage from './fixtures/status-three-image.json';
 import statusThreeImageVaried from './fixtures/status-three-image-varied.json';
 import statusFourImage from './fixtures/status-four-image.json';
+import statusFiveImage from './fixtures/status-five-image.json';
 import statusTwoImageLandscape from './fixtures/status-two-image-landscape.json';
 import statusTwoImage from './fixtures/status-two-image.json';
 import statusPixelfed from './fixtures/status-pixelfed-linebreaks.json';
@@ -42,6 +43,7 @@ const statuses = [
   statusThreeImage,
   statusThreeImageVaried,
   statusFourImage,
+  statusFiveImage,
   statusPixelfed,
 ];
 
