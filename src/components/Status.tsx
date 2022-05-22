@@ -59,6 +59,7 @@ interface StatusHeaderProps {
   sendDate: Date;
   tootTypeMessage: string;
   booster: string | undefined;
+  pinned: boolean | undefined;
 }
 
 const emojiImgStyle = {width: 15, height: 15} as ImageStyle;
@@ -124,6 +125,15 @@ const StatusHeader = (props: StatusHeaderProps) => {
             <Type scale="XS" style={styles.statusHeaderType}>
               boosted
             </Type>
+          </Type>
+        )}
+        {props.pinned && (
+          <Type
+            scale="XS"
+            semiBold
+            style={styles.statusHeaderBooster}
+            numberOfLines={1}>
+            📌 Pinned
           </Type>
         )}
         <Type scale="S" semiBold numberOfLines={1}>
@@ -258,6 +268,7 @@ export const Status = (
             sendDate={new Date(mainStatus.created_at)}
             tootTypeMessage={getType(mainStatus)}
             booster={props.reblog ? props.account.display_name : undefined}
+            pinned={props.pinned}
           />
           {mainStatus.sensitive ? (
             <CollapsedStatus {...mainStatus} />

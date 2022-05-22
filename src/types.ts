@@ -35,6 +35,7 @@ export interface TStatus {
   in_reply_to_id: string | null;
   poll: TPoll | null;
   sensitive: boolean;
+  pinned?: boolean;
   spoiler_text: string;
   emojis: Emoji[];
   media_attachments?: TMediaAttachment[];

@@ -178,11 +178,36 @@ export class MastodonApiClient {
   }
 
   async getProfile(accountId: string) {
-    const accountTimeline = await this.get(`accounts/${accountId}/statuses`);
+    let toots: TStatus[] = [];
+
+    try {
+      const accountTimeline = await this.get(
+        `accounts/${accountId}/statuses?exclude_replies=true`,
+      );
+      const accountPinned = await this.get(
+        `accounts/${accountId}/statuses?pinned=true`,
+      );
+
+      const pinnedIds: string[] = [];
+      const pinnedToots = (accountPinned.body as TStatus[]).map(toot => {
+        pinnedIds.push(toot.id);
+        return {
+          ...toot,
+          pinned: true,
+        };
+      });
+      const filteredTimeline = (accountTimeline.body as TStatus[]).filter(
+        toot => pinnedIds.includes(toot.id) === false,
+      );
+
+      toots = [...pinnedToots, ...filteredTimeline];
+    } catch (e) {
+      console.warn('some profile fetches failed:', e);
+    }
     const accountProfile = await this.get(`accounts/${accountId}`);
     return {
       account: accountProfile.body,
-      timeline: accountTimeline.body,
+      timeline: toots,
     } as TProfileResult;
   }
 
