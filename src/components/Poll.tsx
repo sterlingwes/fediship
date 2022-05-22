@@ -102,6 +102,10 @@ export const Poll = (props: TPoll) => {
     }
   };
 
+  const onView = () => {
+    setVoted(true);
+  };
+
   return (
     <View style={styles.pollContainer}>
       {poll.options.map((option, optionIndex) => (
@@ -120,9 +124,18 @@ export const Poll = (props: TPoll) => {
           />
         </Pressable>
       ))}
-      {!voted && !poll.expired && (
-        <OutlineButton onPress={onVote}>Vote!</OutlineButton>
-      )}
+      <View style={styles.row}>
+        {!voted && !poll.expired && (
+          <OutlineButton onPress={onVote} style={styles.button}>
+            Vote!
+          </OutlineButton>
+        )}
+        {!voted && !poll.expired && (
+          <OutlineButton onPress={onView} style={styles.button}>
+            View
+          </OutlineButton>
+        )}
+      </View>
     </View>
   );
 };
@@ -158,5 +171,13 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   pollContainer: {
     marginTop: 15,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  button: {
+    marginLeft: 5,
+    width: 'auto',
+    paddingHorizontal: 20,
   },
 });
