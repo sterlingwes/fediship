@@ -120,7 +120,7 @@ const StatusHeader = (props: StatusHeaderProps) => {
             semiBold
             style={styles.statusHeaderBooster}
             numberOfLines={1}>
-            {props.booster}{' '}
+            {props.booster.replace(/\s?:[a-z]+:\s?/g, '')}{' '}
             <Type scale="XS" style={styles.statusHeaderType}>
               boosted
             </Type>
