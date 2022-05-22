@@ -117,7 +117,7 @@ export type RootStackParamList = {
   };
   Thread: {statusUrl: string; id: string};
   PeerProfile: TPeerInfo;
-  ImageViewer: TMediaAttachment;
+  ImageViewer: {index: number; attachments: TMediaAttachment[]};
 };
 
 export interface Webfinger {

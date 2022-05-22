@@ -20,24 +20,19 @@ const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
   height,
 });
 
-const Media = (props: TMediaAttachment & {imageStyle?: ImageStyle}) => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+const Media = (
+  props: TMediaAttachment & {imageStyle?: ImageStyle; onOpenImage: () => void},
+) => {
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
 
   const onOpen = () => Linking.openURL(props.url);
 
-  const onOpenImage = (attachment: TMediaAttachment) =>
-    navigation.navigate('ImageViewer', attachment);
-
   const componentForType = (type: TMediaAttachment['type']) => {
     switch (type) {
       case 'image':
         return (
-          <Pressable
-            style={styles.mediaThumbnail}
-            onPress={() => onOpenImage(props)}>
+          <Pressable style={styles.mediaThumbnail} onPress={props.onOpenImage}>
             <Image
               source={{
                 uri: props.preview_url,
@@ -74,11 +69,21 @@ const Media = (props: TMediaAttachment & {imageStyle?: ImageStyle}) => {
 export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
   const styles = useThemeStyle(styleCreator);
 
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const onOpenImage = (index: number) =>
+    navigation.navigate('ImageViewer', {index, attachments: props.media});
+
   if (props.media.length === 1) {
     return (
       <View style={styles.mediaTwo}>
         <View key={props.media[0].id} style={styles.flexColumn}>
-          <Media {...props.media[0]} />
+          <Media
+            {...{
+              ...props.media[0],
+              onOpenImage: () => onOpenImage(0),
+            }}
+          />
         </View>
       </View>
     );
@@ -87,9 +92,9 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
   if (props.media.length === 2) {
     return (
       <View style={styles.mediaTwo}>
-        {props.media.map(attachment => (
+        {props.media.map((attachment, i) => (
           <View key={attachment.id} style={styles.flexColumn}>
-            <Media {...attachment} />
+            <Media {...{...attachment, onOpenImage: () => onOpenImage(i)}} />
           </View>
         ))}
       </View>
@@ -103,14 +108,17 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
         <View style={styles.mediaRow}>
           <View style={styles.flexColumn}>
             <View key={first.id} style={styles.flexColumn}>
-              <Media {...first} imageStyle={styles.previewImageSpanTwoRows} />
+              <Media
+                {...{...first, onOpenImage: () => onOpenImage(0)}}
+                imageStyle={styles.previewImageSpanTwoRows}
+              />
             </View>
           </View>
           <View style={styles.flexColumn}>
-            {[second, third].map(attachment => (
+            {[second, third].map((attachment, i) => (
               <View style={styles.flexColumn}>
                 <Media
-                  {...attachment}
+                  {...{...attachment, onOpenImage: () => onOpenImage(i)}}
                   imageStyle={styles.previewImageTwoRows}
                 />
               </View>
@@ -126,16 +134,22 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
     return (
       <View style={styles.mediaCluster}>
         <View style={styles.mediaRow}>
-          {[first, second].map(attachment => (
+          {[first, second].map((attachment, i) => (
             <View key={attachment.id} style={styles.flexColumn}>
-              <Media {...attachment} imageStyle={styles.previewImageTwoRows} />
+              <Media
+                {...{...attachment, onOpenImage: () => onOpenImage(i)}}
+                imageStyle={styles.previewImageTwoRows}
+              />
             </View>
           ))}
         </View>
         <View style={styles.mediaRow}>
           {[third, fourth].map((attachment, i) => (
             <View key={attachment.id} style={styles.flexColumn}>
-              <Media {...attachment} imageStyle={styles.previewImageTwoRows} />
+              <Media
+                {...{...attachment, onOpenImage: () => onOpenImage(i)}}
+                imageStyle={styles.previewImageTwoRows}
+              />
               {props.media.length > 4 && i === 1 && (
                 <View style={styles.moreCount}>
                   <View style={styles.moreCountOverlay} />
@@ -151,8 +165,11 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
 
   return (
     <View style={styles.media}>
-      {props.media.map(attachment => (
-        <Media key={attachment.id} {...attachment} />
+      {props.media.map((attachment, i) => (
+        <Media
+          key={attachment.id}
+          {...{...attachment, onOpenImage: () => onOpenImage(i)}}
+        />
       ))}
     </View>
   );
