@@ -103,7 +103,7 @@ export const HTMLView = ({value, emojis}: HTMLProps) => {
   return (
     <RNHtmlView
       addLineBreaks={false}
-      value={emojifiedValue.replace(/<br\/?>/g, '')}
+      value={emojifiedValue.replace(/<br\/?>\n+/g, '<br/>')}
       stylesheet={htmlStylesCreator(styles)}
       renderNode={renderNode({
         imageStyle: styles.emoji,
