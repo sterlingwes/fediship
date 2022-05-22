@@ -18,6 +18,7 @@ import {HTMLView} from '../components/HTMLView';
 import {OutlineButton} from '../components/OutlineButton';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
+import {screenHeight} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TAccount, TStatus} from '../types';
@@ -208,6 +209,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   header: {
     overflow: 'hidden',
     backgroundColor: getColor('baseAccent'),
+    minHeight: screenHeight / 3,
   },
   headerBgImage: {
     flex: 1,
