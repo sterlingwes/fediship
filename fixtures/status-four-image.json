@@ -1,0 +1,201 @@
+{
+  "id": "108336926165168173",
+  "created_at": "2022-05-20T23:44:51.000Z",
+  "in_reply_to_id": null,
+  "in_reply_to_account_id": null,
+  "sensitive": false,
+  "spoiler_text": "",
+  "visibility": "public",
+  "language": "en",
+  "uri": "https://post.lurk.org/users/pixouls/statuses/108336925370233145",
+  "url": "https://post.lurk.org/@pixouls/108336925370233145",
+  "replies_count": 0,
+  "reblogs_count": 0,
+  "favourites_count": 0,
+  "favourited": false,
+  "reblogged": false,
+  "muted": false,
+  "bookmarked": false,
+  "content": "<p>*Pluteus cervinus*,  deer mushroom</p><p>Sometimes you can find pink gills as they mature </p><p>Gills are actually not connected directly to the edge of the stipe, instead surround it </p><p><a href=\"https://post.lurk.org/tags/mushroom\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>mushroom</span></a> <a href=\"https://post.lurk.org/tags/mushtodon\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>mushtodon</span></a> <a href=\"https://post.lurk.org/tags/fungi\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>fungi</span></a> <a href=\"https://post.lurk.org/tags/sporespondence\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>sporespondence</span></a></p>",
+  "reblog": null,
+  "account": {
+    "id": "6881",
+    "username": "pixouls",
+    "acct": "pixouls@post.lurk.org",
+    "display_name": "Pixel 🍄",
+    "locked": true,
+    "bot": false,
+    "discoverable": true,
+    "group": false,
+    "created_at": "2022-05-02T12:41:44.430Z",
+    "note": "<p>local menacing digital cryptid<br>white cishet men tread carefully<br>support me: <a href=\"https://liberapay.com/Pixouls/\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">liberapay.com/Pixouls/</span><span class=\"invisible\"></span></a></p><p>i like to help people find what they're looking for<br>i periodically delete my posts, lmk if i should keep smth up<br>i use alt text and i prefer you did too <a href=\"https://post.lurk.org/tags/describedmedia\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>describedmedia</span></a><br>English/Burmese/Mandarin<br>no flirts, <a href=\"https://post.lurk.org/tags/nobot\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>nobot</span></a>, no lewds</p><p>Find me on:<br>gemini://signals.pollux.casa<br>finger signals@happynetbox.com<br>@pixouls@bookwrym.social<br>And ask for Matrix!</p>",
+    "url": "https://post.lurk.org/@pixouls",
+    "avatar": "https://swj.io/system/accounts/avatars/000/006/881/original/8afa4499b9f944de.jpeg?1651495301",
+    "avatar_static": "https://swj.io/system/accounts/avatars/000/006/881/original/8afa4499b9f944de.jpeg?1651495301",
+    "header": "https://swj.io/system/accounts/headers/000/006/881/original/ffa8a3bdb471c7f7.jpeg?1651495302",
+    "header_static": "https://swj.io/system/accounts/headers/000/006/881/original/ffa8a3bdb471c7f7.jpeg?1651495302",
+    "followers_count": 492,
+    "following_count": 380,
+    "statuses_count": 1212,
+    "last_status_at": "2022-05-21",
+    "emojis": [],
+    "fields": [
+      {
+        "name": "pronouns",
+        "value": "he/they/pix",
+        "verified_at": null
+      },
+      {
+        "name": "site",
+        "value": "<a href=\"https://www.pixouls.xyz/\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://www.</span><span class=\"\">pixouls.xyz/</span><span class=\"invisible\"></span></a>",
+        "verified_at": "2022-05-18T21:46:04.077+00:00"
+      },
+      {
+        "name": "now playing",
+        "value": "搬到合歡山上 — 雲端司機 CLOUDRIVER",
+        "verified_at": null
+      },
+      {
+        "name": "key",
+        "value": "<a href=\"https://keyoxide.org/087455320111923C3A68188FAA856ECCC1388EDD\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"ellipsis\">keyoxide.org/087455320111923C3</span><span class=\"invisible\">A68188FAA856ECCC1388EDD</span></a>",
+        "verified_at": "2022-05-18T21:46:04.709+00:00"
+      }
+    ]
+  },
+  "media_attachments": [
+    {
+      "id": "34744",
+      "type": "image",
+      "url": "https://swj.io/system/media_attachments/files/000/034/744/original/73bc6a7514516091.jpeg?1653090300",
+      "preview_url": "https://swj.io/system/media_attachments/files/000/034/744/small/73bc6a7514516091.jpeg?1653090300",
+      "remote_url": "https://post.lurk.org/system/media_attachments/files/108/336/907/429/384/698/original/82a9c5712205f1c6.jpeg",
+      "text_url": null,
+      "meta": {
+        "focus": {
+          "x": 0,
+          "y": 0
+        },
+        "original": {
+          "width": 960,
+          "height": 1280,
+          "size": "960x1280",
+          "aspect": 0.75
+        },
+        "small": {
+          "width": 346,
+          "height": 461,
+          "size": "346x461",
+          "aspect": 0.7505422993492408
+        }
+      },
+      "description": "White gills are tarnished",
+      "blurhash": "UGF=]bHd9YDkDk-o?aVy5Oif-:s;~W%M9ZMy"
+    },
+    {
+      "id": "34745",
+      "type": "image",
+      "url": "https://swj.io/system/media_attachments/files/000/034/745/original/8b3d4d80817ebeda.jpeg?1653090301",
+      "preview_url": "https://swj.io/system/media_attachments/files/000/034/745/small/8b3d4d80817ebeda.jpeg?1653090301",
+      "remote_url": "https://post.lurk.org/system/media_attachments/files/108/336/907/521/273/499/original/f3b735aab9f8ca00.jpeg",
+      "text_url": null,
+      "meta": {
+        "focus": {
+          "x": 0,
+          "y": 0
+        },
+        "original": {
+          "width": 1280,
+          "height": 1052,
+          "size": "1280x1052",
+          "aspect": 1.2167300380228137
+        },
+        "small": {
+          "width": 441,
+          "height": 362,
+          "size": "441x362",
+          "aspect": 1.218232044198895
+        }
+      },
+      "description": "Top of a mushroom, dark grey brown toward the center, lighter out. Speckled a bit around. The mushroom is white when teared.",
+      "blurhash": "ULGu%JM40d4.IW9?WEwOH@t5-qx[E0M}x@oe"
+    },
+    {
+      "id": "34746",
+      "type": "image",
+      "url": "https://swj.io/system/media_attachments/files/000/034/746/original/71cfaec2bb528101.jpeg?1653090302",
+      "preview_url": "https://swj.io/system/media_attachments/files/000/034/746/small/71cfaec2bb528101.jpeg?1653090302",
+      "remote_url": "https://post.lurk.org/system/media_attachments/files/108/336/907/593/939/429/original/dffd2e45380d985e.jpeg",
+      "text_url": null,
+      "meta": {
+        "focus": {
+          "x": 0,
+          "y": 0
+        },
+        "original": {
+          "width": 1280,
+          "height": 956,
+          "size": "1280x956",
+          "aspect": 1.3389121338912133
+        },
+        "small": {
+          "width": 463,
+          "height": 346,
+          "size": "463x346",
+          "aspect": 1.3381502890173411
+        }
+      },
+      "description": "A hand holding out a deer mushroom cap",
+      "blurhash": "UIFY3-OQEyE3~TOX${RPJCV@-UNtE2%2ocR%"
+    },
+    {
+      "id": "34747",
+      "type": "image",
+      "url": "https://swj.io/system/media_attachments/files/000/034/747/original/3d4b2c0eda83c5b5.jpeg?1653090303",
+      "preview_url": "https://swj.io/system/media_attachments/files/000/034/747/small/3d4b2c0eda83c5b5.jpeg?1653090303",
+      "remote_url": "https://post.lurk.org/system/media_attachments/files/108/336/908/434/406/729/original/0e7a352a6c242ee3.jpeg",
+      "text_url": null,
+      "meta": {
+        "focus": {
+          "x": 0,
+          "y": 0
+        },
+        "original": {
+          "width": 1280,
+          "height": 1182,
+          "size": "1280x1182",
+          "aspect": 1.0829103214890017
+        },
+        "small": {
+          "width": 416,
+          "height": 384,
+          "size": "416x384",
+          "aspect": 1.0833333333333333
+        }
+      },
+      "description": "Flipped over to see white gills again",
+      "blurhash": "UEF#U1=hS1}?}+m-S0-UFsNf%fxaxtaff4Rj"
+    }
+  ],
+  "mentions": [],
+  "tags": [
+    {
+      "name": "mushroom",
+      "url": "https://swj.io/tags/mushroom"
+    },
+    {
+      "name": "mushtodon",
+      "url": "https://swj.io/tags/mushtodon"
+    },
+    {
+      "name": "fungi",
+      "url": "https://swj.io/tags/fungi"
+    },
+    {
+      "name": "sporespondence",
+      "url": "https://swj.io/tags/sporespondence"
+    }
+  ],
+  "emojis": [],
+  "card": null,
+  "poll": null
+}

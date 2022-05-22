@@ -1,0 +1,281 @@
+{
+  "id": "108336799901019962",
+  "created_at": "2022-05-20T23:12:46.000Z",
+  "in_reply_to_id": null,
+  "in_reply_to_account_id": null,
+  "sensitive": false,
+  "spoiler_text": "",
+  "visibility": "public",
+  "language": null,
+  "uri": "https://mstdn.social/users/stux/statuses/108336799183408880/activity",
+  "url": null,
+  "replies_count": 0,
+  "reblogs_count": 0,
+  "favourites_count": 0,
+  "favourited": false,
+  "reblogged": false,
+  "muted": false,
+  "bookmarked": false,
+  "content": "<p>thick wet flakes. Mid-May spring snow storm today. <a href=\"https://mstdn.social/tags/snow\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>snow</span></a> <a href=\"https://mstdn.social/tags/spring\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>spring</span></a> <a href=\"https://mstdn.social/tags/citylife\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>citylife</span></a></p>",
+  "reblog": {
+    "id": "108336711519250690",
+    "created_at": "2022-05-20T22:50:28.000Z",
+    "in_reply_to_id": null,
+    "in_reply_to_account_id": null,
+    "sensitive": false,
+    "spoiler_text": "",
+    "visibility": "public",
+    "language": "en",
+    "uri": "https://mstdn.social/users/spoonbending/statuses/108336711483868054",
+    "url": "https://mstdn.social/@spoonbending/108336711483868054",
+    "replies_count": 0,
+    "reblogs_count": 1,
+    "favourites_count": 0,
+    "favourited": false,
+    "reblogged": false,
+    "muted": false,
+    "bookmarked": false,
+    "content": "<p>thick wet flakes. Mid-May spring snow storm today. <a href=\"https://mstdn.social/tags/snow\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>snow</span></a> <a href=\"https://mstdn.social/tags/spring\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>spring</span></a> <a href=\"https://mstdn.social/tags/citylife\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>citylife</span></a></p>",
+    "reblog": null,
+    "account": {
+      "id": "3076",
+      "username": "spoonbending",
+      "acct": "spoonbending@mstdn.social",
+      "display_name": "_mostly_sunshine",
+      "locked": false,
+      "bot": false,
+      "discoverable": false,
+      "group": false,
+      "created_at": "2022-04-30T13:10:20.438Z",
+      "note": "<p>cloud connoisseur.</p>",
+      "url": "https://mstdn.social/@spoonbending",
+      "avatar": "https://swj.io/system/accounts/avatars/000/003/076/original/53fbb331d3537959.jpeg?1651324218",
+      "avatar_static": "https://swj.io/system/accounts/avatars/000/003/076/original/53fbb331d3537959.jpeg?1651324218",
+      "header": "https://swj.io/system/accounts/headers/000/003/076/original/a3fb788bebf4b9c3.jpeg?1651324219",
+      "header_static": "https://swj.io/system/accounts/headers/000/003/076/original/a3fb788bebf4b9c3.jpeg?1651324219",
+      "followers_count": 58,
+      "following_count": 107,
+      "statuses_count": 8,
+      "last_status_at": "2022-05-20",
+      "emojis": [],
+      "fields": [
+        {
+          "name": "steel-cut oats",
+          "value": "for life",
+          "verified_at": null
+        },
+        {
+          "name": "trains",
+          "value": "over planes",
+          "verified_at": null
+        },
+        {
+          "name": "location",
+          "value": "Denver, CO",
+          "verified_at": null
+        }
+      ]
+    },
+    "media_attachments": [
+      {
+        "id": "34714",
+        "type": "image",
+        "url": "https://swj.io/system/media_attachments/files/000/034/714/original/2d86d7197a3b41e0.jpeg?1653088374",
+        "preview_url": "https://swj.io/system/media_attachments/files/000/034/714/small/2d86d7197a3b41e0.jpeg?1653088374",
+        "remote_url": "https://media.mstdn.social/media_attachments/files/108/336/706/701/658/297/original/9ad30e98fb20cc8c.jpeg",
+        "text_url": null,
+        "meta": {
+          "focus": {
+            "x": 0,
+            "y": 0
+          },
+          "original": {
+            "width": 480,
+            "height": 640,
+            "size": "480x640",
+            "aspect": 0.75
+          },
+          "small": {
+            "width": 346,
+            "height": 461,
+            "size": "346x461",
+            "aspect": 0.7505422993492408
+          }
+        },
+        "description": "snow flakes by train tracks",
+        "blurhash": "UlG[NDofWBoeyFofWBj[~WkCayf6x^oej@f6"
+      },
+      {
+        "id": "34715",
+        "type": "image",
+        "url": "https://swj.io/system/media_attachments/files/000/034/715/original/3d13ffbaeecd9643.jpeg?1653088375",
+        "preview_url": "https://swj.io/system/media_attachments/files/000/034/715/small/3d13ffbaeecd9643.jpeg?1653088375",
+        "remote_url": "https://media.mstdn.social/media_attachments/files/108/336/706/736/647/745/original/ace1629ec55b579f.jpeg",
+        "text_url": null,
+        "meta": {
+          "focus": {
+            "x": 0,
+            "y": 0
+          },
+          "original": {
+            "width": 480,
+            "height": 640,
+            "size": "480x640",
+            "aspect": 0.75
+          },
+          "small": {
+            "width": 346,
+            "height": 461,
+            "size": "346x461",
+            "aspect": 0.7505422993492408
+          }
+        },
+        "description": "spring snow on brick buildings",
+        "blurhash": "UiGbYW-;RPt7~q%MM{kC_3x]Rja|%Mt7aef6"
+      },
+      {
+        "id": "34716",
+        "type": "image",
+        "url": "https://swj.io/system/media_attachments/files/000/034/716/original/6975eee44f9dbece.jpeg?1653088376",
+        "preview_url": "https://swj.io/system/media_attachments/files/000/034/716/small/6975eee44f9dbece.jpeg?1653088376",
+        "remote_url": "https://media.mstdn.social/media_attachments/files/108/336/706/739/803/414/original/52468767e4af2a0c.jpeg",
+        "text_url": null,
+        "meta": {
+          "focus": {
+            "x": 0,
+            "y": 0
+          },
+          "original": {
+            "width": 480,
+            "height": 640,
+            "size": "480x640",
+            "aspect": 0.75
+          },
+          "small": {
+            "width": 346,
+            "height": 461,
+            "size": "346x461",
+            "aspect": 0.7505422993492408
+          }
+        },
+        "description": "snowing on train station",
+        "blurhash": "UqGlCn?bRjRj~q%NRjWBofofj[j[IUWBt7ay"
+      }
+    ],
+    "mentions": [],
+    "tags": [
+      {
+        "name": "Snow",
+        "url": "https://swj.io/tags/Snow"
+      },
+      {
+        "name": "spring",
+        "url": "https://swj.io/tags/spring"
+      },
+      {
+        "name": "citylife",
+        "url": "https://swj.io/tags/citylife"
+      }
+    ],
+    "emojis": [],
+    "card": null,
+    "poll": null
+  },
+  "account": {
+    "id": "478",
+    "username": "stux",
+    "acct": "stux@mstdn.social",
+    "display_name": "sтυx💙💛",
+    "locked": false,
+    "bot": false,
+    "discoverable": true,
+    "group": false,
+    "created_at": "2022-04-29T17:56:02.465Z",
+    "note": "<p>From the Netherlands 🇳🇱</p><p>Social media needs to be fun, safe and secure again. Our team and I are working hard to keep that possible here for you♥️</p><p>Don’t forget: questions or any other chitchat are always welcome, we are on a social platform after all!</p><p>I love you all, purrr...</p><p>☮️  In loving memory of Patrick♥️<br><a href=\"http://jhenrystuhr.tributes.com/obituary/show/Patrick-Lee-Archibald-108506367\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">http://</span><span class=\"ellipsis\">jhenrystuhr.tributes.com/obitu</span><span class=\"invisible\">ary/show/Patrick-Lee-Archibald-108506367</span></a></p><p>a🕯️for Lorenz, Sascha &amp; Maxim🖤</p><p><a href=\"https://mstdn.social/tags/fedi22\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>fedi22</span></a> <a href=\"https://mstdn.social/tags/cats\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>cats</span></a> <a href=\"https://mstdn.social/tags/mstdn\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>mstdn</span></a> <a href=\"https://mstdn.social/tags/admin\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>admin</span></a> <a href=\"https://mstdn.social/tags/tech\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>tech</span></a></p>",
+    "url": "https://mstdn.social/@stux",
+    "avatar": "https://swj.io/system/accounts/avatars/000/000/478/original/6a8981c1add86d6f.png?1651254959",
+    "avatar_static": "https://swj.io/system/accounts/avatars/000/000/478/original/6a8981c1add86d6f.png?1651254959",
+    "header": "https://swj.io/system/accounts/headers/000/000/478/original/4fa1b350df8b7575.png?1651254960",
+    "header_static": "https://swj.io/system/accounts/headers/000/000/478/original/4fa1b350df8b7575.png?1651254960",
+    "followers_count": 48369,
+    "following_count": 30181,
+    "statuses_count": 94777,
+    "last_status_at": "2022-05-21",
+    "emojis": [
+      {
+        "shortcode": "pixelfed",
+        "url": "https://swj.io/system/custom_emojis/images/000/000/166/original/7aaf13be11b9f42d.png?1651254964",
+        "static_url": "https://swj.io/system/custom_emojis/images/000/000/166/static/7aaf13be11b9f42d.png?1651254964",
+        "visible_in_picker": true
+      },
+      {
+        "shortcode": "mastodon",
+        "url": "https://swj.io/system/custom_emojis/images/000/000/171/original/67457080411c3d5c.png?1651254972",
+        "static_url": "https://swj.io/system/custom_emojis/images/000/000/171/static/67457080411c3d5c.png?1651254972",
+        "visible_in_picker": true
+      },
+      {
+        "shortcode": "stuxhost",
+        "url": "https://swj.io/system/custom_emojis/images/000/000/164/original/9be8c67f278687df.png?1651254963",
+        "static_url": "https://swj.io/system/custom_emojis/images/000/000/164/static/9be8c67f278687df.png?1651254963",
+        "visible_in_picker": true
+      },
+      {
+        "shortcode": "patreon",
+        "url": "https://swj.io/system/custom_emojis/images/000/000/165/original/48599047b502f86c.png?1651254963",
+        "static_url": "https://swj.io/system/custom_emojis/images/000/000/165/static/48599047b502f86c.png?1651254963",
+        "visible_in_picker": true
+      },
+      {
+        "shortcode": "kofi",
+        "url": "https://swj.io/system/custom_emojis/images/000/000/167/original/47425eb393e0561f.png?1651254964",
+        "static_url": "https://swj.io/system/custom_emojis/images/000/000/167/static/47425eb393e0561f.png?1651254964",
+        "visible_in_picker": true
+      },
+      {
+        "shortcode": "paypal",
+        "url": "https://swj.io/system/custom_emojis/images/000/005/568/original/f7f4294c25c0b921.png?1652559629",
+        "static_url": "https://swj.io/system/custom_emojis/images/000/005/568/static/f7f4294c25c0b921.png?1652559629",
+        "visible_in_picker": true
+      }
+    ],
+    "fields": [
+      {
+        "name": "Pixelfed :pixelfed:",
+        "value": "<a href=\"https://pixey.org/stux\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">pixey.org/stux</span><span class=\"invisible\"></span></a>",
+        "verified_at": "2022-05-18T19:37:14.487+00:00"
+      },
+      {
+        "name": "Alt :mastodon:",
+        "value": "<a href=\"https://mastodon.coffee/@stux\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">mastodon.coffee/@stux</span><span class=\"invisible\"></span></a>",
+        "verified_at": null
+      },
+      {
+        "name": "Stuxhost :stuxhost:",
+        "value": "<a href=\"https://stuxhost.com\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">stuxhost.com</span><span class=\"invisible\"></span></a>",
+        "verified_at": null
+      },
+      {
+        "name": "Patreon :patreon:",
+        "value": "<a href=\"https://patreon.com/mstdn\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">patreon.com/mstdn</span><span class=\"invisible\"></span></a>",
+        "verified_at": "2022-05-18T19:37:25.675+00:00"
+      },
+      {
+        "name": "Ko-Fi :kofi:",
+        "value": "<a href=\"https://ko-fi.com/mstdn\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">ko-fi.com/mstdn</span><span class=\"invisible\"></span></a>",
+        "verified_at": null
+      },
+      {
+        "name": "PayPal :paypal:",
+        "value": "<a href=\"https://paypal.me/stuxOS\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">paypal.me/stuxOS</span><span class=\"invisible\"></span></a>",
+        "verified_at": null
+      }
+    ]
+  },
+  "media_attachments": [],
+  "mentions": [],
+  "tags": [],
+  "emojis": [],
+  "card": null,
+  "poll": null
+}

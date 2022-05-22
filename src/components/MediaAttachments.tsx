@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React from 'react';
-import {Image, Linking, Pressable, View} from 'react-native';
+import {Image, ImageStyle, Linking, Pressable, View} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TMediaAttachment} from '../types';
@@ -12,7 +12,7 @@ const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
   height,
 });
 
-const Media = (props: TMediaAttachment) => {
+const Media = (props: TMediaAttachment & {imageStyle?: ImageStyle}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const styles = useThemeStyle(styleCreator);
@@ -35,10 +35,7 @@ const Media = (props: TMediaAttachment) => {
                 uri: props.preview_url,
                 ...dimensProps(props.meta.small),
               }}
-              style={[
-                styles.previewImage,
-                {aspectRatio: props.meta.small.aspect},
-              ]}
+              style={[styles.previewImage, props.imageStyle]}
             />
           </Pressable>
         );
@@ -51,7 +48,7 @@ const Media = (props: TMediaAttachment) => {
                 uri: props.preview_url,
                 ...dimensProps(props.meta.small),
               }}
-              style={[styles.previewImage]}
+              style={[styles.previewImage, props.imageStyle]}
             />
             <View style={styles.mediaPlayableIcon}>
               <PlayCircleIcon color={getColor('contrastTextColor')} />
@@ -68,6 +65,76 @@ const Media = (props: TMediaAttachment) => {
 
 export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
   const styles = useThemeStyle(styleCreator);
+
+  if (props.media.length === 1) {
+    return (
+      <View style={styles.mediaTwo}>
+        <View key={props.media[0].id} style={styles.flexColumn}>
+          <Media {...props.media[0]} />
+        </View>
+      </View>
+    );
+  }
+
+  if (props.media.length === 2) {
+    return (
+      <View style={styles.mediaTwo}>
+        {props.media.map(attachment => (
+          <View key={attachment.id} style={styles.flexColumn}>
+            <Media {...attachment} />
+          </View>
+        ))}
+      </View>
+    );
+  }
+
+  if (props.media.length === 3) {
+    const [first, second, third] = props.media;
+    return (
+      <View style={[styles.mediaCluster]}>
+        <View style={styles.mediaRow}>
+          <View style={styles.flexColumn}>
+            <View key={first.id} style={styles.flexColumn}>
+              <Media {...first} imageStyle={styles.previewImageSpanTwoRows} />
+            </View>
+          </View>
+          <View style={styles.flexColumn}>
+            {[second, third].map(attachment => (
+              <View style={styles.flexColumn}>
+                <Media
+                  {...attachment}
+                  imageStyle={styles.previewImageTwoRows}
+                />
+              </View>
+            ))}
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  if (props.media.length === 4) {
+    const [first, second, third, fourth] = props.media;
+    return (
+      <View style={styles.mediaCluster}>
+        <View style={styles.mediaRow}>
+          {[first, second].map(attachment => (
+            <View key={attachment.id} style={styles.flexColumn}>
+              <Media {...attachment} imageStyle={styles.previewImageTwoRows} />
+            </View>
+          ))}
+        </View>
+        <View style={styles.mediaRow}>
+          {[third, fourth].map(attachment => (
+            <View key={attachment.id} style={styles.flexColumn}>
+              <Media {...attachment} imageStyle={styles.previewImageTwoRows} />
+            </View>
+          ))}
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.media}>
       {props.media.map(attachment => (
@@ -84,9 +151,34 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
+  mediaCluster: {
+    overflow: 'hidden',
+    marginTop: 10,
+    borderRadius: 10,
+  },
+  mediaRow: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  mediaTwo: {
+    overflow: 'hidden',
+    marginTop: 10,
+    flexDirection: 'row',
+    borderRadius: 8,
+  },
+  flexColumn: {
+    flex: 1,
+  },
   previewImage: {
-    height: 150,
+    height: 125,
+    width: '100%',
     resizeMode: 'cover',
+  },
+  previewImageTwoRows: {
+    height: 75,
+  },
+  previewImageSpanTwoRows: {
+    height: 152,
   },
   mediaThumbnail: {
     flex: 1,
@@ -96,7 +188,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     alignItems: 'center',
     marginRight: 2,
     marginBottom: 2,
-    borderRadius: 2,
   },
   mediaPlayableIcon: {
     position: 'absolute',

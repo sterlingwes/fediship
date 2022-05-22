@@ -32,8 +32,8 @@ export interface TStatus {
   reblogged: boolean;
   url: string | null;
   uri: string;
-  in_reply_to_id: string; // ?
-  poll?: TPoll;
+  in_reply_to_id: string | null;
+  poll: TPoll | null;
   sensitive: boolean;
   spoiler_text: string;
   emojis: Emoji[];
@@ -73,7 +73,7 @@ export interface TNote {
 // https://docs.joinmastodon.org/entities/attachment/
 export interface TMediaAttachment {
   id: string;
-  type: 'image' | 'gifv' | 'video' | 'audio';
+  type: string; // 'image' | 'gifv' | 'video' | 'audio';
   url: string;
   preview_url: string;
   remote_url: string;
@@ -92,7 +92,7 @@ export interface TMediaAttachment {
       aspect: number;
     };
   };
-  description: string;
+  description: string | null;
   blurhash: string;
 }
 
@@ -100,7 +100,7 @@ export interface Emoji {
   shortcode: string; // without the preceding / ending ':'
   static_url: string;
   url: string;
-  visible_in_picker: true;
+  visible_in_picker: boolean;
 }
 
 export type RootStackParamList = {

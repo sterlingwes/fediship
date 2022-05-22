@@ -1,17 +1,35 @@
-/**
- * Metro configuration for React Native
- * https://github.com/facebook/react-native
- *
- * @format
- */
+const storiesResolverConfig = require('./metro-stories.config');
 
-module.exports = {
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: false,
-        inlineRequires: true,
-      },
-    }),
-  },
+const env = process.env.APP_ENV || 'default';
+
+const storyTime = env === 'stories';
+
+const envBound = key => `${key}-${env}`;
+
+const generateCacheKey = () => {
+  if (storyTime) {
+    return envBound('stories-bundle');
+  }
+
+  return envBound('default-bundle');
 };
+
+const cacheVersion = generateCacheKey();
+console.log(`using cache key: ${cacheVersion}`);
+
+module.exports = (async () => {
+  return {
+    cacheVersion,
+    transformer: {
+      getTransformOptions: async () => ({
+        transform: {
+          experimentalImportSupport: false,
+          inlineRequires: true,
+        },
+      }),
+    },
+    resolver: {
+      ...storiesResolverConfig,
+    },
+  };
+})();
