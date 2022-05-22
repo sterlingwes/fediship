@@ -1,3 +1,4 @@
+import {ReactNativeZoomableView} from '@openspacelabs/react-native-zoomable-view';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {Image, View} from 'react-native';
@@ -13,7 +14,14 @@ export const ImageViewer = (
   const styles = useThemeStyle(styleCreator);
   return (
     <View style={styles.container}>
-      <Image source={{uri: props.route.params.url}} style={styles.img} />
+      <ReactNativeZoomableView
+        style={styles.zoomView}
+        maxZoom={3}
+        minZoom={0.5}
+        initialZoom={1}
+        bindToBorders>
+        <Image source={{uri: props.route.params.url}} style={styles.img} />
+      </ReactNativeZoomableView>
       <SafeAreaView edges={['bottom']} style={styles.button}>
         <OutlineButton onPress={props.navigation.goBack}>Close</OutlineButton>
       </SafeAreaView>
@@ -24,11 +32,15 @@ export const ImageViewer = (
 const styleCreator: StyleCreator = () => ({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: 'rgba(10,10,10,0.85)',
   },
-  img: {
+  zoomView: {
     flex: 1,
+    padding: 20,
+  },
+  img: {
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
   },
   button: {
