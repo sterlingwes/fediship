@@ -16,6 +16,7 @@ const VoteAmountLine = (props: {
   selected: boolean;
 }) => {
   const styles = useThemeStyle(styleCreator);
+  const pctLabel = props.value ? widthPct(props.value, props.total) : '0%';
   return (
     <View style={styles.amountLineContainer}>
       <View
@@ -25,6 +26,9 @@ const VoteAmountLine = (props: {
           props.selected && styles.pollOptionVoteLine,
         ]}
       />
+      <Type scale="XS" style={styles.amountLineLabel}>
+        {pctLabel}
+      </Type>
     </View>
   );
 };
@@ -70,8 +74,9 @@ export const Poll = (props: TPoll) => {
   const [selections, setSelections] = useState<number[]>(props.own_votes || []);
 
   const poll = voteResult ?? props;
+  const hasVoted = voted || poll.voted;
 
-  const PollItem = poll.expired || poll.voted ? PollOptionReadOnly : PollOption;
+  const PollItem = poll.expired || hasVoted ? PollOptionReadOnly : PollOption;
 
   const onSelect = (optionIndex: number) => {
     if (!poll.multiple) {
@@ -104,6 +109,7 @@ export const Poll = (props: TPoll) => {
 
   const onView = () => {
     setVoted(true);
+    setVoteResult(undefined);
   };
 
   return (
@@ -125,16 +131,17 @@ export const Poll = (props: TPoll) => {
         </Pressable>
       ))}
       <View style={styles.row}>
-        {!voted && !poll.expired && (
+        {!hasVoted && !poll.expired && (
           <OutlineButton onPress={onVote} style={styles.button}>
             Vote!
           </OutlineButton>
         )}
-        {!voted && !poll.expired && (
+        {!hasVoted && !poll.expired && (
           <OutlineButton onPress={onView} style={styles.button}>
             View
           </OutlineButton>
         )}
+        {hasVoted && <Type scale="XS">{poll.votes_count} votes</Type>}
       </View>
     </View>
   );
@@ -145,6 +152,11 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     flex: 1,
     marginTop: 5,
     marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  amountLineLabel: {
+    marginLeft: 6,
   },
   amountLine: {
     height: 5,
