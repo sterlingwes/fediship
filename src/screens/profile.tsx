@@ -171,7 +171,6 @@ const ProfileError = ({
 }) => {
   const styles = useThemeStyle(styleCreator);
   const message = errorMessage(error, host, account);
-  console.log({message});
   return (
     <>
       <View style={[styles.container, styles.centered, {margin: 20}]}>
