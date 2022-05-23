@@ -116,9 +116,9 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
             {props.following ? 'Unfollow' : 'Follow'}
           </OutlineButton>
         )}
-        <Type scale="L" semiBold style={styles.headerDisplayName}>
-          {display_name}
-        </Type>
+        <View style={styles.headerDisplayName}>
+          <HTMLView value={display_name} emojis={emojis} />
+        </View>
         <Type scale="S" medium style={styles.headerUsername}>
           @{username}@{instanceHostName(url)}
         </Type>

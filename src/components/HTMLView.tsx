@@ -7,13 +7,15 @@ import RNHtmlView, {
 import {StyleCreator} from '../theme';
 import {Emoji, RootStackParamList} from '../types';
 import {useThemeStyle} from '../theme/utils';
-import {Type, TypeProps} from './Type';
+import {FontScale, FontWeight, Type, TypeProps} from './Type';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 interface HTMLProps {
   emojis?: Emoji[];
   value: string;
+  baseTypeScale?: FontScale;
+  baseFontWeight?: FontWeight;
 }
 
 const htmlStylesCreator = (styles: ReturnType<typeof styleCreator>) => ({
@@ -26,10 +28,12 @@ const renderNode =
     imageStyle,
     linkStyle,
     onLinkPress,
+    baseTypeScale,
   }: {
     imageStyle: ImageStyle;
     linkStyle: TextStyle;
     onLinkPress: (attribs: Record<string, any>) => void;
+    baseTypeScale?: FontScale;
   }) =>
   (
     node: HTMLViewNode,
@@ -52,7 +56,7 @@ const renderNode =
       return (
         <Type
           style={linkStyle}
-          scale="S"
+          scale={baseTypeScale ?? 'S'}
           onPress={() => onLinkPress(node.attribs)}>
           {defaultRenderer(node.children as HTMLViewNode[], parent)}
         </Type>
@@ -68,7 +72,12 @@ const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) =>
     );
   }, props.content);
 
-export const HTMLView = ({value, emojis}: HTMLProps) => {
+export const HTMLView = ({
+  value,
+  emojis,
+  baseTypeScale,
+  baseFontWeight,
+}: HTMLProps) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const styles = useThemeStyle(styleCreator);
@@ -112,9 +121,12 @@ export const HTMLView = ({value, emojis}: HTMLProps) => {
         imageStyle: styles.emoji,
         linkStyle: styles.linkColor,
         onLinkPress,
+        baseTypeScale,
       })}
       TextComponent={Type}
-      textComponentProps={{scale: 'S'} as TypeProps}
+      textComponentProps={
+        {scale: baseTypeScale ?? 'S', weight: baseFontWeight} as TypeProps
+      }
     />
   );
 };

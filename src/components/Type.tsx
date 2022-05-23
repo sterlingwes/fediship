@@ -12,13 +12,14 @@ const fontScales = Object.freeze({
   XS: 14,
 });
 
-type FontScale = keyof typeof fontScales;
-
+export type FontScale = keyof typeof fontScales;
+export type FontWeight = 'bold' | 'semiBold' | 'medium' | 'regular';
 export interface TypeProps extends TextProps {
   scale?: FontScale;
   bold?: boolean;
   semiBold?: boolean;
   medium?: boolean;
+  weight?: FontWeight;
 }
 
 export const Type = (props: TypeProps) => {
@@ -29,9 +30,9 @@ export const Type = (props: TypeProps) => {
       {...props}
       style={[
         styles.text,
-        props.bold && styles.bold,
-        props.semiBold && styles.semiBold,
-        props.medium && styles.medium,
+        props.weight === 'bold' || (props.bold && styles.bold),
+        props.weight === 'semiBold' || (props.semiBold && styles.semiBold),
+        props.weight === 'medium' || (props.medium && styles.medium),
         {fontSize: scale, lineHeight: scale * 1.3},
         props.style,
       ]}
