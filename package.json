@@ -13,7 +13,7 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "types": "tsc --noEmit",
-    "go": "open -a Simulator && cd ../flipper/desktop && yarn start & cd ../fediship && yarn start",
+    "go": "code . && open -a Simulator && cd ../flipper/desktop && yarn start & cd ../fediship && yarn start",
     "ci": "yarn lint && yarn types",
     "gather-licenses": "license-report --only=prod --output=json --config=scripts/license-report-config.json > scripts/out/licenses.json",
     "postinstall": "patch-package"
