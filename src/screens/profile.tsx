@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import {useProfile} from '../api';
 import {AvatarImage} from '../components/AvatarImage';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
@@ -22,6 +21,7 @@ import {screenHeight} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TAccount, TStatus} from '../types';
+import {useAPProfile} from './profile/profilehooks';
 
 interface ProfileHeaderProps {
   profile: TAccount | undefined;
@@ -36,6 +36,20 @@ const instanceHostName = (url: string | undefined) => {
   }
   const [, , host] = url.split('/');
   return host;
+};
+
+const errorMessage = (
+  error: string,
+  host: string | undefined,
+  account: TAccount | undefined,
+) => {
+  if (error.includes('Network request failed')) {
+    return `Unable to reach ${
+      host ?? instanceHostName(account?.url)
+    } (this user's instance). Please try again later!`;
+  }
+
+  return error;
 };
 
 interface ProfileImages {
@@ -68,10 +82,14 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
 
   return (
     <View style={styles.header}>
-      <Image
-        source={{uri: profileImages.header}}
-        style={styles.headerBgImage}
-      />
+      {profileImages.header ? (
+        <Image
+          source={{uri: profileImages.header}}
+          style={styles.headerBgImage}
+        />
+      ) : (
+        <View style={styles.headerSpacer} />
+      )}
       <View style={styles.headerBio}>
         {profileImages.avatar && (
           <AvatarImage uri={profileImages.avatar} style={styles.headerAvatar} />
@@ -111,12 +129,11 @@ const createProfileTimelineRenderer =
         onPress={() => {
           navigation.push('Thread', {statusUrl: nextStatusUrl, id: status.id});
         }}
-        onPressAvatar={account => {
-          navigation.push('Profile', {
-            statusUrl: nextStatusUrl,
-            account,
-          });
-        }}
+        onPressAvatar={
+          (/*account */) => {
+            // TODO: re-enable when we enable profile boosts
+          }
+        }
       />
     );
   };
@@ -128,18 +145,20 @@ export const Profile = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Profile'>) => {
   const [headerOpaque, setHeaderOpaque] = useState(false);
-  const {statusUrl, account, host, accountHandle} = route.params;
+  const {account, host, accountHandle} = route.params;
   const styles = useThemeStyle(styleCreator);
   const {
     error,
     profile,
     statuses,
     refreshing,
+    loadingMore,
+    fetchTimeline,
     fetchAccountAndTimeline,
     following,
     followLoading,
     onToggleFollow,
-  } = useProfile(statusUrl, account?.id, host, accountHandle);
+  } = useAPProfile(host, accountHandle, account);
 
   const renderItem = useMemo(
     () => createProfileTimelineRenderer(navigation),
@@ -162,7 +181,9 @@ export const Profile = ({
     return (
       <>
         <View style={[styles.container, styles.centered]}>
-          <Type style={styles.errorMessage}>{error}</Type>
+          <Type style={styles.errorMessage}>
+            {errorMessage(error, host, account)}
+          </Type>
         </View>
         <FloatingHeader
           {...{
@@ -198,6 +219,7 @@ export const Profile = ({
           setHeaderOpaque(true);
         }}
         ListHeaderComponent={headerComponent}
+        onEndReached={fetchTimeline}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -212,6 +234,13 @@ export const Profile = ({
           transparent: !headerOpaque,
         }}
       />
+      {loadingMore && (
+        <View style={styles.loadingMoreBar}>
+          <Type scale="S" medium>
+            Loading More...
+          </Type>
+        </View>
+      )}
     </View>
   );
 };
@@ -234,6 +263,9 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     minHeight: 170,
     resizeMode: 'cover',
   },
+  headerSpacer: {
+    minHeight: 130,
+  },
   headerAvatar: {
     position: 'absolute',
     top: -50,
@@ -255,5 +287,14 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   errorMessage: {
     marginHorizontal: 15,
+  },
+  loadingMoreBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingVertical: 5,
+    alignItems: 'center',
+    backgroundColor: getColor('contrastTextColor'),
   },
 });

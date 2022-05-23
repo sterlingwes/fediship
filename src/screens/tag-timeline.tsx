@@ -50,7 +50,6 @@ const createTimelineRenderer =
           }
 
           navigation.push('Profile', {
-            statusUrl: nextStatusUrl,
             account,
           });
         }}

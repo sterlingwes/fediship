@@ -111,7 +111,6 @@ export type RootStackParamList = {
   User: undefined;
   TagTimeline: {host: string; tag: string};
   Profile: {
-    statusUrl?: string;
     account?: TAccount;
     host?: string;
     accountHandle?: string;

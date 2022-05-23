@@ -1,14 +1,9 @@
-import {useCallback, useState} from 'react';
-import {TAccount, TPeerInfo, TProfileResult, TStatus, TThread} from './types';
+import {useState} from 'react';
+import {TAccount, TPeerInfo, TStatus, TThread} from './types';
 import {useMount} from './utils/hooks';
 import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
-import {
-  useMyMastodonInstance,
-  useRemoteActivityPubInstance,
-  useRemoteMastodonInstance,
-} from './api/hooks';
+import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
 import {parseStatusUrl} from './api/api.utils';
-import {MastodonApiClient} from './api/mastodon';
 
 export const useFollowers = () => {
   const api = useMyMastodonInstance();
@@ -223,139 +218,6 @@ export const useTagTimeline = (host: string, tag: string) => {
   return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
 };
 
-const getProfileByStatusUrl = async (
-  url: string,
-  getRemoteInstance: (host: string) => MastodonApiClient,
-) => {
-  const {host, statusId} = parseStatusUrl(url);
-  if (!host || !statusId) {
-    return;
-  }
-  const api = getRemoteInstance(host);
-  const statusDetail = await api.getStatus(statusId);
-  if (!statusDetail) {
-    return;
-  }
-  const accountId = statusDetail.account.id;
-  return api.getProfile(accountId);
-};
-
-export const useProfile = (
-  statusUrl: string | undefined,
-  accountId: string | undefined,
-  host: string | undefined,
-  accountHandle: string | undefined,
-) => {
-  const api = useMyMastodonInstance();
-  const getRemoteMastoInstance = useRemoteMastodonInstance();
-  const getRemoteAPInstance = useRemoteActivityPubInstance();
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [localId, setLocalId] = useState(accountId);
-  const [followLoading, setFollowLoading] = useState(false);
-  const [following, setFollowing] = useState<boolean | undefined>();
-  const [error, setError] = useState('');
-  const [profile, setProfile] = useState<TAccount>();
-  const [statuses, setStatuses] = useState<TStatus[]>([]);
-
-  const fetchAccountAndTimeline = async () => {
-    if (!statusUrl && !accountId && !host) {
-      setLoading(false);
-      return;
-    }
-
-    if (profile) {
-      setRefreshing(true);
-    }
-    setLoading(true);
-    try {
-      let result: TProfileResult | undefined;
-      if (statusUrl) {
-        result = await getProfileByStatusUrl(statusUrl, getRemoteMastoInstance);
-        if (result) {
-          const localAccount = await api.findAccount(result?.account.acct);
-          if (localAccount?.id) {
-            const relationship = await api.getRelationship(localAccount.id);
-            setLocalId(localAccount.id);
-            setFollowing(relationship?.following);
-          }
-        }
-      }
-      if (host && accountHandle) {
-        const remoteActivityPub = getRemoteAPInstance(host);
-        result = await remoteActivityPub.getProfileByHandle(
-          host,
-          accountHandle,
-        );
-        if (result) {
-          const localAccount = await api.findAccount(result?.account.acct);
-          if (localAccount?.id) {
-            const relationship = await api.getRelationship(localAccount.id);
-            setLocalId(localAccount.id);
-            setFollowing(relationship?.following);
-          }
-        }
-      }
-      if (!result && accountId) {
-        result = await api.getProfile(accountId);
-        if (result?.account.id) {
-          const relationship = await api.getRelationship(result.account.id);
-          setLocalId(result.account.id);
-          setFollowing(relationship?.following);
-        }
-      }
-      if (!result) {
-        setLoading(false);
-        return;
-      }
-      setStatuses(result.timeline);
-      setProfile(result.account);
-    } catch (e: unknown) {
-      console.error(e);
-      setError((e as Error).message);
-    } finally {
-      setRefreshing(false);
-      setLoading(false);
-    }
-  };
-
-  const onToggleFollow = useCallback(async () => {
-    if (!localId) {
-      return;
-    }
-    setFollowLoading(true);
-    if (following) {
-      const ok = await api.unfollow(localId);
-      if (ok) {
-        setFollowing(false);
-      }
-    } else {
-      const ok = await api.follow(localId);
-      if (ok) {
-        setFollowing(true);
-      }
-    }
-    setFollowLoading(false);
-  }, [setFollowLoading, following, setFollowing, localId, api]);
-
-  useMount(() => {
-    fetchAccountAndTimeline();
-  });
-
-  return {
-    profile,
-    statuses,
-    fetchAccountAndTimeline,
-    error,
-    loading,
-    refreshing,
-    localId,
-    following,
-    followLoading,
-    onToggleFollow,
-  };
-};
-
 export const useThread = (statusUrl: string, localId: string) => {
   const api = useMyMastodonInstance();
   const getRemoteMasto = useRemoteMastodonInstance();
@@ -370,9 +232,11 @@ export const useThread = (statusUrl: string, localId: string) => {
     }
     setLoading(true);
     try {
-      const localResult = await api.getThread(localId);
+      const localResult = localId.startsWith('http')
+        ? undefined
+        : await api.getThread(localId);
       const localStatuses: Record<string, TStatus> = {};
-      if (localResult.response) {
+      if (localResult && localResult.response) {
         const {ancestors, descendants} = localResult.response;
         [
           ...(localResult.response.status ? [localResult.response.status] : []),
@@ -384,7 +248,8 @@ export const useThread = (statusUrl: string, localId: string) => {
       }
 
       const remoteResult = await getRemoteMasto(host).getThread(statusId, {
-        skipTargetStatus: localResult.type === 'error' ? false : true,
+        skipTargetStatus:
+          !localResult || localResult.type === 'error' ? false : true,
       });
 
       if (remoteResult.type === 'error' && remoteResult.error) {
@@ -396,7 +261,7 @@ export const useThread = (statusUrl: string, localId: string) => {
         ...remoteResult,
         response: {
           ...remoteResult.response,
-          ...(localResult.response?.status
+          ...(localResult?.response?.status
             ? {status: localResult.response?.status}
             : undefined),
           localStatuses,

@@ -56,7 +56,6 @@ export const Thread = ({
         }}
         onPressAvatar={account => {
           navigation.push('Profile', {
-            statusUrl: item.uri,
             account,
           });
         }}

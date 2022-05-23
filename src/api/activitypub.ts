@@ -1,6 +1,6 @@
 import {HTTPClient} from './http-client';
 
-import {APPerson, TStatus, Webfinger} from '../types';
+import {APPerson, TAccount, TStatus, Webfinger} from '../types';
 
 import {
   isOrderedCollection,
@@ -45,25 +45,46 @@ export class ActivityPubClient extends HTTPClient {
           result.body as APPerson,
         );
         const outboxUrl = `${result.body.outbox}?page=true`;
-        const activityPage = await this.get(outboxUrl);
         let timeline: TStatus[] = [];
-        if (isOutboxCollection(activityPage.body)) {
-          timeline = transformActivityPage(activityPage.body, account);
-        }
+        const tlResult = await this.getProfileTimeline(outboxUrl, account);
 
+        const pinnedIds: string[] = [];
         const featuredCollection = await this.get(result.body.featured);
         if (isOrderedCollection(featuredCollection.body)) {
           timeline = featuredCollection.body.orderedItems
-            .map(item => transformActivity(item, {account, pinned: true}))
-            .concat(timeline);
+            .map(item => {
+              pinnedIds.push(item.id);
+              return transformActivity(item, {account, pinned: true});
+            })
+            .concat(
+              (tlResult?.result ?? []).filter(
+                toot => !pinnedIds.includes(toot.id),
+              ),
+            );
         }
 
         return {
           account,
           timeline,
+          pinnedIds,
+          pageInfo: tlResult?.pageInfo,
         };
       }
     }
+  }
+
+  async getProfileTimeline(outboxPageUrl: string, account: TAccount) {
+    const activityPage = await this.get(outboxPageUrl);
+
+    if (isOutboxCollection(activityPage.body)) {
+      const {next} = activityPage.body;
+      return {
+        result: transformActivityPage(activityPage.body, account),
+        pageInfo: {next},
+      };
+    }
+
+    return;
   }
 
   async getWebfinger(host: string, accountHandle: string) {
