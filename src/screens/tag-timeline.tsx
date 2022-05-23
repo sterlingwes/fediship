@@ -109,7 +109,7 @@ export const TagTimeline = ({
         renderItem={renderItem}
         style={styles.container}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={reloadTimeline} />
+          <RefreshControl refreshing={loadingMore} onRefresh={reloadTimeline} />
         }
         onScroll={event => {
           scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
