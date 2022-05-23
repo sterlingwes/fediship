@@ -68,7 +68,7 @@ export const User = ({
           {
             label: 'Your Profile',
             onPress: () =>
-              navigation.push('Profile', {...actorDetails, self: true}),
+              navigation.push('MyProfile', {...actorDetails, self: true}),
           },
         ],
       },

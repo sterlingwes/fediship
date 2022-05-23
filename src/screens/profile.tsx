@@ -12,6 +12,7 @@ import {
   Image,
 } from 'react-native';
 import {AvatarImage} from '../components/AvatarImage';
+import {EmptyList} from '../components/EmptyList';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
 import {SolidButton} from '../components/SolidButton';
@@ -264,9 +265,15 @@ export const Profile = ({
           setHeaderOpaque(true);
         }}
         ListHeaderComponent={headerComponent}
-        ListEmptyComponent={() => (
-          <ProfileError {...{error, host, account, headerOpaque, navigation}} />
-        )}
+        ListEmptyComponent={() =>
+          error ? (
+            <ProfileError
+              {...{error, host, account, headerOpaque, navigation}}
+            />
+          ) : (
+            <EmptyList loading={loading} />
+          )
+        }
         onEndReached={fetchTimeline}
         refreshControl={
           <RefreshControl

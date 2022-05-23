@@ -117,7 +117,7 @@ export const FavouritesTimeline = ({
         onScroll={event => {
           scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
         }}
-        ListEmptyComponent={EmptyList}
+        ListEmptyComponent={() => <EmptyList loading={loading} />}
         onEndReached={() => fetchTimeline()}
       />
       {loadingMore && (

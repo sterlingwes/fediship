@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useTagTimeline} from '../api';
+import {EmptyList} from '../components/EmptyList';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
 import {StyleCreator} from '../theme';
@@ -113,6 +114,7 @@ export const TagTimeline = ({
         onScroll={event => {
           scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
         }}
+        ListEmptyComponent={() => <EmptyList loading={loading} />}
         onEndReached={() => fetchTimeline()}
       />
       {loadingMore && (

@@ -75,6 +75,11 @@ const UserStack = () => (
       component={FavouritesTimeline}
       options={{headerTitle: ''}}
     />
+    <UStack.Screen
+      name="MyProfile"
+      component={Profile}
+      options={{headerShown: false}}
+    />
   </UStack.Navigator>
 );
 

@@ -117,6 +117,12 @@ export type RootStackParamList = {
     accountHandle?: string;
     self?: boolean;
   };
+  MyProfile: {
+    account?: TAccount;
+    host?: string;
+    accountHandle?: string;
+    self?: boolean;
+  };
   Thread: {statusUrl: string; id: string};
   PeerProfile: TPeerInfo;
   ImageViewer: {index: number; attachments: TMediaAttachment[]};
