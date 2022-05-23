@@ -5,7 +5,7 @@ import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
 import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
 import {parseStatusUrl} from './api/api.utils';
 
-export const useFollowers = () => {
+export const useFollowers = (source = 'mine') => {
   const api = useMyMastodonInstance();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -19,7 +19,8 @@ export const useFollowers = () => {
 
     setLoading(true);
     try {
-      const result = await api.getFollowers(reset ? undefined : nextPage);
+      const method = source === 'mine' ? 'getFollowers' : 'getFollowing';
+      const result = await api[method](reset ? undefined : nextPage);
       if (reset) {
         setAccounts(result.list);
       } else {

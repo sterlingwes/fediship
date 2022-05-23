@@ -14,13 +14,23 @@ import {Type} from '../../components/Type';
 import {StyleCreator} from '../../theme';
 import {useThemeStyle} from '../../theme/utils';
 import {RootStackParamList, TAccount} from '../../types';
+import {useMount} from '../../utils/hooks';
 import {getHostAndHandle} from '../../utils/mastodon';
 
 export const FollowerList = ({
   navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Explore'>) => {
+  route,
+}: NativeStackScreenProps<RootStackParamList, 'FollowerList'>) => {
   const styles = useThemeStyle(styleCreator);
-  const {loading, accounts, fetchFollowers, reloadFollowers} = useFollowers();
+  const {source} = route.params;
+  const {loading, accounts, fetchFollowers, reloadFollowers} =
+    useFollowers(source);
+
+  useMount(() => {
+    navigation.setOptions({
+      headerTitle: source === 'mine' ? 'Followers' : 'Following',
+    });
+  });
 
   if (loading && !accounts.length) {
     return (

@@ -36,8 +36,12 @@ export const User = ({
         title: 'Profile',
         data: [
           {
+            label: 'Following',
+            onPress: () => navigation.push('FollowerList', {source: 'theirs'}),
+          },
+          {
             label: 'Followers',
-            onPress: () => navigation.push('FollowerList'),
+            onPress: () => navigation.push('FollowerList', {source: 'mine'}),
           },
         ],
       },

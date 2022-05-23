@@ -67,7 +67,7 @@ const UserStack = () => (
     <UStack.Screen
       name="FollowerList"
       component={FollowerList}
-      options={{headerTitle: 'Your Followers'}}
+      options={{headerTitle: ''}}
     />
   </UStack.Navigator>
 );

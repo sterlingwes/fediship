@@ -109,6 +109,7 @@ export const useAPProfile = (
         setLoading(false);
         return;
       }
+
       setStatuses(result.timeline);
       setProfile(result.account);
     } catch (e: unknown) {

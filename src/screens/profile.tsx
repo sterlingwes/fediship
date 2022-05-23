@@ -2,7 +2,7 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   RefreshControl,
   FlatList,
@@ -193,12 +193,14 @@ export const Profile = ({
   navigation,
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Profile'>) => {
+  const initialLoad = useRef(true);
   const [headerOpaque, setHeaderOpaque] = useState(false);
   const {account, host, accountHandle} = route.params;
   const styles = useThemeStyle(styleCreator);
   const {
     error,
     profile,
+    loading,
     statuses,
     refreshing,
     loadingMore,
@@ -225,6 +227,13 @@ export const Profile = ({
     ),
     [profile, account, following, followLoading, onToggleFollow],
   );
+
+  useEffect(() => {
+    if (initialLoad.current && !loading && profile && !statuses.length) {
+      initialLoad.current = false;
+      fetchTimeline();
+    }
+  }, [initialLoad, loading, profile, statuses, fetchTimeline]);
 
   if (error && !account) {
     return (
