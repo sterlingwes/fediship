@@ -219,6 +219,50 @@ export const useTagTimeline = (host: string, tag: string) => {
   return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
 };
 
+export const useFavourites = (type: 'favourites' | 'bookmarks') => {
+  const api = useMyMastodonInstance();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [statuses, setStatuses] = useState<TStatus[]>([]);
+  const [nextPage, setNextPage] = useState<string | false>();
+
+  const fetchTimeline = async (reset?: boolean) => {
+    if (nextPage === false || loading) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const method = type === 'favourites' ? 'getFavourites' : 'getBookmarks';
+      const result = await api[method](reset ? undefined : nextPage);
+      if (reset) {
+        setStatuses(result.list);
+      } else {
+        setStatuses(statuses.concat(result.list));
+      }
+      setNextPage(result?.pageInfo?.next ?? false);
+    } catch (e: unknown) {
+      console.error(e);
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const reloadTimeline = () => {
+    setNextPage(undefined);
+    return fetchTimeline(true);
+  };
+
+  useMount(() => {
+    fetchTimeline(true);
+  });
+
+  const loadingMore = !!nextPage && loading;
+
+  return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
+};
+
 export const useThread = (statusUrl: string, localId: string) => {
   const api = useMyMastodonInstance();
   const getRemoteMasto = useRemoteMastodonInstance();

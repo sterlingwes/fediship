@@ -48,6 +48,21 @@ export const User = ({
         ],
       },
       {
+        title: 'Toots',
+        data: [
+          {
+            label: 'Favorites',
+            onPress: () =>
+              navigation.push('FavouritesTimeline', {type: 'favourites'}),
+          },
+          {
+            label: 'Bookmarks',
+            onPress: () =>
+              navigation.push('FavouritesTimeline', {type: 'bookmarks'}),
+          },
+        ],
+      },
+      {
         title: 'Account',
         data: [
           {
@@ -68,7 +83,7 @@ export const User = ({
       style={styles.listRow}
       activeOpacity={0.5}
       onPress={item.onPress}>
-      <Type scale="M" style={styles.menuItemLabel} numberOfLines={1}>
+      <Type scale="S" style={styles.menuItemLabel} numberOfLines={1}>
         {item.label}
       </Type>
       <ChevronInverted color={getColor('primary')} />

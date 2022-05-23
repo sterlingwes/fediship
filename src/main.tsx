@@ -23,6 +23,7 @@ import {ImageViewer} from './screens/image-viewer';
 import {TagTimeline} from './screens/tag-timeline';
 import {ErrorBoundary} from './components/ErrorBoundary';
 import {FollowerList} from './screens/user/followers';
+import {FavouritesTimeline} from './screens/timelines/favourites';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -67,6 +68,11 @@ const UserStack = () => (
     <UStack.Screen
       name="FollowerList"
       component={FollowerList}
+      options={{headerTitle: ''}}
+    />
+    <UStack.Screen
+      name="FavouritesTimeline"
+      component={FavouritesTimeline}
       options={{headerTitle: ''}}
     />
   </UStack.Navigator>

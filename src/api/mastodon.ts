@@ -186,6 +186,30 @@ export class MastodonApiClient extends HTTPClient {
     } as TProfileResult;
   }
 
+  async getFavourites(nextPage?: string) {
+    const response = await this.authedGet(nextPage ?? 'favourites');
+    if (!response.body) {
+      throw new Error('Failed to fetch favourites');
+    }
+
+    return {
+      list: response.body as TStatus[],
+      pageInfo: response.pageInfo,
+    };
+  }
+
+  async getBookmarks(nextPage?: string) {
+    const response = await this.authedGet(nextPage ?? 'bookmarks');
+    if (!response.body) {
+      throw new Error('Failed to fetch bookmarks');
+    }
+
+    return {
+      list: response.body as TStatus[],
+      pageInfo: response.pageInfo,
+    };
+  }
+
   async unfavourite(statusId: string) {
     const response = await this.authedPost(`statuses/${statusId}/unfavourite`);
     return response.ok;

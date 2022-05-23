@@ -110,6 +110,7 @@ export type RootStackParamList = {
   Explore: undefined;
   User: undefined;
   TagTimeline: {host: string; tag: string};
+  FavouritesTimeline: {type: 'favourites' | 'bookmarks'};
   Profile: {
     account?: TAccount;
     host?: string;
