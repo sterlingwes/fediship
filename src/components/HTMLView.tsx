@@ -61,7 +61,7 @@ const renderNode =
   };
 
 const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) =>
-  props.emojis.reduce((content, emoji) => {
+  (props.emojis ?? []).reduce((content, emoji) => {
     return content.replace(
       `:${emoji.shortcode}:`,
       `<emoji src="${emoji.url}" />`,
