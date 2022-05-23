@@ -2,6 +2,7 @@ import {
   APAttachment,
   APCreate,
   APNote,
+  APOrderedCollection,
   APOrderedCollectionPage,
   APPerson,
   TAccount,
@@ -47,11 +48,7 @@ export const transformPerson = (
 };
 
 const typeForMime = (mime: string) => {
-  switch (mime) {
-    case 'image/jpeg':
-    default:
-      return 'image';
-  }
+  return mime.startsWith('video') ? 'video' : 'image';
 };
 
 const transformDocument = ({
@@ -87,14 +84,15 @@ const transformDocument = ({
   blurhash,
 });
 
-const transformActivity = (
+export const transformActivity = (
   {id, published, content, url, sensitive, attachment}: APNote,
-  account: TAccount,
+  {account, pinned}: {account: TAccount; pinned?: boolean},
 ): TStatus => ({
   id,
   created_at: published,
   content,
   account,
+  pinned,
   favourited: false,
   reblog: null,
   reblogged: false,
@@ -115,7 +113,7 @@ export const transformActivityPage = (
   activities.orderedItems
     // filter out boosts & replies to simplify
     .filter(item => item.object.type === 'Note' && !item.object.inReplyTo)
-    .map(activity => transformActivity(activity.object as APNote, account));
+    .map(activity => transformActivity(activity.object as APNote, {account}));
 
 export const isPerson = (object: any): object is APPerson =>
   typeof object === 'object' && object.type === 'Person';
@@ -124,3 +122,8 @@ export const isOutboxCollection = (
   object: any,
 ): object is APOrderedCollectionPage<APCreate> =>
   typeof object === 'object' && object.type === 'OrderedCollectionPage';
+
+export const isOrderedCollection = (
+  object: any,
+): object is APOrderedCollection<APNote> =>
+  typeof object === 'object' && object.type === 'OrderedCollection';

@@ -9,8 +9,10 @@ import {
   Webfinger,
 } from '../types';
 import {
+  isOrderedCollection,
   isOutboxCollection,
   isPerson,
+  transformActivity,
   transformActivityPage,
   transformPerson,
 } from '../utils/activitypub';
@@ -186,6 +188,14 @@ export class MastodonApiClient {
         if (isOutboxCollection(activityPage.body)) {
           timeline = transformActivityPage(activityPage.body, account);
         }
+
+        const featuredCollection = await this.get(result.body.featured);
+        if (isOrderedCollection(featuredCollection.body)) {
+          timeline = featuredCollection.body.orderedItems
+            .map(item => transformActivity(item, {account, pinned: true}))
+            .concat(timeline);
+        }
+
         return {
           account,
           timeline,

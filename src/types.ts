@@ -179,6 +179,13 @@ export interface APOrderedCollectionPage<T> extends APObject {
   orderedItems: Array<T>;
 }
 
+export interface APOrderedCollection<T> extends APObject {
+  id: string; // url for mastodon collection this is
+  type: 'OrderedCollection';
+  totalItems: number;
+  orderedItems: Array<T>;
+}
+
 export interface APCreate extends APObject {
   id: string; // url for mastodon status create
   type: 'Create';
