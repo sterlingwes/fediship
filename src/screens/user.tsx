@@ -9,15 +9,17 @@ import {
 } from 'react-native';
 import {ChevronInverted} from '../components/icons/Chevron';
 import {Type} from '../components/Type';
+import {actorDetails} from '../constants';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
+import {flex} from '../utils/styles';
 
 const ListHeader = ({section: {title}}: {section: {title: string}}) => {
   const styles = useThemeStyle(styleCreator);
   return (
     <View style={styles.listHeader}>
-      <Type scale="S" semiBold>
+      <Type scale="S" semiBold style={styles.listHeaderTitle}>
         {title}
       </Type>
     </View>
@@ -33,7 +35,7 @@ export const User = ({
   const menuItems = useMemo(
     () => [
       {
-        title: 'Profile',
+        title: 'Relationships',
         data: [
           {
             label: 'Following',
@@ -42,6 +44,16 @@ export const User = ({
           {
             label: 'Followers',
             onPress: () => navigation.push('FollowerList', {source: 'mine'}),
+          },
+        ],
+      },
+      {
+        title: 'Account',
+        data: [
+          {
+            label: 'Your Profile',
+            onPress: () =>
+              navigation.push('Profile', {...actorDetails, self: true}),
           },
         ],
       },
@@ -64,7 +76,7 @@ export const User = ({
   );
 
   return (
-    <View>
+    <View style={flex}>
       <SectionList
         sections={menuItems}
         renderItem={renderItem}
@@ -90,7 +102,11 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   listHeader: {
     paddingHorizontal: 15,
     paddingVertical: 8,
-    backgroundColor: getColor('baseAccent'),
+    paddingTop: 12,
+    backgroundColor: getColor('baseHighlight'),
+  },
+  listHeaderTitle: {
+    color: getColor('primary'),
   },
   listRow: {
     justifyContent: 'center',

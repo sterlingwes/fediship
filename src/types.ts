@@ -114,6 +114,7 @@ export type RootStackParamList = {
     account?: TAccount;
     host?: string;
     accountHandle?: string;
+    self?: boolean;
   };
   Thread: {statusUrl: string; id: string};
   PeerProfile: TPeerInfo;

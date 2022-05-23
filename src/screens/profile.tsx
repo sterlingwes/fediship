@@ -195,7 +195,7 @@ export const Profile = ({
 }: NativeStackScreenProps<RootStackParamList, 'Profile'>) => {
   const initialLoad = useRef(true);
   const [headerOpaque, setHeaderOpaque] = useState(false);
-  const {account, host, accountHandle} = route.params;
+  const {account, host, accountHandle, self} = route.params;
   const styles = useThemeStyle(styleCreator);
   const {
     error,
@@ -220,12 +220,12 @@ export const Profile = ({
     () => (
       <ProfileHeader
         profile={profile ?? account}
-        following={following}
+        following={self ? undefined : following}
         followToggleLoading={followLoading}
         onToggleFollow={onToggleFollow}
       />
     ),
-    [profile, account, following, followLoading, onToggleFollow],
+    [self, profile, account, following, followLoading, onToggleFollow],
   );
 
   useEffect(() => {
