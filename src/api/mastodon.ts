@@ -1,22 +1,13 @@
 import {
-  APPerson,
   TAccount,
   TAccountRelationship,
   TPeerTagTrend,
   TProfileResult,
   TStatus,
   TThread,
-  Webfinger,
 } from '../types';
-import {
-  isOrderedCollection,
-  isOutboxCollection,
-  isPerson,
-  transformActivity,
-  transformActivityPage,
-  transformPerson,
-} from '../utils/activitypub';
-import {ApiResponse} from './response';
+
+import {HTTPClient} from './http-client';
 
 interface ClientOptions {
   host: string;
@@ -25,11 +16,16 @@ interface ClientOptions {
   actorId?: string;
 }
 
-export class MastodonApiClient {
-  private options: ClientOptions;
+export class MastodonApiClient extends HTTPClient {
+  private mastoOptions: ClientOptions;
 
   constructor(options: ClientOptions) {
-    this.options = options;
+    super({
+      host: options.host,
+      token: options.token,
+      pathBase: `/api/v${options.apiVersion ?? 1}`,
+    });
+    this.mastoOptions = options;
   }
 
   async getTimeline(timeline: 'home' | 'public', nextPage?: string) {
@@ -121,7 +117,7 @@ export class MastodonApiClient {
   }
 
   async getFollowers(nextPage?: string) {
-    const {actorId} = this.options;
+    const {actorId} = this.mastoOptions;
     if (!actorId) {
       throw new Error('Cannot get followers with no actorId');
     }
@@ -139,7 +135,7 @@ export class MastodonApiClient {
   }
 
   async getFollowing(nextPage?: string) {
-    const {actorId} = this.options;
+    const {actorId} = this.mastoOptions;
     if (!actorId) {
       throw new Error('Cannot get following with no actorId');
     }
@@ -154,54 +150,6 @@ export class MastodonApiClient {
       list: response.body as TAccount[],
       pageInfo: response.pageInfo,
     };
-  }
-
-  // TODO: move to an ActivityPub class
-  async getWebfinger(host: string, accountHandle: string) {
-    const response = await this.get(
-      `https://${host}/.well-known/webfinger?resource=acct:${accountHandle}@${host}`,
-    );
-    if (!response.ok) {
-      return;
-    }
-    return response.body as Webfinger;
-  }
-
-  async getProfileByHandle(host: string, handle: string) {
-    const webfinger = await this.getWebfinger(host, handle);
-    if (!webfinger) {
-      return;
-    }
-    const profileLink = webfinger.links.find(
-      link => link.rel === 'self' && link.type.includes('json'),
-    );
-    if (profileLink) {
-      const result = await this.get(profileLink.href);
-      if (isPerson(result.body)) {
-        const account = transformPerson(
-          profileLink.href,
-          result.body as APPerson,
-        );
-        const outboxUrl = `${result.body.outbox}?page=true`;
-        const activityPage = await this.get(outboxUrl);
-        let timeline: TStatus[] = [];
-        if (isOutboxCollection(activityPage.body)) {
-          timeline = transformActivityPage(activityPage.body, account);
-        }
-
-        const featuredCollection = await this.get(result.body.featured);
-        if (isOrderedCollection(featuredCollection.body)) {
-          timeline = featuredCollection.body.orderedItems
-            .map(item => transformActivity(item, {account, pinned: true}))
-            .concat(timeline);
-        }
-
-        return {
-          account,
-          timeline,
-        };
-      }
-    }
   }
 
   async getProfile(accountId: string) {
@@ -274,82 +222,5 @@ export class MastodonApiClient {
       return [];
     }
     return response.body as TPeerTagTrend[];
-  }
-
-  private async authedPost(info: RequestInfo, extra?: RequestInit) {
-    this.assertToken();
-    return this.post(info, {
-      ...extra,
-      headers: {Authorization: `Bearer ${this.options.token}`},
-    });
-  }
-
-  private async authedGet(info: RequestInfo, extra?: RequestInit) {
-    this.assertToken();
-    return this.get(info, {
-      ...extra,
-      headers: {Authorization: `Bearer ${this.options.token}`},
-    });
-  }
-
-  private async post(info: RequestInfo, extra?: RequestInit) {
-    return this.req(info, {...extra, method: 'POST'});
-  }
-
-  private async get(info: RequestInfo, extra?: RequestInit) {
-    return this.req(info, {...extra, method: 'GET'});
-  }
-
-  private async req(info: RequestInfo, extra?: RequestInit) {
-    const urlOrRequest = typeof info === 'string' ? this.url(info) : info;
-    const response = await fetch(urlOrRequest, {
-      ...extra,
-      headers: {Accept: 'application/json', ...extra?.headers},
-    });
-    const apiResponse = new ApiResponse(response);
-    await apiResponse.parseBody();
-    return apiResponse;
-  }
-
-  private assertToken() {
-    if (!this.options.token) {
-      throw new Error('Token required for operation');
-    }
-  }
-
-  private url(path: string) {
-    const {host, apiVersion} = this.options;
-
-    if (path.startsWith(`https://${host}`)) {
-      return path;
-    }
-
-    let usedPath = path;
-    if (usedPath[0] === '/') {
-      usedPath = path.substring(1);
-    }
-    return `https://${host}/api/v${apiVersion ?? 1}/${path}`;
-  }
-
-  private json(body: Record<string, any>) {
-    return {
-      body: JSON.stringify(body),
-    };
-  }
-
-  private form(data: Record<string, any>) {
-    const body = new FormData();
-    Object.keys(data).forEach((key: string) => {
-      const value = data[key];
-      if (Array.isArray(value)) {
-        value.forEach(val => body.append(`${key}[]`, val));
-      } else {
-        body.append(key, value);
-      }
-    });
-
-    return {
-      body,
-    };
   }
 }

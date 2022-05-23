@@ -131,6 +131,7 @@ export const Profile = ({
   const {statusUrl, account, host, accountHandle} = route.params;
   const styles = useThemeStyle(styleCreator);
   const {
+    error,
     profile,
     statuses,
     refreshing,
@@ -156,6 +157,23 @@ export const Profile = ({
     ),
     [profile, account, following, followLoading, onToggleFollow],
   );
+
+  if (error) {
+    return (
+      <>
+        <View style={[styles.container, styles.centered]}>
+          <Type style={styles.errorMessage}>{error}</Type>
+        </View>
+        <FloatingHeader
+          {...{
+            navigation,
+            title: '',
+            transparent: !headerOpaque,
+          }}
+        />
+      </>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -234,5 +252,8 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   followBtn: {
     position: 'absolute',
     right: 10,
+  },
+  errorMessage: {
+    marginHorizontal: 15,
   },
 });

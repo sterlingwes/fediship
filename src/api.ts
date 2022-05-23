@@ -2,7 +2,11 @@ import {useCallback, useState} from 'react';
 import {TAccount, TPeerInfo, TProfileResult, TStatus, TThread} from './types';
 import {useMount} from './utils/hooks';
 import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
-import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
+import {
+  useMyMastodonInstance,
+  useRemoteActivityPubInstance,
+  useRemoteMastodonInstance,
+} from './api/hooks';
 import {parseStatusUrl} from './api/api.utils';
 import {MastodonApiClient} from './api/mastodon';
 
@@ -243,7 +247,8 @@ export const useProfile = (
   accountHandle: string | undefined,
 ) => {
   const api = useMyMastodonInstance();
-  const getRemoteInstance = useRemoteMastodonInstance();
+  const getRemoteMastoInstance = useRemoteMastodonInstance();
+  const getRemoteAPInstance = useRemoteActivityPubInstance();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [localId, setLocalId] = useState(accountId);
@@ -266,7 +271,7 @@ export const useProfile = (
     try {
       let result: TProfileResult | undefined;
       if (statusUrl) {
-        result = await getProfileByStatusUrl(statusUrl, getRemoteInstance);
+        result = await getProfileByStatusUrl(statusUrl, getRemoteMastoInstance);
         if (result) {
           const localAccount = await api.findAccount(result?.account.acct);
           if (localAccount?.id) {
@@ -277,8 +282,11 @@ export const useProfile = (
         }
       }
       if (host && accountHandle) {
-        const remoteApi = getRemoteInstance(host);
-        result = await remoteApi.getProfileByHandle(host, accountHandle);
+        const remoteActivityPub = getRemoteAPInstance(host);
+        result = await remoteActivityPub.getProfileByHandle(
+          host,
+          accountHandle,
+        );
         if (result) {
           const localAccount = await api.findAccount(result?.account.acct);
           if (localAccount?.id) {

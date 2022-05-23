@@ -1,5 +1,6 @@
 import {useRef} from 'react';
 import {mastoActorId, mastoBearerToken, mastoHost} from '../constants';
+import {ActivityPubClient} from './activitypub';
 import {MastodonApiClient} from './mastodon';
 
 export const useMyMastodonInstance = () => {
@@ -17,5 +18,11 @@ export const useMyMastodonInstance = () => {
 export const useRemoteMastodonInstance = () => {
   return (host: string) => {
     return new MastodonApiClient({host});
+  };
+};
+
+export const useRemoteActivityPubInstance = () => {
+  return (host: string) => {
+    return new ActivityPubClient({host});
   };
 };
