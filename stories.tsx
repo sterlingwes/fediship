@@ -30,6 +30,7 @@ import statusFiveImage from './fixtures/status-five-image.json';
 import statusTwoImageLandscape from './fixtures/status-two-image-landscape.json';
 import statusTwoImage from './fixtures/status-two-image.json';
 import statusPixelfed from './fixtures/status-pixelfed-linebreaks.json';
+import statusBrPs from './fixtures/status-paragraphs-and-linebreaks.json';
 
 const defaultAdditionalProps = {
   isLocal: true,
@@ -45,6 +46,7 @@ const statuses = [
   statusFourImage,
   statusFiveImage,
   statusPixelfed,
+  statusBrPs,
 ];
 
 const StatusStory = () => {

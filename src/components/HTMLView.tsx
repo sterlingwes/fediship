@@ -18,7 +18,7 @@ interface HTMLProps {
 
 const htmlStylesCreator = (styles: ReturnType<typeof styleCreator>) => ({
   a: styles.linkColor,
-  p: styles.textColor,
+  p: styles.paragraph,
 });
 
 const renderNode =
@@ -105,8 +105,8 @@ export const HTMLView = ({value, emojis}: HTMLProps) => {
 
   return (
     <RNHtmlView
-      addLineBreaks={false}
-      value={emojifiedValue.replace(/<br\/?>\n+/g, '<br/>')}
+      paragraphBreak=""
+      value={fixLinebreaking(emojifiedValue)}
       stylesheet={htmlStylesCreator(styles)}
       renderNode={renderNode({
         imageStyle: styles.emoji,
@@ -119,12 +119,27 @@ export const HTMLView = ({value, emojis}: HTMLProps) => {
   );
 };
 
+const br = '<br/>';
+const fixLinebreaking = (text: string) => {
+  const value = text.replace(/<br\/?>\n+/g, br);
+  const parts = value.split(br);
+  if (parts.length > 1) {
+    return `<p>${parts.join('</p><p>')}</p>`;
+  }
+
+  return value;
+};
+
 const styleCreator: StyleCreator = ({getColor}) => ({
   textColor: {
     color: getColor('baseTextColor'),
   },
   linkColor: {
     color: getColor('primary'),
+  },
+  paragraph: {
+    color: getColor('baseTextColor'),
+    marginBottom: 10,
   },
   emoji: {
     width: 18,
