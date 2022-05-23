@@ -16,6 +16,7 @@ export const OutlineButton = (props: ButtonProps) => {
   return (
     <Pressable
       style={[styles.buttonContainer, props.style]}
+      disabled={props.disabled}
       onPress={props.onPress}>
       <Type
         scale="S"
