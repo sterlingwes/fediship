@@ -22,6 +22,7 @@ import {User} from './screens/user';
 import {ImageViewer} from './screens/image-viewer';
 import {TagTimeline} from './screens/tag-timeline';
 import {ErrorBoundary} from './components/ErrorBoundary';
+import {FollowerList} from './screens/user/followers';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -54,6 +55,23 @@ const iconForTab =
     }
   };
 
+const UStack = createNativeStackNavigator();
+
+const UserStack = () => (
+  <UStack.Navigator>
+    <UStack.Screen
+      name="User"
+      component={User}
+      options={{headerTitle: 'You'}}
+    />
+    <UStack.Screen
+      name="FollowerList"
+      component={FollowerList}
+      options={{headerTitle: 'Your Followers'}}
+    />
+  </UStack.Navigator>
+);
+
 const TabbedHome = () => (
   <Tab.Navigator screenOptions={{tabBarStyle: {height: 60}}}>
     <Tab.Screen
@@ -68,8 +86,12 @@ const TabbedHome = () => (
     />
     <Tab.Screen
       name="User"
-      component={User}
-      options={{tabBarIcon: iconForTab('user'), tabBarShowLabel: false}}
+      component={UserStack}
+      options={{
+        tabBarIcon: iconForTab('user'),
+        tabBarShowLabel: false,
+        headerShown: false,
+      }}
     />
   </Tab.Navigator>
 );

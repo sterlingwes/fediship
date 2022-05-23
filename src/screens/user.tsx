@@ -1,26 +1,25 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React from 'react';
+import React, {useMemo} from 'react';
 import {
-  ActivityIndicator,
-  FlatList,
   ListRenderItem,
-  RefreshControl,
+  SectionList,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useFollowers} from '../api';
+import {ChevronInverted} from '../components/icons/Chevron';
 import {Type} from '../components/Type';
 import {StyleCreator} from '../theme';
-import {useThemeStyle} from '../theme/utils';
-import {RootStackParamList, TAccount} from '../types';
-import {getHostAndHandle} from '../utils/mastodon';
+import {useThemeGetters, useThemeStyle} from '../theme/utils';
+import {RootStackParamList} from '../types';
 
-const ListHeader = () => {
+const ListHeader = ({section: {title}}: {section: {title: string}}) => {
   const styles = useThemeStyle(styleCreator);
   return (
     <View style={styles.listHeader}>
-      <Type semiBold>Followers</Type>
+      <Type scale="S" semiBold>
+        {title}
+      </Type>
     </View>
   );
 };
@@ -29,46 +28,44 @@ export const User = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Explore'>) => {
   const styles = useThemeStyle(styleCreator);
-  const {loading, accounts, fetchFollowers, reloadFollowers} = useFollowers();
+  const {getColor} = useThemeGetters();
 
-  if (loading && !accounts.length) {
-    return (
-      <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
+  const menuItems = useMemo(
+    () => [
+      {
+        title: 'Profile',
+        data: [
+          {
+            label: 'Followers',
+            onPress: () => navigation.push('FollowerList'),
+          },
+        ],
+      },
+    ],
+    [navigation],
+  );
 
-  const renderItem: ListRenderItem<TAccount> = ({item}) => (
+  const renderItem: ListRenderItem<typeof menuItems[0]['data'][0]> = ({
+    item,
+  }) => (
     <TouchableOpacity
       style={styles.listRow}
       activeOpacity={0.5}
-      onPress={() =>
-        navigation.navigate('Profile', {...getHostAndHandle(item)})
-      }>
-      <Type scale="S" style={styles.userName} medium numberOfLines={1}>
-        {item.display_name || item.username}
+      onPress={item.onPress}>
+      <Type scale="M" style={styles.menuItemLabel} numberOfLines={1}>
+        {item.label}
       </Type>
-      {!!item.display_name && !!item.username && (
-        <Type scale="S">{item.acct}</Type>
-      )}
+      <ChevronInverted color={getColor('primary')} />
     </TouchableOpacity>
   );
 
   return (
     <View>
-      <FlatList
-        data={accounts}
+      <SectionList
+        sections={menuItems}
         renderItem={renderItem}
-        refreshControl={
-          <RefreshControl
-            refreshing={!!accounts.length && loading}
-            onRefresh={reloadFollowers}
-          />
-        }
-        keyExtractor={item => `${item.id}-${item.acct}`}
-        ListHeaderComponent={ListHeader}
-        onEndReached={() => fetchFollowers()}
+        renderSectionHeader={props => <ListHeader {...props} />}
+        keyExtractor={(item, index) => `${item.label}-${index}`}
       />
     </View>
   );
@@ -87,18 +84,21 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     marginTop: 20,
   },
   listHeader: {
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
     backgroundColor: getColor('baseAccent'),
   },
   listRow: {
     justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
     minHeight: 65,
     paddingVertical: 15,
     paddingHorizontal: 15,
     borderBottomColor: getColor('baseAccent'),
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  userName: {
-    marginBottom: 5,
+  menuItemLabel: {
+    flex: 1,
   },
 });

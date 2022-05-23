@@ -24,3 +24,7 @@ export const Chevron = ({width, height, color, ...svgProps}: ChevronProps) => {
     </Svg>
   );
 };
+
+export const ChevronInverted = (props: ChevronProps) => (
+  <Chevron {...props} style={{transform: [{rotate: '180deg'}]}} />
+);
