@@ -38,34 +38,6 @@ const instanceHostName = (url: string | undefined) => {
   return host;
 };
 
-const errorMessage = (
-  error: string,
-  host: string | undefined,
-  account: TAccount | undefined,
-) => {
-  if (error.includes('Network request failed')) {
-    return `Unable to reach ${
-      host ?? instanceHostName(account?.url)
-    } (this user's instance). Please try again later!`;
-  }
-
-  if (error.includes('not authorized')) {
-    const url = account ? account.url : `https://${host}`;
-    return (
-      <View>
-        <Type style={{marginBottom: 10}} scale="L">
-          Sorry :(
-        </Type>
-        <HTMLView
-          value={`<p>This user appears to be on an instance that uses "secure mode". To view their profile, please visit <a href="${url}">${url}</a></p>`}
-        />
-      </View>
-    );
-  }
-
-  return error;
-};
-
 interface ProfileImages {
   header?: string;
   avatar?: string;
@@ -154,6 +126,70 @@ const createProfileTimelineRenderer =
 
 const headerOpacityVerticalBreakpoint = 120;
 
+const errorMessage = (
+  error: string,
+  host: string | undefined,
+  account: TAccount | undefined,
+) => {
+  if (error.includes('Network request failed')) {
+    return `Unable to reach ${
+      host ?? instanceHostName(account?.url)
+    } (this user's instance). Please try again later!`;
+  }
+
+  if (error.includes('not authorized')) {
+    const url = account ? account.url : `https://${host}`;
+    return (
+      <View>
+        <Type style={{marginBottom: 10}} scale="L">
+          Sorry :(
+        </Type>
+        <HTMLView
+          value={`<p>This user appears to be on an instance that uses "secure mode". To view their profile, please visit <a href="${url}">${url}</a></p>`}
+        />
+      </View>
+    );
+  }
+
+  return error;
+};
+
+const ProfileError = ({
+  error,
+  host,
+  account,
+  navigation,
+  headerOpaque,
+  showHeader,
+}: {
+  error: string;
+  host: string | undefined;
+  account?: TAccount | undefined;
+  headerOpaque: boolean;
+  navigation: NativeStackNavigationProp<RootStackParamList>;
+  showHeader?: boolean;
+}) => {
+  const styles = useThemeStyle(styleCreator);
+  const message = errorMessage(error, host, account);
+  console.log({message});
+  return (
+    <>
+      <View style={[styles.container, styles.centered, {margin: 20}]}>
+        {typeof message === 'string' ? <Type>{message}</Type> : message}
+      </View>
+      {showHeader && (
+        <FloatingHeader
+          {...{
+            navigation,
+            title: '',
+            transparent: !headerOpaque,
+          }}
+        />
+      )}
+    </>
+  );
+};
+
 export const Profile = ({
   navigation,
   route,
@@ -191,22 +227,9 @@ export const Profile = ({
     [profile, account, following, followLoading, onToggleFollow],
   );
 
-  if (error) {
+  if (error && !account) {
     return (
-      <>
-        <View style={[styles.container, styles.centered]}>
-          <Type style={styles.errorMessage}>
-            {errorMessage(error, host, account)}
-          </Type>
-        </View>
-        <FloatingHeader
-          {...{
-            navigation,
-            title: '',
-            transparent: !headerOpaque,
-          }}
-        />
-      </>
+      <ProfileError {...{error, host, headerOpaque, navigation}} showHeader />
     );
   }
 
@@ -233,6 +256,9 @@ export const Profile = ({
           setHeaderOpaque(true);
         }}
         ListHeaderComponent={headerComponent}
+        ListEmptyComponent={() => (
+          <ProfileError {...{error, host, account, headerOpaque, navigation}} />
+        )}
         onEndReached={fetchTimeline}
         refreshControl={
           <RefreshControl
@@ -298,9 +324,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   followBtn: {
     position: 'absolute',
     right: 10,
-  },
-  errorMessage: {
-    marginHorizontal: 15,
   },
   loadingMoreBar: {
     position: 'absolute',
