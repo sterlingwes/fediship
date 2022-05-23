@@ -1,9 +1,10 @@
 import {ReactNativeZoomableView} from '@openspacelabs/react-native-zoomable-view';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
-import {Image, View} from 'react-native';
+import {ActivityIndicator, Image, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {OutlineButton} from '../components/OutlineButton';
+import {screenHeight} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
@@ -11,6 +12,7 @@ import {RootStackParamList} from '../types';
 export const ImageViewer = (
   props: NativeStackScreenProps<RootStackParamList, 'ImageViewer'>,
 ) => {
+  const [loading, setLoading] = useState(false);
   const styles = useThemeStyle(styleCreator);
   const {index, attachments} = props.route.params;
   const [currentIndex, setIndex] = useState(index);
@@ -32,9 +34,12 @@ export const ImageViewer = (
         initialZoom={1}
         bindToBorders>
         <Image
+          onLoadStart={() => setLoading(true)}
+          onLoadEnd={() => setLoading(false)}
           source={{uri: attachments[currentIndex].url}}
           style={styles.img}
         />
+        {loading && <ActivityIndicator size="large" style={styles.loading} />}
       </ReactNativeZoomableView>
       <SafeAreaView edges={['bottom']} style={styles.button}>
         {attachments.length > 1 && (
@@ -67,6 +72,11 @@ const styleCreator: StyleCreator = () => ({
   container: {
     flex: 1,
     backgroundColor: 'rgba(10,10,10,0.85)',
+  },
+  loading: {
+    position: 'absolute',
+    top: screenHeight / 2 - 20,
+    alignSelf: 'center',
   },
   zoomView: {
     flex: 1,
