@@ -49,6 +49,20 @@ const errorMessage = (
     } (this user's instance). Please try again later!`;
   }
 
+  if (error.includes('not authorized')) {
+    const url = account ? account.url : `https://${host}`;
+    return (
+      <View>
+        <Type style={{marginBottom: 10}} scale="L">
+          Sorry :(
+        </Type>
+        <HTMLView
+          value={`<p>This user appears to be on an instance that uses "secure mode". To view their profile, please visit <a href="${url}">${url}</a></p>`}
+        />
+      </View>
+    );
+  }
+
   return error;
 };
 

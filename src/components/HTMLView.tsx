@@ -12,7 +12,7 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 interface HTMLProps {
-  emojis: Emoji[];
+  emojis?: Emoji[];
   value: string;
 }
 
@@ -72,7 +72,10 @@ export const HTMLView = ({value, emojis}: HTMLProps) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const styles = useThemeStyle(styleCreator);
-  const emojifiedValue = contentWithEmojis({content: value, emojis});
+  const emojifiedValue = contentWithEmojis({
+    content: value,
+    emojis: emojis ?? [],
+  });
 
   const onLinkPress = (attribs: Record<string, any>) => {
     // handle hashtag links

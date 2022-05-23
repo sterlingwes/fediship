@@ -37,7 +37,7 @@ export const PeerProfile = ({
       <AvatarImage uri={thumbnail} style={styles.avatar} />
       <Spacer />
       <Spacer />
-      <HTMLView value={description} emojis={[]} />
+      <HTMLView value={description} />
       <Spacer />
       <Spacer />
       <Type scale="S">Users: {thousandsNumber(stats.user_count)}</Type>
