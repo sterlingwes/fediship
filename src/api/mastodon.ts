@@ -8,7 +8,12 @@ import {
   TThread,
   Webfinger,
 } from '../types';
-import {transformPerson} from '../utils/activitypub';
+import {
+  isOutboxCollection,
+  isPerson,
+  transformActivityPage,
+  transformPerson,
+} from '../utils/activitypub';
 import {ApiResponse} from './response';
 
 interface ClientOptions {
@@ -170,10 +175,22 @@ export class MastodonApiClient {
     );
     if (profileLink) {
       const result = await this.get(profileLink.href);
-      return {
-        account: transformPerson(profileLink.href, result.body as APPerson),
-        timeline: [],
-      };
+      if (isPerson(result.body)) {
+        const account = transformPerson(
+          profileLink.href,
+          result.body as APPerson,
+        );
+        const outboxUrl = `${result.body.outbox}?page=true`;
+        const activityPage = await this.get(outboxUrl);
+        let timeline: TStatus[] = [];
+        if (isOutboxCollection(activityPage.body)) {
+          timeline = transformActivityPage(activityPage.body, account);
+        }
+        return {
+          account,
+          timeline,
+        };
+      }
     }
   }
 

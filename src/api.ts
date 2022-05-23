@@ -282,7 +282,6 @@ export const useProfile = (
         if (result) {
           const localAccount = await api.findAccount(result?.account.acct);
           if (localAccount?.id) {
-            result = await api.getProfile(localAccount.id);
             const relationship = await api.getRelationship(localAccount.id);
             setLocalId(localAccount.id);
             setFollowing(relationship?.following);

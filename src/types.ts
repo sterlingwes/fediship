@@ -36,8 +36,8 @@ export interface TStatus {
   poll: TPoll | null;
   sensitive: boolean;
   pinned?: boolean;
-  spoiler_text: string;
-  emojis: Emoji[];
+  spoiler_text?: string | null;
+  emojis?: Emoji[] | null;
   media_attachments?: TMediaAttachment[];
 }
 
@@ -169,6 +169,79 @@ export interface APPerson extends APObject {
     mediaType: string;
     url: Url;
   };
+}
+
+export interface APOrderedCollectionPage<T> extends APObject {
+  type: 'OrderedCollectionPage';
+  next: Url;
+  prev: Url;
+  partOf: Url; // main collection url
+  orderedItems: Array<T>;
+}
+
+export interface APCreate extends APObject {
+  id: string; // url for mastodon status create
+  type: 'Create';
+  actor: Url;
+  published: string; // datetime
+  to: string[];
+  cc: string[];
+  object: APNote | APAnnounce;
+}
+
+interface APAnnounce extends APObject {
+  id: string; // url for status activity
+  type: 'Announce';
+  actor: Url; // booster
+  published: string; // datetime
+  to: string[];
+  cc: string[];
+  object: Url; // mastodon status detail
+}
+
+type ShortLocale = string; // "en"
+export interface APNote extends APObject {
+  id: string; // url for mastodon status detail
+  type: 'Note';
+  summary: null; // ?
+  inReplyTo: Url;
+  published: string; // datetime
+  url: Url;
+  attributedTo: string; // actor
+  to: string[];
+  cc: string[];
+  sensitive: boolean;
+  atomUri: Url;
+  inReplyToAtomUri: Url;
+  conversation: string; // some convo ID
+  content: string;
+  contentMap: Record<ShortLocale, string>;
+  attachment: APAttachment[];
+  tag: Array<APMention | APHashtag>;
+  replies: any[]; // doesn't seem to resolve for mastodon at least
+}
+
+export interface APMention extends APObject {
+  type: 'Mention';
+  href: Url;
+  name: string; // @name@host.place
+}
+
+export interface APHashtag extends APObject {
+  type: 'Hashtag';
+  href: Url;
+  name: string; // includes #
+}
+
+export interface APAttachment extends APObject {
+  type: 'Document';
+  mediaType: string; // mime type
+  url: Url;
+  name: string; // content caption / alt
+  blurhash: string;
+  focalPoint: number[];
+  width: number;
+  height: number;
 }
 
 export interface TStatusContext {

@@ -27,7 +27,7 @@ const CollapsedStatus = (props: TStatus) => {
 
   return (
     <View>
-      {!!props.spoiler_text.trim() && (
+      {!!(props.spoiler_text ?? '').trim() && (
         <Type style={styles.spoilerText} scale="S">
           {props.spoiler_text}
         </Type>
@@ -41,7 +41,7 @@ const CollapsedStatus = (props: TStatus) => {
       </Pressable>
       {!collapsed && (
         <>
-          <HTMLView emojis={props.emojis} value={props.content} />
+          <HTMLView emojis={props.emojis ?? []} value={props.content} />
           {props.poll && <Poll {...props.poll} />}
           {props.media_attachments && (
             <MediaAttachments media={props.media_attachments} />
@@ -274,7 +274,10 @@ export const Status = (
             <CollapsedStatus {...mainStatus} />
           ) : (
             <>
-              <HTMLView emojis={mainStatus.emojis} value={mainStatus.content} />
+              <HTMLView
+                emojis={mainStatus.emojis ?? []}
+                value={mainStatus.content}
+              />
               {mainStatus.poll && <Poll {...mainStatus.poll} />}
               {mainStatus.media_attachments && (
                 <MediaAttachments media={mainStatus.media_attachments} />

@@ -14,12 +14,13 @@ import {Type} from '../components/Type';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TAccount} from '../types';
+import {getHostAndHandle} from '../utils/mastodon';
 
 const ListHeader = () => {
   const styles = useThemeStyle(styleCreator);
   return (
     <View style={styles.listHeader}>
-      <Type semiBold>Follows</Type>
+      <Type semiBold>Followers</Type>
     </View>
   );
 };
@@ -42,7 +43,9 @@ export const User = ({
     <TouchableOpacity
       style={styles.listRow}
       activeOpacity={0.5}
-      onPress={() => navigation.navigate('Profile', {account: item})}>
+      onPress={() =>
+        navigation.navigate('Profile', {...getHostAndHandle(item)})
+      }>
       <Type scale="S" style={styles.userName} medium numberOfLines={1}>
         {item.display_name || item.username}
       </Type>

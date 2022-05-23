@@ -26,7 +26,7 @@ export const groupReplies = (
       grouped.replyList[child.id] = {status: child};
     } else {
       grouped.replyList[child.id] = {status: child};
-      const parent = grouped.replyList[child.in_reply_to_id];
+      const parent = grouped.replyList[child.in_reply_to_id ?? ''];
       if (parent) {
         if (typeof parent.next === 'string') {
           parent.next = [parent.next, child.id];
