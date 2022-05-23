@@ -14,7 +14,7 @@ import {
 import {AvatarImage} from '../components/AvatarImage';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
-import {OutlineButton} from '../components/OutlineButton';
+import {SolidButton} from '../components/SolidButton';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
 import {screenHeight} from '../dimensions';
@@ -81,12 +81,12 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
           <AvatarImage uri={profileImages.avatar} style={styles.headerAvatar} />
         )}
         {typeof props.following === 'boolean' && (
-          <OutlineButton
+          <SolidButton
             style={styles.followBtn}
             disabled={props.followToggleLoading}
             onPress={props.onToggleFollow}>
             {props.following ? 'Unfollow' : 'Follow'}
-          </OutlineButton>
+          </SolidButton>
         )}
         <View style={styles.headerDisplayName}>
           <HTMLView value={display_name} emojis={emojis} />
