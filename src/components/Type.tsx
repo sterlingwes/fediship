@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, TextProps} from 'react-native';
+import {ColorValue, Text, TextProps} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 
@@ -17,6 +17,7 @@ export type FontWeight = 'bold' | 'semiBold' | 'medium' | 'regular';
 export interface TypeProps extends TextProps {
   scale?: FontScale;
   bold?: boolean;
+  color?: ColorValue;
   semiBold?: boolean;
   medium?: boolean;
   weight?: FontWeight;
@@ -35,6 +36,7 @@ export const Type = (props: TypeProps) => {
         props.weight === 'medium' || (props.medium && styles.medium),
         {fontSize: scale, lineHeight: scale * 1.3},
         props.style,
+        props.color && {color: props.color},
       ]}
     />
   );

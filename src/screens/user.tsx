@@ -1,5 +1,6 @@
+import {useFocusEffect} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useMemo} from 'react';
+import React, {ReactNode, useCallback, useMemo} from 'react';
 import {
   ListRenderItem,
   SectionList,
@@ -12,8 +13,10 @@ import {Type} from '../components/Type';
 import {actorDetails} from '../constants';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
-import {RootStackParamList} from '../types';
+import {NotificationGroups, RootStackParamList} from '../types';
+import {useNotifications} from '../utils/notifications';
 import {flex} from '../utils/styles';
+import {clearStorage} from '../utils/testing';
 
 const ListHeader = ({section: {title}}: {section: {title: string}}) => {
   const styles = useThemeStyle(styleCreator);
@@ -26,24 +29,71 @@ const ListHeader = ({section: {title}}: {section: {title: string}}) => {
   );
 };
 
+const NewRowBadge = () => {
+  const {getColor} = useThemeGetters();
+  return (
+    <Type color={getColor('primary')} bold>
+      {' •'}
+    </Type>
+  );
+};
+
+const withNewBadge = (
+  notifs: NotificationGroups,
+  type: keyof NotificationGroups,
+  label: string,
+) => (
+  <>
+    {label}
+    {notifs[type]?.length ? <NewRowBadge /> : null}
+  </>
+);
+
+interface MenuSection {
+  title: string;
+  data: MenuItem[];
+}
+
+interface MenuItem {
+  label: ReactNode;
+  onPress: () => any;
+  newCount?: number;
+  hideChevron?: boolean;
+}
+
 export const User = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Explore'>) => {
+  const {notifs, readTab, readType} = useNotifications();
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
 
+  useFocusEffect(
+    useCallback(() => {
+      return () => readTab();
+    }, [readTab]),
+  );
+
   const menuItems = useMemo(
-    () => [
+    (): MenuSection[] => [
       {
         title: 'Relationships',
         data: [
           {
-            label: 'Following',
-            onPress: () => navigation.push('FollowerList', {source: 'theirs'}),
+            label: withNewBadge(notifs, 'status', 'Following'),
+            newCount: notifs.status?.length,
+            onPress: () => {
+              readType('status');
+              navigation.push('FollowerList', {source: 'theirs'});
+            },
           },
           {
-            label: 'Followers',
-            onPress: () => navigation.push('FollowerList', {source: 'mine'}),
+            label: withNewBadge(notifs, 'follow', 'Followers'),
+            newCount: notifs.follow?.length,
+            onPress: () => {
+              readType('follow');
+              navigation.push('FollowerList', {source: 'mine'});
+            },
           },
         ],
       },
@@ -51,9 +101,11 @@ export const User = ({
         title: 'Toots',
         data: [
           {
-            label: 'Favorites',
-            onPress: () =>
-              navigation.push('FavouritesTimeline', {type: 'favourites'}),
+            label: withNewBadge(notifs, 'favourite', 'Favorites'),
+            newCount: notifs.favourite?.length,
+            onPress: () => {
+              navigation.push('FavouritesTimeline', {type: 'favourites'});
+            },
           },
           {
             label: 'Bookmarks',
@@ -72,8 +124,18 @@ export const User = ({
           },
         ],
       },
+      {
+        title: 'Testing',
+        data: [
+          {
+            label: 'Clear Storage',
+            hideChevron: true,
+            onPress: () => clearStorage(),
+          },
+        ],
+      },
     ],
-    [navigation],
+    [navigation, notifs, readType],
   );
 
   const renderItem: ListRenderItem<typeof menuItems[0]['data'][0]> = ({
@@ -86,7 +148,14 @@ export const User = ({
       <Type scale="S" style={styles.menuItemLabel} numberOfLines={1}>
         {item.label}
       </Type>
-      <ChevronInverted color={getColor('primary')} />
+      <View style={styles.rightSide}>
+        {!!item.newCount && (
+          <Type scale="S" style={styles.rightSideLabel}>
+            {item.newCount}
+          </Type>
+        )}
+        {!item.hideChevron && <ChevronInverted color={getColor('primary')} />}
+      </View>
     </TouchableOpacity>
   );
 
@@ -127,11 +196,19 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    minHeight: 65,
+    minHeight: 50,
     paddingVertical: 15,
     paddingHorizontal: 15,
     borderBottomColor: getColor('baseAccent'),
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  rightSide: {
+    flexDirection: 'row',
+  },
+  rightSideLabel: {
+    marginTop: 1,
+    marginRight: 6,
+    color: getColor('primary'),
   },
   menuItemLabel: {
     flex: 1,

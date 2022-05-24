@@ -109,6 +109,7 @@ export type RootStackParamList = {
   Home: undefined;
   Explore: undefined;
   User: undefined;
+  UserMain: undefined;
   TagTimeline: {host: string; tag: string};
   FavouritesTimeline: {type: 'favourites' | 'bookmarks'};
   Profile: {
@@ -286,6 +287,24 @@ export interface TPoll {
   options: TPollOption[];
   // "emojis": []
 }
+
+export interface TNotification {
+  id: string;
+  type:
+    | 'follow'
+    | 'follow_request'
+    | 'mention'
+    | 'reblog'
+    | 'favourite'
+    | 'poll'
+    | 'status';
+  created_at: string;
+  account: TAccount;
+  status?: TStatus | null;
+}
+
+type NotificationType = TNotification['type'];
+export type NotificationGroups = Record<NotificationType, TNotification[]>;
 
 export interface TAccountRelationship {
   id: string;

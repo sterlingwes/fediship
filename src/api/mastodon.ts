@@ -1,6 +1,7 @@
 import {
   TAccount,
   TAccountRelationship,
+  TNotification,
   TPeerTagTrend,
   TProfileResult,
   TStatus,
@@ -226,6 +227,18 @@ export class MastodonApiClient extends HTTPClient {
     }
 
     return response.ok;
+  }
+
+  async getNotifications(params?: {minId?: string}) {
+    const path = params?.minId
+      ? `notifications?min_id${params.minId}`
+      : 'notifications';
+    const response = await this.authedGet(path);
+    if (!response.ok) {
+      return [];
+    }
+
+    return response.body as TNotification[];
   }
 
   async vote(pollId: string, choices: number[]) {

@@ -1,6 +1,7 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Toast from 'react-native-toast-message';
 import React from 'react';
 import {useColorScheme} from 'react-native';
 import {Profile} from './screens/profile';
@@ -24,6 +25,7 @@ import {TagTimeline} from './screens/tag-timeline';
 import {ErrorBoundary} from './components/ErrorBoundary';
 import {FollowerList} from './screens/user/followers';
 import {FavouritesTimeline} from './screens/timelines/favourites';
+import {useNotifications} from './utils/notifications';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -61,7 +63,7 @@ const UStack = createNativeStackNavigator();
 const UserStack = () => (
   <UStack.Navigator>
     <UStack.Screen
-      name="User"
+      name="UserMain"
       component={User}
       options={{headerTitle: 'You'}}
     />
@@ -83,29 +85,33 @@ const UserStack = () => (
   </UStack.Navigator>
 );
 
-const TabbedHome = () => (
-  <Tab.Navigator screenOptions={{tabBarStyle: {height: 60}}}>
-    <Tab.Screen
-      name="Home"
-      component={Timeline}
-      options={{tabBarIcon: iconForTab('home'), tabBarShowLabel: false}}
-    />
-    <Tab.Screen
-      name="Explore"
-      component={Explore}
-      options={{tabBarIcon: iconForTab('explore'), tabBarShowLabel: false}}
-    />
-    <Tab.Screen
-      name="User"
-      component={UserStack}
-      options={{
-        tabBarIcon: iconForTab('user'),
-        tabBarShowLabel: false,
-        headerShown: false,
-      }}
-    />
-  </Tab.Navigator>
-);
+const TabbedHome = () => {
+  const {newNotifCount, tabRead} = useNotifications();
+  return (
+    <Tab.Navigator screenOptions={{tabBarStyle: {height: 60}}}>
+      <Tab.Screen
+        name="Home"
+        component={Timeline}
+        options={{tabBarIcon: iconForTab('home'), tabBarShowLabel: false}}
+      />
+      <Tab.Screen
+        name="Explore"
+        component={Explore}
+        options={{tabBarIcon: iconForTab('explore'), tabBarShowLabel: false}}
+      />
+      <Tab.Screen
+        name="User"
+        component={UserStack}
+        options={{
+          tabBarIcon: iconForTab('user'),
+          tabBarShowLabel: false,
+          tabBarBadge: !tabRead && newNotifCount ? newNotifCount : undefined,
+          headerShown: false,
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 export const App = () => {
   const scheme = useColorScheme();
@@ -142,6 +148,7 @@ export const App = () => {
           </Stack.Navigator>
         </NavigationContainer>
       </ThemeProvider>
+      <Toast />
     </ErrorBoundary>
   );
 };
