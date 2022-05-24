@@ -1,4 +1,4 @@
-package com.fediship;
+package org.mobywan.fediship;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

@@ -1,4 +1,4 @@
-package com.fediship.newarchitecture.components;
+package org.mobywan.fediship.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

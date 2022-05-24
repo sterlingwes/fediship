@@ -1,4 +1,4 @@
-package com.fediship.newarchitecture;
+package org.mobywan.fediship.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.fediship.BuildConfig;
-import com.fediship.newarchitecture.components.MainComponentsRegistry;
-import com.fediship.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import org.mobywan.fediship.BuildConfig;
+import org.mobywan.fediship.newarchitecture.components.MainComponentsRegistry;
+import org.mobywan.fediship.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 
