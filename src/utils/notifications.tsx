@@ -25,7 +25,7 @@ const generateWatermarks = (notifs: NotificationGroups) => {
   return (Object.keys(notifs) as Array<keyof NotificationGroups>).reduce(
     (acc, notifType) => ({
       ...acc,
-      [notifType]: notifs[notifType][0].id,
+      [notifType]: notifs[notifType][0]?.id,
     }),
     {} as NotifWatermarks,
   );
