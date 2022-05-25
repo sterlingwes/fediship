@@ -134,14 +134,15 @@ export const useNotifications = () => {
         const notifications = await api.getNotifications();
         const supported = filterNotifTypes(notifications);
         if (supported && supported.length) {
-          const grouped = filterByWatermarks(
-            groupTypes(supported),
+          const grouped = groupTypes(supported);
+          const groupedFiltered = filterByWatermarks(
+            grouped,
             initialWatermarks.current,
           );
-          setNotifs(grouped);
-          const count = countNotifs(grouped);
+          setNotifs(groupedFiltered);
+          const count = countNotifs(groupedFiltered);
           setNewNotifCount(count);
-          setNotifGroup(grouped);
+          setNotifGroup(groupedFiltered);
 
           const newWatermarks = generateWatermarks(grouped);
 
