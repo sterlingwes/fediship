@@ -1,6 +1,5 @@
-import {useFocusEffect} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {ReactNode, useCallback, useMemo} from 'react';
+import React, {ReactNode, useMemo} from 'react';
 import {
   ListRenderItem,
   SectionList,
@@ -14,6 +13,7 @@ import {actorDetails} from '../constants';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {NotificationGroups, RootStackParamList} from '../types';
+import {useMount} from '../utils/hooks';
 import {useNotifications} from '../utils/notifications';
 import {flex} from '../utils/styles';
 import {clearStorage} from '../utils/testing';
@@ -68,11 +68,7 @@ export const User = ({
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
 
-  useFocusEffect(
-    useCallback(() => {
-      return () => readTab();
-    }, [readTab]),
-  );
+  useMount(() => readTab());
 
   const menuItems = useMemo(
     (): MenuSection[] => [
@@ -104,6 +100,7 @@ export const User = ({
             label: withNewBadge(notifs, 'favourite', 'Favorites'),
             newCount: notifs.favourite?.length,
             onPress: () => {
+              readType('favourite');
               navigation.push('FavouritesTimeline', {type: 'favourites'});
             },
           },

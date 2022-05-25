@@ -25,7 +25,7 @@ import {TagTimeline} from './screens/tag-timeline';
 import {ErrorBoundary} from './components/ErrorBoundary';
 import {FollowerList} from './screens/user/followers';
 import {FavouritesTimeline} from './screens/timelines/favourites';
-import {useNotifications} from './utils/notifications';
+import {NotificationProvider, useNotifications} from './utils/notifications';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -118,36 +118,38 @@ export const App = () => {
 
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <NavigationContainer
-          theme={
-            scheme === 'dark' ? darkNavigationTheme : lightNavigationTheme
-          }>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="Tabs"
-              component={TabbedHome}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="Profile"
-              component={Profile}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen name="Thread" component={Thread} />
-            <Stack.Screen name="PeerProfile" component={PeerProfile} />
-            <Stack.Screen name="TagTimeline" component={TagTimeline} />
-            <Stack.Screen
-              name="ImageViewer"
-              component={ImageViewer}
-              options={{
-                presentation: 'containedTransparentModal',
-                headerShown: false,
-              }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </ThemeProvider>
+      <NotificationProvider>
+        <ThemeProvider>
+          <NavigationContainer
+            theme={
+              scheme === 'dark' ? darkNavigationTheme : lightNavigationTheme
+            }>
+            <Stack.Navigator>
+              <Stack.Screen
+                name="Tabs"
+                component={TabbedHome}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="Profile"
+                component={Profile}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen name="Thread" component={Thread} />
+              <Stack.Screen name="PeerProfile" component={PeerProfile} />
+              <Stack.Screen name="TagTimeline" component={TagTimeline} />
+              <Stack.Screen
+                name="ImageViewer"
+                component={ImageViewer}
+                options={{
+                  presentation: 'containedTransparentModal',
+                  headerShown: false,
+                }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </ThemeProvider>
+      </NotificationProvider>
       <Toast />
     </ErrorBoundary>
   );
