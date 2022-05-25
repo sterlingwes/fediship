@@ -1,7 +1,7 @@
 import {ReactNativeZoomableView} from '@openspacelabs/react-native-zoomable-view';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
-import {ActivityIndicator, Image, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, Image, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {OutlineButton} from '../components/OutlineButton';
 import {screenHeight} from '../dimensions';

@@ -118,7 +118,7 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
             {[second, third].map((attachment, i) => (
               <View style={styles.flexColumn}>
                 <Media
-                  {...{...attachment, onOpenImage: () => onOpenImage(i)}}
+                  {...{...attachment, onOpenImage: () => onOpenImage(i + 1)}}
                   imageStyle={styles.previewImageTwoRows}
                 />
               </View>
