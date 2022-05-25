@@ -62,6 +62,29 @@ const groupTypes = (notifications: TNotification[]): NotificationGroups =>
     {} as NotificationGroups,
   );
 
+const filterByWatermarks = (
+  notifs: NotificationGroups,
+  watermarks?: NotifWatermarks | undefined | null,
+): NotificationGroups =>
+  watermarks
+    ? (Object.keys(notifs) as Array<keyof NotificationGroups>).reduce(
+        (acc, type) => {
+          if (notifs[type]?.[0] && notifs[type][0].id === watermarks[type]) {
+            return {
+              ...acc,
+              [type]: [],
+            };
+          }
+
+          return acc;
+        },
+        notifs,
+      )
+    : notifs;
+
+const countNotifs = (notifs: NotificationGroups) =>
+  Object.values(notifs).reduce((acc, entries) => acc + entries.length, 0);
+
 const filterNotifTypes = (notifs: TNotification[]) =>
   notifs.filter(notif => supportedNotifTypes.includes(notif.type));
 
@@ -111,9 +134,13 @@ export const useNotifications = () => {
         const notifications = await api.getNotifications();
         const supported = filterNotifTypes(notifications);
         if (supported && supported.length) {
-          const grouped = groupTypes(supported);
+          const grouped = filterByWatermarks(
+            groupTypes(supported),
+            initialWatermarks.current,
+          );
           setNotifs(grouped);
-          setNewNotifCount(supported.length);
+          const count = countNotifs(grouped);
+          setNewNotifCount(count);
           setNotifGroup(grouped);
 
           const newWatermarks = generateWatermarks(grouped);

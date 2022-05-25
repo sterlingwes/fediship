@@ -177,7 +177,11 @@ describe('useNotifications', () => {
         NotificationStorage.getNotifWatermarks.mockReturnValue({});
 
         fetchPromise = new Promise(resolve =>
-          resolve([{type: 'follow', id: '100'}]),
+          resolve([
+            {type: 'follow', id: '100'},
+            {type: 'follow', id: '99'},
+            {type: 'follow', id: '98'},
+          ]),
         );
         fetchSpy.mockReturnValue(fetchPromise);
       });
@@ -186,7 +190,44 @@ describe('useNotifications', () => {
         const {result} = renderHook(() => useNotifications(), {wrapper});
         await act(() => fetchPromise);
 
+        expect(result.current.newNotifCount).toBe(3);
         expect(result.current.tabRead).toBe(false);
+      });
+    });
+  });
+
+  describe('read state on notif types', () => {
+    let fetchPromise: Promise<any>;
+
+    beforeEach(() => {
+      // @ts-expect-error mock
+      NotificationStorage.getLastFetch.mockReturnValue(initialDateTime);
+
+      MockDate.set(initialDateTime + 200000);
+    });
+
+    describe('receiving the same entries for a previously read type', () => {
+      beforeEach(() => {
+        const follows = [
+          {type: 'follow', id: '102'},
+          {type: 'follow', id: '101'},
+        ];
+
+        // @ts-expect-error mock
+        NotificationStorage.getNotifWatermarks.mockReturnValue({follow: '102'});
+        // @ts-expect-error mock
+        NotificationStorage.getNotifGroup.mockReturnValue({follow: follows});
+
+        fetchPromise = new Promise(resolve => resolve(follows));
+        fetchSpy.mockReturnValue(fetchPromise);
+      });
+
+      it('should not indicate there are more unread', async () => {
+        const {result} = renderHook(() => useNotifications(), {wrapper});
+        await act(() => fetchPromise);
+
+        expect(result.current.tabRead).toBe(true);
+        expect(result.current.notifs.follow).toHaveLength(0);
       });
     });
   });
