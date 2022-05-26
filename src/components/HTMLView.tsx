@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, ImageStyle, Linking, TextStyle} from 'react-native';
+import {Image, ImageStyle, Linking, TextStyle, ViewStyle} from 'react-native';
 import RNHtmlView, {
   HTMLViewNode,
   HTMLViewNodeRenderer,
@@ -27,11 +27,13 @@ const renderNode =
   ({
     imageStyle,
     linkStyle,
+    paragraphStyle,
     onLinkPress,
     baseTypeScale,
   }: {
     imageStyle: ImageStyle;
     linkStyle: TextStyle;
+    paragraphStyle: ViewStyle;
     onLinkPress: (attribs: Record<string, any>) => void;
     baseTypeScale?: FontScale;
   }) =>
@@ -71,6 +73,14 @@ const renderNode =
           onPress={() => onLinkPress(node.attribs)}>
           {prefix}
           {children}
+        </Type>
+      );
+    }
+
+    if (node.name && /^h[0-9]/.test(node.name)) {
+      return (
+        <Type bold style={paragraphStyle}>
+          {defaultRenderer(node.children as HTMLViewNode[], parent)}
         </Type>
       );
     }
@@ -132,6 +142,7 @@ export const HTMLView = ({
       renderNode={renderNode({
         imageStyle: styles.emoji,
         linkStyle: styles.linkColor,
+        paragraphStyle: styles.paragraph,
         onLinkPress,
         baseTypeScale,
       })}

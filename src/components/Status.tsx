@@ -256,6 +256,15 @@ export const Status = (
     return [mainStatus.content.slice(0, 500) + '...', true];
   }, [mainStatus.content, props.focused]);
 
+  const emojis = useMemo(
+    () => [...(mainStatus.emojis ?? []), ...(mainStatus.account.emojis ?? [])],
+    [mainStatus],
+  );
+
+  if (mainStatus.content.includes('is so very')) {
+    console.log('emojis>>', emojis.length);
+  }
+
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
       <View
@@ -325,7 +334,7 @@ export const Status = (
             />
           ) : (
             <>
-              <HTMLView emojis={mainStatus.emojis ?? []} value={content} />
+              <HTMLView emojis={emojis} value={content} />
               {!truncated && (
                 <>
                   {mainStatus.poll && <Poll {...mainStatus.poll} />}

@@ -2,8 +2,9 @@ import {useCallback, useRef, useState} from 'react';
 import {
   useMyMastodonInstance,
   useRemoteActivityPubInstance,
+  useRemoteMastodonInstance,
 } from '../../api/hooks';
-import {TAccount, TStatus} from '../../types';
+import {Emoji, TAccount, TStatus} from '../../types';
 import {useMount} from '../../utils/hooks';
 import {getHostAndHandle} from '../../utils/mastodon';
 
@@ -14,6 +15,8 @@ export const useAPProfile = (
 ) => {
   const api = useMyMastodonInstance();
   const getRemoteAPInstance = useRemoteActivityPubInstance();
+  const getRemoteMasto = useRemoteMastodonInstance();
+  const emojis = useRef<Emoji[]>([]);
   const [loading, setLoading] = useState(true);
   const [localId, setLocalId] = useState<string>();
   const [refreshing, setRefreshing] = useState(false);
@@ -41,6 +44,12 @@ export const useAPProfile = (
     };
   };
 
+  const fetchEmojis = async (remoteHost: string) => {
+    const remoteMasto = getRemoteMasto(remoteHost);
+    emojis.current = await remoteMasto.getEmojis();
+    return emojis.current;
+  };
+
   const fetchTimeline = async () => {
     const idParts = getIdParts();
 
@@ -49,6 +58,7 @@ export const useAPProfile = (
     }
 
     setLoading(true);
+
     try {
       const remoteActivityPub = getRemoteAPInstance(idParts.host);
       const response = await remoteActivityPub.getProfileTimeline(
@@ -58,9 +68,9 @@ export const useAPProfile = (
       if (response) {
         setStatuses(
           statuses.concat(
-            response.result.filter(
-              toot => !pinnedIds.current.includes(toot.id),
-            ),
+            response.result
+              .filter(toot => !pinnedIds.current.includes(toot.id))
+              .map(toot => ({...toot, emojis: emojis.current})),
           ),
         );
         setNextPage(response.pageInfo.next);
@@ -94,7 +104,9 @@ export const useAPProfile = (
         idParts.handle,
       );
       if (result) {
-        const localAccount = await api.findAccount(result?.account.acct);
+        const localAccount = await api.findAccount(
+          `${idParts.handle}@${idParts.host}`,
+        );
         if (localAccount?.id) {
           const relationship = await api.getRelationship(localAccount.id);
           setLocalId(localAccount.id);
@@ -105,13 +117,19 @@ export const useAPProfile = (
         setNextPage(result.pageInfo?.next);
       }
 
+      await fetchEmojis(idParts.host);
+
       if (!result) {
         setLoading(false);
         return;
       }
 
-      setStatuses(result.timeline);
-      setProfile(result.account);
+      const profileWithEmojis = {...result.account, emojis: emojis.current};
+
+      setStatuses(
+        result.timeline.map(toot => ({...toot, emojis: emojis.current})),
+      );
+      setProfile(profileWithEmojis);
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);

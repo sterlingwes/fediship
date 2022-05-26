@@ -1,4 +1,5 @@
 import {
+  Emoji,
   TAccount,
   TAccountRelationship,
   TNotification,
@@ -89,6 +90,15 @@ export class MastodonApiClient extends HTTPClient {
         status: statusDetail,
       } as Omit<TThread, 'localStatuses'>,
     };
+  }
+
+  async getEmojis() {
+    const response = await this.get('custom_emojis');
+    if (!response.ok) {
+      return [];
+    }
+
+    return response.body as Emoji[];
   }
 
   async findAccount(acct: string) {
