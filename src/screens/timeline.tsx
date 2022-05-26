@@ -52,14 +52,7 @@ export const Timeline = ({
   const {statuses, loading, loadingMore, fetchTimeline, reloadTimeline} =
     useTimeline('home');
 
-  useScrollToTop(
-    useRef({
-      scrollToTop: () => {
-        scrollRef.current?.scrollToOffset({offset: 0});
-        reloadTimeline();
-      },
-    }),
-  );
+  useScrollToTop(scrollRef);
 
   const renderItem = useMemo(
     () => createTimelineRenderer(navigation),
