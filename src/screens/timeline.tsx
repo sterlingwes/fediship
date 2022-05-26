@@ -32,22 +32,9 @@ const createTimelineRenderer =
         isLocal
         {...status}
         onPress={() => {
-          if (nextStatusUrl.includes('/notes/')) {
-            Alert.alert(
-              '',
-              'Viewing threads on Misskey posts is not yet supported.',
-            );
-            return;
-          }
-
           navigation.push('Thread', {statusUrl: nextStatusUrl, id: status.id});
         }}
         onPressAvatar={account => {
-          if (nextStatusUrl.includes('/notes/')) {
-            Alert.alert('', 'Viewing Misskey profiles is not yet supported.');
-            return;
-          }
-
           navigation.push('Profile', {
             account,
           });
