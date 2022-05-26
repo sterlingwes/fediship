@@ -269,6 +269,7 @@ export const useThread = (statusUrl: string, localId: string) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [thread, setThread] = useState<TThread>();
+  const [localFallback, setLocalFallback] = useState(false);
 
   const fetchThread = async () => {
     const {host, statusId} = parseStatusUrl(statusUrl);
@@ -297,9 +298,20 @@ export const useThread = (statusUrl: string, localId: string) => {
           !localResult || localResult.type === 'error' ? false : true,
       });
 
-      if (remoteResult.type === 'error' && remoteResult.error) {
+      const hasLocalThread = localResult?.type === 'success';
+      const hasRemoteThread = remoteResult?.type === 'success';
+
+      if (
+        remoteResult.type === 'error' &&
+        remoteResult.error &&
+        !hasLocalThread
+      ) {
         setError(remoteResult.error);
         return;
+      }
+
+      if (hasLocalThread && !hasRemoteThread) {
+        setLocalFallback(true);
       }
 
       const result = {
@@ -310,6 +322,7 @@ export const useThread = (statusUrl: string, localId: string) => {
             ? {status: localResult.response?.status}
             : undefined),
           localStatuses,
+          localResponse: localResult?.response,
         },
       };
 
@@ -326,5 +339,5 @@ export const useThread = (statusUrl: string, localId: string) => {
     fetchThread();
   });
 
-  return {thread, fetchThread, error, loading};
+  return {thread, fetchThread, error, loading, localFallback};
 };

@@ -268,6 +268,7 @@ export interface TStatusContext {
 export interface TThread extends TStatusContext {
   status?: TStatus | undefined;
   localStatuses: Record<string, TStatus>;
+  localResponse: Omit<TThread, 'localStatuses'> | undefined;
 }
 
 interface TPollOption {

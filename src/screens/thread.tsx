@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import {useThread} from '../api';
+import {InfoBanner} from '../components/InfoBanner';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
 import {RootStackParamList, TStatus} from '../types';
@@ -18,7 +19,10 @@ export const Thread = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Thread'>) => {
   const {statusUrl, id} = route.params;
-  const {thread, loading, fetchThread, error} = useThread(statusUrl, id);
+  const {thread, loading, fetchThread, error, localFallback} = useThread(
+    statusUrl,
+    id,
+  );
 
   const terminatingIds = useMemo(() => {
     if (!thread?.descendants || !thread.status) {
@@ -28,12 +32,22 @@ export const Thread = ({
   }, [thread]);
 
   const statuses = useMemo(() => {
+    if (localFallback) {
+      return [
+        ...(thread?.localResponse?.ancestors ?? []),
+        ...(thread?.localResponse?.status
+          ? [thread.localResponse?.status]
+          : []),
+        ...(thread?.localResponse?.descendants ?? []),
+      ];
+    }
+
     return [
       ...(thread?.ancestors ?? []),
       ...(thread?.status ? [thread.status] : []),
       ...(thread?.descendants ?? []),
     ];
-  }, [thread]);
+  }, [thread, localFallback]);
 
   const renderItem: ListRenderItem<TStatus> = ({item, index}) => {
     const localStatus = thread?.localStatuses?.[item.uri];
@@ -73,15 +87,23 @@ export const Thread = ({
   }
 
   return (
-    <FlatList
-      data={statuses}
-      renderItem={renderItem}
-      style={styles.container}
-      contentInset={{bottom: 40}}
-      refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={fetchThread} />
-      }
-    />
+    <>
+      {localFallback && (
+        <InfoBanner>
+          This thread could not be retrieved from the user's instance so you may
+          be seeing a partial view of it.
+        </InfoBanner>
+      )}
+      <FlatList
+        data={statuses}
+        renderItem={renderItem}
+        style={styles.container}
+        contentInset={{bottom: 40}}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={fetchThread} />
+        }
+      />
+    </>
   );
 };
 
