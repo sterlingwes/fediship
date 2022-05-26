@@ -304,7 +304,8 @@ export interface TNotification {
 }
 
 type NotificationType = TNotification['type'];
-export type NotificationGroups = Record<NotificationType, TNotification[]>;
+export type NormalizedNotif = TNotification & {key: number | string};
+export type NotificationGroups = Record<NotificationType, NormalizedNotif[]>;
 
 export interface TAccountRelationship {
   id: string;

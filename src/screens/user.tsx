@@ -64,7 +64,7 @@ interface MenuItem {
 export const User = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Explore'>) => {
-  const {notifs, readTab, readType} = useNotifications();
+  const {notifs, readTab, readType, tabRead, watermarks} = useNotifications();
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
 
@@ -164,6 +164,17 @@ export const User = ({
         renderSectionHeader={props => <ListHeader {...props} />}
         keyExtractor={(item, index) => `${item.label}-${index}`}
       />
+      {tabRead && (
+        <View>
+          <Type scale="XS">{JSON.stringify(watermarks)}</Type>
+          <Type scale="XS">
+            vs.{' '}
+            {Object.keys(notifs).map(
+              type => notifs[type as keyof NotificationGroups][0]?.id,
+            )}
+          </Type>
+        </View>
+      )}
     </View>
   );
 };

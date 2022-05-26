@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import {useMyMastodonInstance} from '../api/hooks';
-import {NotificationGroups, TNotification} from '../types';
+import {NotificationGroups, NormalizedNotif, TNotification} from '../types';
 import {AppState} from 'react-native';
 import {
   getLastFetch,
@@ -53,7 +53,7 @@ const compareWatermarks = (
   });
 };
 
-const groupTypes = (notifications: TNotification[]): NotificationGroups =>
+const groupTypes = (notifications: NormalizedNotif[]): NotificationGroups =>
   notifications.reduce(
     (acc, notif) => ({
       ...acc,
@@ -85,8 +85,24 @@ const filterByWatermarks = (
 const countNotifs = (notifs: NotificationGroups) =>
   Object.values(notifs).reduce((acc, entries) => acc + entries.length, 0);
 
-const filterNotifTypes = (notifs: TNotification[]) =>
-  notifs.filter(notif => supportedNotifTypes.includes(notif.type));
+const filterNotifTypes = (notifs: TNotification[]): NormalizedNotif[] =>
+  notifs
+    .filter(notif => supportedNotifTypes.includes(notif.type))
+    .map(notif => ({
+      ...notif,
+      key: notif.created_at ? new Date(notif.created_at).valueOf() : notif.id,
+    }))
+    .sort((a, b) => {
+      if (typeof a.key === 'number' && typeof b.key === 'number') {
+        return b.key - a.key;
+      }
+
+      if (typeof a.key === 'string' && typeof b.key === 'string') {
+        return b.key.localeCompare(a.key);
+      }
+
+      return b.id.localeCompare(a.id);
+    });
 
 const fetchFrequency = 120000; // 2 mins
 
@@ -188,5 +204,15 @@ export const useNotifications = () => {
     initialWatermarks.current = watermarks;
   };
 
-  return {notifs, newNotifCount, tabRead, readTab, readType};
+  return {
+    notifs,
+    newNotifCount,
+    tabRead,
+    readTab,
+    readType,
+    watermarks: {
+      current: initialWatermarks.current,
+      saved: getNotifWatermarks(),
+    },
+  };
 };

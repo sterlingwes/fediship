@@ -134,8 +134,8 @@ describe('useNotifications', () => {
 
         fetchPromise = new Promise(resolve =>
           resolve([
-            {type: 'follow', id: '102'},
-            {type: 'follow', id: '101'},
+            {type: 'follow', id: '101', key: 1653566331400}, // assert sorting reverses this
+            {type: 'follow', id: '102', key: 1653566331488},
           ]),
         );
         fetchSpy.mockReturnValue(fetchPromise);
