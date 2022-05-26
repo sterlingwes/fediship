@@ -5,7 +5,6 @@ import {
 } from '@react-navigation/native-stack';
 import React, {useEffect, useMemo, useRef} from 'react';
 import {
-  Alert,
   FlatList,
   InteractionManager,
   ListRenderItem,
@@ -52,8 +51,6 @@ export const Timeline = ({
   const styles = useThemeStyle(styleCreator);
   const {statuses, loading, loadingMore, fetchTimeline, reloadTimeline} =
     useTimeline('home');
-
-  useScrollToTop(scrollRef);
 
   useScrollToTop(
     useRef({
