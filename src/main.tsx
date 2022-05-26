@@ -3,7 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
 import React from 'react';
-import {useColorScheme} from 'react-native';
+import {LogBox, useColorScheme} from 'react-native';
 import {Profile} from './screens/profile';
 import {Explore} from './screens/explore';
 import {
@@ -29,6 +29,11 @@ import {NotificationProvider, useNotifications} from './utils/notifications';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+LogBox.ignoreLogs([
+  // TODO: need to silence this for HTMLView specifically...
+  'Warning: Each child in a list should have a unique "key" prop.',
+]);
 
 const iconForTab =
   (tab: 'home' | 'explore' | 'user') =>
