@@ -110,6 +110,7 @@ export const NotificationProvider = ({children}: {children: JSX.Element}) => {
 export const useNotifications = () => {
   const api = useMyMastodonInstance();
 
+  const fetching = useRef(false);
   const {tabRead, setTabRead} = useContext(NotificationContext);
   const [lastFetch, setLastFetch] = useState(getLastFetch());
   const [newNotifCount, setNewNotifCount] = useState(0);
@@ -121,6 +122,10 @@ export const useNotifications = () => {
       const currentAppState = AppState.currentState;
 
       const fetchNotifs = async () => {
+        if (fetching.current) {
+          return;
+        }
+
         if (
           currentAppState === 'background' ||
           (lastFetch && Date.now() - lastFetch <= fetchFrequency)
@@ -128,6 +133,7 @@ export const useNotifications = () => {
           return;
         }
 
+        fetching.current = true;
         markFetch();
         setLastFetch(Date.now());
 
@@ -159,6 +165,8 @@ export const useNotifications = () => {
             setTabRead(false);
           }
         }
+
+        fetching.current = false;
       };
 
       fetchNotifs();
