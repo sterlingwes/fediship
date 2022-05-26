@@ -53,12 +53,24 @@ const renderNode =
     }
 
     if (node.name === 'a') {
+      let prefix = node.children?.[0]?.data;
+      let children = defaultRenderer(node.children as HTMLViewNode[], parent);
+      if (prefix === '#' || prefix === '@') {
+        children = defaultRenderer(
+          node.children.slice(1) as HTMLViewNode[],
+          parent,
+        );
+      } else {
+        prefix = '';
+      }
+
       return (
         <Type
           style={linkStyle}
           scale={baseTypeScale ?? 'S'}
           onPress={() => onLinkPress(node.attribs)}>
-          {defaultRenderer(node.children as HTMLViewNode[], parent)}
+          {prefix}
+          {children}
         </Type>
       );
     }
