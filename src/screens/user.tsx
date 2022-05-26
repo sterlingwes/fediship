@@ -99,7 +99,6 @@ export const User = ({
         data: [
           {
             label: withNewBadge(notifs, 'favourite', 'Favorites'),
-            newCount: notifs.favourite?.length,
             onPress: () => {
               readType('favourite');
               navigation.push('FavouritesTimeline', {type: 'favourites'});
@@ -109,6 +108,21 @@ export const User = ({
             label: 'Bookmarks',
             onPress: () =>
               navigation.push('FavouritesTimeline', {type: 'bookmarks'}),
+          },
+          {
+            label: 'Your Activity',
+            newCount:
+              notifs.mention?.length +
+              notifs.favourite?.length +
+              notifs.reblog?.length,
+            hideChevron: true,
+            onPress: () => {},
+          },
+          {
+            label: 'Polls',
+            newCount: notifs.poll?.length,
+            hideChevron: true,
+            onPress: () => {},
           },
         ],
       },
