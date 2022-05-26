@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
+import {useRecentFavourites} from '../storage/recent-favourites';
 
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
@@ -213,8 +214,11 @@ export const Status = (
   },
 ) => {
   const api = useMyMastodonInstance();
+  const {favourites, trackStatusFavourite} = useRecentFavourites();
   const mainStatus = props.reblog ? props.reblog : props;
+  const recentFav = favourites[mainStatus.url ?? mainStatus.uri];
   const [faved, setFaved] = useState(mainStatus.favourited);
+  const favourited = recentFav || faved;
   const [loadingFav, setLoadingFav] = useState(false);
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
@@ -232,6 +236,7 @@ export const Status = (
       ? await api.unfavourite(mainStatus.id)
       : await api.favourite(mainStatus.id);
     if (success) {
+      trackStatusFavourite(mainStatus.url ?? mainStatus.uri, !faved);
       setFaved(!faved);
     }
     setLoadingFav(false);
@@ -285,15 +290,18 @@ export const Status = (
               <Pressable
                 disabled={loadingFav}
                 onPress={onFavourite}
-                style={[styles.starButton, faved && styles.starButtonFaved]}>
+                style={[
+                  styles.starButton,
+                  favourited && styles.starButtonFaved,
+                ]}>
                 {loadingFav ? (
                   <ActivityIndicator />
                 ) : (
                   <StarIcon
                     width="18"
                     height="18"
-                    stroke={faved ? 'transparent' : getColor('baseAccent')}
-                    fill={faved ? getColor('goldAccent') : undefined}
+                    stroke={favourited ? 'transparent' : getColor('baseAccent')}
+                    fill={favourited ? getColor('goldAccent') : undefined}
                   />
                 )}
               </Pressable>
