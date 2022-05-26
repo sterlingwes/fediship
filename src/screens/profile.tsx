@@ -15,12 +15,13 @@ import {AvatarImage} from '../components/AvatarImage';
 import {EmptyList} from '../components/EmptyList';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
+import {LockIcon} from '../components/icons/LockIcon';
 import {SolidButton} from '../components/SolidButton';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
 import {screenHeight} from '../dimensions';
 import {StyleCreator} from '../theme';
-import {useThemeStyle} from '../theme/utils';
+import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TAccount, TStatus} from '../types';
 import {useAPProfile} from './profile/profilehooks';
 
@@ -49,6 +50,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
     header: props.profile?.header,
     avatar: props.profile?.avatar,
   });
+  const {getColor} = useThemeGetters();
   const styles = useThemeStyle(styleCreator);
 
   useEffect(() => {
@@ -88,6 +90,18 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
             onPress={props.onToggleFollow}>
             {props.following ? 'Unfollow' : 'Follow'}
           </SolidButton>
+        )}
+        {props.following === false && props.profile.locked && (
+          <View style={styles.approvalRequiredContainer}>
+            <LockIcon
+              width="12"
+              height="12"
+              color={getColor('baseTextColor')}
+            />
+            <Type scale="XS" style={styles.approvalRequired}>
+              requires approval
+            </Type>
+          </View>
         )}
         <View style={styles.headerDisplayName}>
           <HTMLView value={display_name} emojis={emojis} />
@@ -348,5 +362,16 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     paddingVertical: 5,
     alignItems: 'center',
     backgroundColor: getColor('contrastTextColor'),
+  },
+  approvalRequiredContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: -8,
+  },
+  approvalRequired: {
+    textAlign: 'right',
+
+    marginLeft: 4,
   },
 });

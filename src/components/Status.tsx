@@ -16,6 +16,7 @@ import {Emoji, TAccount, TStatus} from '../types';
 import {timeAgo} from '../utils/dates';
 import {HTMLView} from './HTMLView';
 import {ChevronInverted} from './icons/Chevron';
+import {LockIcon} from './icons/LockIcon';
 import {StarIcon} from './icons/StarIcon';
 import {MediaAttachments} from './MediaAttachments';
 import {Poll} from './Poll';
@@ -184,6 +185,22 @@ const ViewMoreButton = () => {
   );
 };
 
+const lockIconWidth = 18;
+
+const AvatarLock = () => {
+  const styles = useThemeStyle(styleCreator);
+  const {getColor} = useThemeGetters();
+  return (
+    <View style={styles.avatarLock}>
+      <LockIcon
+        width={lockIconWidth + ''}
+        height={lockIconWidth + ''}
+        color={getColor('primary')}
+      />
+    </View>
+  );
+};
+
 export const Status = (
   props: TStatus & {
     isLocal: boolean;
@@ -255,6 +272,7 @@ export const Status = (
               }}
               style={[styles.avatar, props.focused && styles.avatarFocused]}
             />
+            {mainStatus.account.locked && <AvatarLock />}
           </Pressable>
           <View style={styles.statusLeftButtons}>
             <ReplyLine
@@ -369,6 +387,15 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     marginRight: 15,
     borderRadius: 5,
     backgroundColor: getColor('baseAccent'),
+  },
+  avatarLock: {
+    position: 'absolute',
+    bottom: -8,
+    right: 8,
+    backgroundColor: getColor('base'),
+    borderRadius: lockIconWidth,
+    padding: 4,
+    opacity: 0.9,
   },
   avatarFocused: {
     borderWidth: 2,
