@@ -31,6 +31,7 @@ import statusTwoImageLandscape from './fixtures/status-two-image-landscape.json'
 import statusTwoImage from './fixtures/status-two-image.json';
 import statusPixelfed from './fixtures/status-pixelfed-linebreaks.json';
 import statusBrPs from './fixtures/status-paragraphs-and-linebreaks.json';
+import statusLong from './fixtures/status-long.json';
 
 const defaultAdditionalProps = {
   isLocal: true,
@@ -38,6 +39,7 @@ const defaultAdditionalProps = {
 };
 
 const statuses = [
+  statusLong,
   statusOneImage,
   statusTwoImage,
   statusTwoImageLandscape,

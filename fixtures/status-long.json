@@ -1,0 +1,84 @@
+{
+  "id": "108365614291830130",
+  "created_at": "2022-05-26T01:20:36.000Z",
+  "in_reply_to_id": null,
+  "in_reply_to_account_id": null,
+  "sensitive": false,
+  "spoiler_text": "",
+  "visibility": "public",
+  "language": "en",
+  "uri": "https://climatejustice.social/users/GreenFire/statuses/108365613412185364",
+  "url": "https://climatejustice.social/@GreenFire/108365613412185364",
+  "replies_count": 0,
+  "reblogs_count": 0,
+  "favourites_count": 0,
+  "favourited": false,
+  "reblogged": false,
+  "muted": false,
+  "bookmarked": false,
+  "content": "<p>On the MSN news feed I have noticed a distinct drop-off in stories about the <a href=\"https://climatejustice.social/tags/BabyFormula\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>BabyFormula</span></a> shortage in USA now that Biden has taken strong steps to address it.</p><p>If it was my field of research, I sure wish I could know whether it is actually as it appears to me, in that the stories in major media and especially the news feed algorithm is geared toward bringing down public sentiment towards Biden/DNC. </p><p>Like I said I don't know to determine whether it is my perception versus a <a href=\"https://climatejustice.social/tags/conspiracy\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\">#<span>conspiracy</span></a> so I am definitely not asserting that it is actually that way.</p><p>I think he is managing the job as our POTUS marvelously during a period of unprecedented crises imho and am saddened by American public opinion poll numbers even though i don't trust polling data here as much as I once did anyway.</p>",
+  "reblog": null,
+  "account": {
+    "id": "8678",
+    "username": "GreenFire",
+    "acct": "GreenFire@climatejustice.social",
+    "display_name": "Climate Code Red",
+    "locked": false,
+    "bot": false,
+    "discoverable": true,
+    "group": false,
+    "created_at": "2022-05-03T18:57:00.952Z",
+    "note": "<p>toots may just be hot air</p>",
+    "url": "https://climatejustice.social/@GreenFire",
+    "avatar": "https://swj.io/system/accounts/avatars/000/008/678/original/1cb7cc1d4006a4b5.png?1651604219",
+    "avatar_static": "https://swj.io/system/accounts/avatars/000/008/678/original/1cb7cc1d4006a4b5.png?1651604219",
+    "header": "https://swj.io/system/accounts/headers/000/008/678/original/1c625c8951279d4e.jpeg?1651604219",
+    "header_static": "https://swj.io/system/accounts/headers/000/008/678/original/1c625c8951279d4e.jpeg?1651604219",
+    "followers_count": 176,
+    "following_count": 170,
+    "statuses_count": 3407,
+    "last_status_at": "2022-05-26",
+    "emojis": [],
+    "fields": []
+  },
+  "media_attachments": [
+    {
+      "id": "42055",
+      "type": "image",
+      "url": "https://swj.io/system/media_attachments/files/000/042/055/original/e183f4563bc3912f.png?1653528049",
+      "preview_url": "https://swj.io/system/media_attachments/files/000/042/055/small/e183f4563bc3912f.png?1653528049",
+      "remote_url": "https://climatejustice.social/system/media_attachments/files/108/365/604/578/250/910/original/e4c5af6477df5934.png",
+      "text_url": null,
+      "meta": {
+        "original": {
+          "width": 670,
+          "height": 565,
+          "size": "670x565",
+          "aspect": 1.1858407079646018
+        },
+        "small": {
+          "width": 435,
+          "height": 367,
+          "size": "435x367",
+          "aspect": 1.1852861035422344
+        }
+      },
+      "description": null,
+      "blurhash": "UwO:-CoL%Mx]R%Rjjuof~qRjRPRjjGofWBWB"
+    }
+  ],
+  "mentions": [],
+  "tags": [
+    {
+      "name": "babyformula",
+      "url": "https://swj.io/tags/babyformula"
+    },
+    {
+      "name": "conspiracy",
+      "url": "https://swj.io/tags/conspiracy"
+    }
+  ],
+  "emojis": [],
+  "card": null,
+  "poll": null
+}

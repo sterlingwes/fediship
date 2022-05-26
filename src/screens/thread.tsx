@@ -41,6 +41,7 @@ export const Thread = ({
     return (
       <Status
         key={item.id}
+        collapsed={false}
         isLocal={!!localStatus}
         focused={thread?.status?.id === item.id}
         {...(localStatus ?? item)}

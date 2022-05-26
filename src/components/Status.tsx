@@ -15,31 +15,24 @@ import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {Emoji, TAccount, TStatus} from '../types';
 import {timeAgo} from '../utils/dates';
 import {HTMLView} from './HTMLView';
+import {ChevronInverted} from './icons/Chevron';
 import {StarIcon} from './icons/StarIcon';
 import {MediaAttachments} from './MediaAttachments';
 import {Poll} from './Poll';
 import {getType} from './status.util';
 import {Type} from './Type';
 
-const CollapsedStatus = (props: TStatus) => {
+const CollapsedStatus = (props: TStatus & {collapsed: boolean}) => {
   const styles = useThemeStyle(styleCreator);
-  const [collapsed, setCollapsed] = useState(true);
 
   return (
     <View>
       {!!(props.spoiler_text ?? '').trim() && (
         <Type style={styles.spoilerText} scale="S">
-          {props.spoiler_text}
+          ⚠️ {props.spoiler_text}
         </Type>
       )}
-      <Pressable
-        onPress={() => setCollapsed(!collapsed)}
-        style={styles.collapsedButton}>
-        <Type style={styles.buttonLabel} scale="XS">
-          {collapsed ? 'Show more' : 'Show less'}
-        </Type>
-      </Pressable>
-      {!collapsed && (
+      {!props.collapsed && (
         <>
           <HTMLView emojis={props.emojis ?? []} value={props.content} />
           {props.poll && <Poll {...props.poll} />}
@@ -48,6 +41,7 @@ const CollapsedStatus = (props: TStatus) => {
           )}
         </>
       )}
+      {props.collapsed && <ViewMoreButton />}
     </View>
   );
 };
@@ -177,12 +171,26 @@ const ReplyLine = ({
   );
 };
 
+const ViewMoreButton = () => {
+  const styles = useThemeStyle(styleCreator);
+  const {getColor} = useThemeGetters();
+  return (
+    <View style={styles.viewMore}>
+      <Type scale="XS" semiBold style={styles.viewMoreText}>
+        View More
+      </Type>
+      <ChevronInverted color={getColor('primary')} width="18" />
+    </View>
+  );
+};
+
 export const Status = (
   props: TStatus & {
     isLocal: boolean;
     focused?: boolean;
     hasReplies?: boolean;
     lastStatus?: boolean;
+    collapsed?: boolean;
     onPress: () => void;
     onPressAvatar?: (account: TAccount) => void;
   },
@@ -211,6 +219,20 @@ export const Status = (
     }
     setLoadingFav(false);
   };
+
+  const [content, truncated] = useMemo(() => {
+    const plainText = mainStatus.content.replace(/<\/?[^<>]+>/g, '');
+
+    if (props.focused) {
+      return [mainStatus.content, false];
+    }
+
+    if (plainText.length < 500) {
+      return [mainStatus.content, false];
+    }
+
+    return [mainStatus.content.slice(0, 500) + '...', true];
+  }, [mainStatus.content, props.focused]);
 
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
@@ -271,19 +293,24 @@ export const Status = (
             pinned={props.pinned}
           />
           {mainStatus.sensitive ? (
-            <CollapsedStatus {...mainStatus} />
+            <CollapsedStatus
+              {...mainStatus}
+              collapsed={props.collapsed ?? true}
+            />
           ) : (
             <>
-              <HTMLView
-                emojis={mainStatus.emojis ?? []}
-                value={mainStatus.content}
-              />
-              {mainStatus.poll && <Poll {...mainStatus.poll} />}
-              {mainStatus.media_attachments && (
-                <MediaAttachments media={mainStatus.media_attachments} />
+              <HTMLView emojis={mainStatus.emojis ?? []} value={content} />
+              {!truncated && (
+                <>
+                  {mainStatus.poll && <Poll {...mainStatus.poll} />}
+                  {mainStatus.media_attachments && (
+                    <MediaAttachments media={mainStatus.media_attachments} />
+                  )}
+                </>
               )}
             </>
           )}
+          {!mainStatus.sensitive && truncated && <ViewMoreButton />}
         </View>
       </View>
     </Pressable>
@@ -316,6 +343,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   spoilerText: {
     color: getColor('baseTextColor'),
+    marginBottom: 10,
   },
   statusContainer: {
     flex: 1,
@@ -399,5 +427,15 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     width: 1,
     flex: 1,
     backgroundColor: getColor('baseAccent'),
+  },
+  viewMore: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  viewMoreText: {
+    marginRight: 2,
+    marginBottom: 1,
+    color: getColor('primary'),
   },
 });
