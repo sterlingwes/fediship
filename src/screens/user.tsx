@@ -1,6 +1,7 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {ReactNode, useMemo} from 'react';
 import {
+  DevSettings,
   ListRenderItem,
   SectionList,
   StyleSheet,
@@ -128,6 +129,11 @@ export const User = ({
             label: 'Clear Storage',
             hideChevron: true,
             onPress: () => clearStorage(),
+          },
+          {
+            label: 'Reload Bundle',
+            hideChevron: true,
+            onPress: () => DevSettings.reload(),
           },
         ],
       },
