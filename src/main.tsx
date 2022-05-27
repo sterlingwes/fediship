@@ -1,4 +1,5 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
@@ -27,6 +28,9 @@ import {FollowerList} from './screens/user/followers';
 import {FavouritesTimeline} from './screens/timelines/favourites';
 import {NotificationProvider, useNotifications} from './utils/notifications';
 import {FavouritesProvider} from './storage/recent-favourites';
+import {DrawerMenu} from './components/Drawer/DrawerMenu';
+import {DrawerHeaderLeft} from './components/Drawer/DrawerHeaderLeft';
+import {tabBarHeight} from './constants';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -91,14 +95,38 @@ const UserStack = () => (
   </UStack.Navigator>
 );
 
+const TimelineStack = () => (
+  <Drawer.Navigator
+    drawerContent={DrawerMenu}
+    screenOptions={{
+      swipeEdgeWidth: 50,
+      headerLeft: DrawerHeaderLeft,
+    }}>
+    <Drawer.Screen
+      name="Local"
+      component={Timeline}
+      initialParams={{timeline: 'home'}}
+    />
+    <Drawer.Screen
+      name="Federated"
+      component={Timeline}
+      initialParams={{timeline: 'public'}}
+    />
+  </Drawer.Navigator>
+);
+
 const TabbedHome = () => {
   const {newNotifCount, tabRead} = useNotifications();
   return (
-    <Tab.Navigator screenOptions={{tabBarStyle: {height: 60}}}>
+    <Tab.Navigator screenOptions={{tabBarStyle: {height: tabBarHeight}}}>
       <Tab.Screen
-        name="Home"
-        component={Timeline}
-        options={{tabBarIcon: iconForTab('home'), tabBarShowLabel: false}}
+        name="Timelines"
+        component={TimelineStack}
+        options={{
+          tabBarIcon: iconForTab('home'),
+          tabBarShowLabel: false,
+          headerShown: false,
+        }}
       />
       <Tab.Screen
         name="Explore"
@@ -119,6 +147,8 @@ const TabbedHome = () => {
   );
 };
 
+const Drawer = createDrawerNavigator();
+
 export const App = () => {
   const scheme = useColorScheme();
 
@@ -137,6 +167,7 @@ export const App = () => {
                   component={TabbedHome}
                   options={{headerShown: false}}
                 />
+
                 <Stack.Screen
                   name="Profile"
                   component={Profile}

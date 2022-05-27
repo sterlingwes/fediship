@@ -105,9 +105,15 @@ export interface Emoji {
   category?: string;
 }
 
+interface TimelineParams {
+  timeline: 'home' | 'public';
+}
+
 export type RootStackParamList = {
   Tabs: undefined;
-  Home: undefined;
+  Drawer: undefined;
+  Local: TimelineParams;
+  Federated: TimelineParams;
   Explore: undefined;
   User: undefined;
   UserMain: undefined;

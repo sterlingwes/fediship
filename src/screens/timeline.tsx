@@ -20,7 +20,10 @@ import {RootStackParamList, TStatus} from '../types';
 
 const createTimelineRenderer =
   (
-    navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>,
+    navigation: NativeStackNavigationProp<
+      RootStackParamList,
+      'Local' | 'Federated'
+    >,
   ): ListRenderItem<TStatus> =>
   row => {
     const status = row.item;
@@ -44,13 +47,14 @@ const createTimelineRenderer =
 
 export const Timeline = ({
   navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
+  route,
+}: NativeStackScreenProps<RootStackParamList, 'Local' | 'Federated'>) => {
   const scrollOffsetRef = useRef(0);
   const scrollRef = React.createRef<FlatList<TStatus>>();
   const lastStatusLenRef = useRef(0);
   const styles = useThemeStyle(styleCreator);
   const {statuses, loading, loadingMore, fetchTimeline, reloadTimeline} =
-    useTimeline('home');
+    useTimeline(route.params.timeline);
 
   useScrollToTop(scrollRef);
 
