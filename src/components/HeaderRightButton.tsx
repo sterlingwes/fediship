@@ -1,5 +1,5 @@
 import React, {ComponentProps} from 'react';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native';
 import {StyleCreator} from '../theme/types';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {PlusCircleIcon} from './icons/PlusCircleIcon';

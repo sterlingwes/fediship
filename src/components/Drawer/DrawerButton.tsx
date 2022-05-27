@@ -25,7 +25,7 @@ export const DrawerButton = ({
       activeOpacity={0.5}
       style={[styles.touchable, active && styles.active]}>
       <View style={styles.buttonRow}>
-        <Type scale="S" style={flex}>
+        <Type scale="S" style={flex} numberOfLines={1}>
           {children}
         </Type>
         <ChevronInverted

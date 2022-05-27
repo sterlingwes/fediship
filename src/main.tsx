@@ -131,6 +131,7 @@ const TimelineStack = () => {
       drawerContent={DrawerMenu}
       screenOptions={{
         swipeEdgeWidth: 60,
+        swipeEnabled: true,
         headerLeft: DrawerHeaderLeft,
       }}>
       {timelines.map(tl => (
