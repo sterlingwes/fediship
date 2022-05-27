@@ -31,6 +31,11 @@ import {FavouritesProvider} from './storage/recent-favourites';
 import {DrawerMenu} from './components/Drawer/DrawerMenu';
 import {DrawerHeaderLeft} from './components/Drawer/DrawerHeaderLeft';
 import {tabBarHeight} from './constants';
+import {
+  SavedTimeline,
+  SavedTimelineProvider,
+  useSavedTimelines,
+} from './storage/saved-timelines';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -95,25 +100,49 @@ const UserStack = () => (
   </UStack.Navigator>
 );
 
-const TimelineStack = () => (
-  <Drawer.Navigator
-    drawerContent={DrawerMenu}
-    screenOptions={{
-      swipeEdgeWidth: 50,
-      headerLeft: DrawerHeaderLeft,
-    }}>
-    <Drawer.Screen
-      name="Local"
-      component={Timeline}
-      initialParams={{timeline: 'home'}}
-    />
-    <Drawer.Screen
-      name="Federated"
-      component={Timeline}
-      initialParams={{timeline: 'public'}}
-    />
-  </Drawer.Navigator>
-);
+const componentForTimelineType = (tl: SavedTimeline) => {
+  if (tl.type) {
+    return Timeline;
+  }
+
+  if (tl.tag) {
+    return TagTimeline;
+  }
+
+  throw new Error(`Unsupported timeline saved: ${tl.name}`);
+};
+
+const initialParamsForTimelineType = (tl: SavedTimeline) => {
+  if (tl.type) {
+    return {timeline: tl.type};
+  }
+
+  if (tl.tag) {
+    return tl.tag;
+  }
+
+  return undefined;
+};
+
+const TimelineStack = () => {
+  const {timelines} = useSavedTimelines();
+  return (
+    <Drawer.Navigator
+      drawerContent={DrawerMenu}
+      screenOptions={{
+        swipeEdgeWidth: 60,
+        headerLeft: DrawerHeaderLeft,
+      }}>
+      {timelines.map(tl => (
+        <Drawer.Screen
+          name={tl.name}
+          component={componentForTimelineType(tl)}
+          initialParams={initialParamsForTimelineType(tl)}
+        />
+      ))}
+    </Drawer.Navigator>
+  );
+};
 
 const TabbedHome = () => {
   const {newNotifCount, tabRead} = useNotifications();
@@ -155,39 +184,41 @@ export const App = () => {
   return (
     <ErrorBoundary>
       <NotificationProvider>
-        <FavouritesProvider>
-          <ThemeProvider>
-            <NavigationContainer
-              theme={
-                scheme === 'dark' ? darkNavigationTheme : lightNavigationTheme
-              }>
-              <Stack.Navigator>
-                <Stack.Screen
-                  name="Tabs"
-                  component={TabbedHome}
-                  options={{headerShown: false}}
-                />
+        <SavedTimelineProvider>
+          <FavouritesProvider>
+            <ThemeProvider>
+              <NavigationContainer
+                theme={
+                  scheme === 'dark' ? darkNavigationTheme : lightNavigationTheme
+                }>
+                <Stack.Navigator>
+                  <Stack.Screen
+                    name="Tabs"
+                    component={TabbedHome}
+                    options={{headerShown: false}}
+                  />
 
-                <Stack.Screen
-                  name="Profile"
-                  component={Profile}
-                  options={{headerShown: false}}
-                />
-                <Stack.Screen name="Thread" component={Thread} />
-                <Stack.Screen name="PeerProfile" component={PeerProfile} />
-                <Stack.Screen name="TagTimeline" component={TagTimeline} />
-                <Stack.Screen
-                  name="ImageViewer"
-                  component={ImageViewer}
-                  options={{
-                    presentation: 'containedTransparentModal',
-                    headerShown: false,
-                  }}
-                />
-              </Stack.Navigator>
-            </NavigationContainer>
-          </ThemeProvider>
-        </FavouritesProvider>
+                  <Stack.Screen
+                    name="Profile"
+                    component={Profile}
+                    options={{headerShown: false}}
+                  />
+                  <Stack.Screen name="Thread" component={Thread} />
+                  <Stack.Screen name="PeerProfile" component={PeerProfile} />
+                  <Stack.Screen name="TagTimeline" component={TagTimeline} />
+                  <Stack.Screen
+                    name="ImageViewer"
+                    component={ImageViewer}
+                    options={{
+                      presentation: 'containedTransparentModal',
+                      headerShown: false,
+                    }}
+                  />
+                </Stack.Navigator>
+              </NavigationContainer>
+            </ThemeProvider>
+          </FavouritesProvider>
+        </SavedTimelineProvider>
       </NotificationProvider>
       <Toast />
     </ErrorBoundary>

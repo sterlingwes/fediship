@@ -2,9 +2,8 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import React, {useEffect, useMemo, useRef} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
-  Alert,
   FlatList,
   InteractionManager,
   ListRenderItem,
@@ -14,8 +13,12 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useTagTimeline} from '../api';
 import {EmptyList} from '../components/EmptyList';
+import {HeaderRightButton} from '../components/HeaderRightButton';
+import {MinusCircleIcon} from '../components/icons/MinusCircleIcon';
+import {PlusCircleIcon} from '../components/icons/PlusCircleIcon';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
+import {useSavedTimelines} from '../storage/saved-timelines';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatus} from '../types';
@@ -45,6 +48,28 @@ const createTimelineRenderer =
     );
   };
 
+const TagTimelineHeaderRight = ({
+  name,
+  tag,
+}: {
+  name: string;
+  tag: {tag: string; host: string};
+}) => {
+  const {timelines, addSavedTimeline} = useSavedTimelines();
+  const [added, setAdded] = useState(!!timelines.find(tl => tl.name === name));
+  const onPress = () => {
+    if (added) {
+      // TODO: handle remove
+      return;
+    }
+
+    setAdded(!added);
+    addSavedTimeline({name, tag});
+  };
+  const Icon = added ? MinusCircleIcon : PlusCircleIcon;
+  return <HeaderRightButton onPress={onPress} IconComponent={Icon} />;
+};
+
 export const TagTimeline = ({
   navigation,
   route,
@@ -63,8 +88,12 @@ export const TagTimeline = ({
   );
 
   useMount(() => {
+    const name = `#${tag} ${host}`;
     navigation.setOptions({
-      headerTitle: `${host} #${tag}`,
+      headerTitle: name,
+      headerRight: () => (
+        <TagTimelineHeaderRight {...{name, tag: {tag, host}}} />
+      ),
     });
   });
 

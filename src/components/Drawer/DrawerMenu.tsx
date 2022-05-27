@@ -8,12 +8,14 @@ import {StyleCreator} from '../../theme';
 import {screenHeight} from '../../dimensions';
 import {useThemeStyle} from '../../theme/utils';
 import {tabBarHeight} from '../../constants';
+import {useSavedTimelines} from '../../storage/saved-timelines';
 
 export const DrawerMenu = ({
   navigation,
   state,
 }: DrawerContentComponentProps) => {
   const styles = useThemeStyle(styleCreator);
+  const {timelines} = useSavedTimelines();
   const currentRoute = state.routeNames[state.index];
   const onPress = (route: keyof RootStackParamList) => {
     navigation.navigate(route);
@@ -24,16 +26,14 @@ export const DrawerMenu = ({
       style={flex}
       contentContainerStyle={{minHeight: screenHeight - tabBarHeight * 2}}>
       <View style={flex} />
-      <DrawerButton
-        active={currentRoute === 'Local'}
-        onPress={() => onPress('Local')}>
-        Local
-      </DrawerButton>
-      <DrawerButton
-        active={currentRoute === 'Federated'}
-        onPress={() => onPress('Federated')}>
-        Federated
-      </DrawerButton>
+      {timelines.map(tl => (
+        <DrawerButton
+          key={tl.name}
+          active={currentRoute === tl.name}
+          onPress={() => onPress(tl.name as keyof RootStackParamList)}>
+          {tl.name}
+        </DrawerButton>
+      ))}
       <View style={styles.spacer} />
     </ScrollView>
   );
