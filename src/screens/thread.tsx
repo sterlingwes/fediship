@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useMemo} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import {
   FlatList,
   ListRenderItem,
@@ -19,6 +19,8 @@ export const Thread = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Thread'>) => {
   const {statusUrl, id} = route.params;
+  const [initialLoad, setInitialLoad] = useState(true);
+  const filtered = useRef(false);
   const {thread, loading, fetchThread, error, localFallback} = useThread(
     statusUrl,
     id,
@@ -48,6 +50,20 @@ export const Thread = ({
       ...(thread?.descendants ?? []),
     ];
   }, [thread, localFallback]);
+
+  const focusedThread = useMemo(() => {
+    const targetPosition = statuses.findIndex(
+      status => (status.uri ?? status.url) === statusUrl,
+    );
+
+    if (targetPosition > 2 && initialLoad) {
+      filtered.current = true;
+      return statuses.slice(targetPosition - 1);
+    }
+
+    filtered.current = false;
+    return statuses;
+  }, [initialLoad, statuses, statusUrl]);
 
   const renderItem: ListRenderItem<TStatus> = ({item, index}) => {
     const localStatus = thread?.localStatuses?.[item.uri];
@@ -95,10 +111,15 @@ export const Thread = ({
         </InfoBanner>
       )}
       <FlatList
-        data={statuses}
+        data={focusedThread}
         renderItem={renderItem}
         style={styles.container}
         contentInset={{bottom: 40}}
+        onScroll={event => {
+          if (event.nativeEvent.contentOffset.y <= 0 && filtered.current) {
+            setInitialLoad(false);
+          }
+        }}
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={fetchThread} />
         }

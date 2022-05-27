@@ -314,13 +314,16 @@ export const useThread = (statusUrl: string, localId: string) => {
         setLocalFallback(true);
       }
 
+      let localStatus = localResult?.response?.status;
+      if (localStatus?.reblog) {
+        localStatus = localStatus?.reblog;
+      }
+
       const result = {
         ...remoteResult,
         response: {
           ...remoteResult.response,
-          ...(localResult?.response?.status
-            ? {status: localResult.response?.status}
-            : undefined),
+          ...(localStatus ? {status: localStatus} : undefined),
           localStatuses,
           localResponse: localResult?.response,
         },
