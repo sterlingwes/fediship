@@ -6,8 +6,8 @@ import {DrawerButton} from './DrawerButton';
 import {flex} from '../../utils/styles';
 import {StyleCreator} from '../../theme';
 import {screenHeight} from '../../dimensions';
-import {tabBarHeight} from '../../constants';
 import {useThemeStyle} from '../../theme/utils';
+import {tabBarHeight} from '../../constants';
 
 export const DrawerMenu = ({
   navigation,
@@ -17,12 +17,12 @@ export const DrawerMenu = ({
   const currentRoute = state.routeNames[state.index];
   const onPress = (route: keyof RootStackParamList) => {
     navigation.navigate(route);
-    setTimeout(() => navigation.closeDrawer(), 100);
+    setTimeout(() => navigation.closeDrawer(), 150);
   };
   return (
     <ScrollView
       style={flex}
-      contentContainerStyle={{minHeight: screenHeight - tabBarHeight}}>
+      contentContainerStyle={{minHeight: screenHeight - tabBarHeight * 2}}>
       <View style={flex} />
       <DrawerButton
         active={currentRoute === 'Local'}
