@@ -9,6 +9,7 @@ import {screenHeight} from '../../dimensions';
 import {useThemeStyle} from '../../theme/utils';
 import {tabBarHeight} from '../../constants';
 import {useSavedTimelines} from '../../storage/saved-timelines';
+import {LogoBoat} from '../icons/LogoBoat';
 
 export const DrawerMenu = ({
   navigation,
@@ -25,6 +26,7 @@ export const DrawerMenu = ({
     <ScrollView
       style={flex}
       contentContainerStyle={{minHeight: screenHeight - tabBarHeight * 2}}>
+      <LogoBoat />
       <View style={flex} />
       {timelines.map(tl => (
         <DrawerButton
