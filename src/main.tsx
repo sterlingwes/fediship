@@ -1,15 +1,8 @@
-import {
-  BottomTabScreenProps,
-  createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs';
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {NavigationContainer, useScrollToTop} from '@react-navigation/native';
-import {
-  createNativeStackNavigator,
-  NativeStackScreenProps,
-} from '@react-navigation/native-stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import React, {MutableRefObject, useMemo, useRef} from 'react';
+import React from 'react';
 import {LogBox} from 'react-native';
 import {Profile} from './screens/profile';
 import {Explore} from './screens/explore';
@@ -19,7 +12,6 @@ import {
   lightNavigationTheme,
 } from './theme';
 import {Thread} from './screens/thread';
-import {Timeline} from './screens/timeline';
 import {RootStackParamList} from './types';
 import {PeerProfile} from './screens/peer-profile';
 import {useTheme, useThemeGetters} from './theme/utils';
@@ -33,16 +25,11 @@ import {FollowerList} from './screens/user/followers';
 import {FavouritesTimeline} from './screens/timelines/favourites';
 import {NotificationProvider, useNotifications} from './utils/notifications';
 import {FavouritesProvider} from './storage/recent-favourites';
-import {DrawerMenu} from './components/Drawer/DrawerMenu';
-import {DrawerHeaderLeft} from './components/Drawer/DrawerHeaderLeft';
 import {tabBarHeight} from './constants';
-import {
-  SavedTimeline,
-  SavedTimelineProvider,
-  useSavedTimelines,
-} from './storage/saved-timelines';
+import {SavedTimelineProvider} from './storage/saved-timelines';
 import {MessageIcon} from './components/icons/MessageIcon';
 import {AppearanceSettings} from './screens/settings/apperance';
+import {TimelineStack} from './timeline-stack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -112,126 +99,6 @@ const UserStack = () => (
   </UStack.Navigator>
 );
 
-const componentForTimelineType = (
-  tl: SavedTimeline,
-  screenRefs: MutableRefObject<RefMap>,
-) => {
-  if (tl.type) {
-    return (
-      props: NativeStackScreenProps<RootStackParamList, 'Local' | 'Federated'>,
-    ) => (
-      <Timeline
-        ref={(nodeRef: ScreenRefHandle) =>
-          (screenRefs.current[tl.name] = nodeRef)
-        }
-        {...props}
-      />
-    );
-  }
-
-  if (tl.tag) {
-    return (
-      props: NativeStackScreenProps<RootStackParamList, 'TagTimeline'>,
-    ) => <TagTimeline {...props} />;
-  }
-
-  throw new Error(`Unsupported timeline saved: ${tl.name}`);
-};
-
-type ScreenRefHandle = {scrollToTop: () => void} | undefined;
-type RefMap = Record<string, ScreenRefHandle>;
-
-const initialParamsForTimelineType = (tl: SavedTimeline) => {
-  if (tl.type) {
-    return {timeline: tl.type};
-  }
-
-  if (tl.tag) {
-    return tl.tag;
-  }
-
-  return undefined;
-};
-
-const TimelineStack = ({
-  navigation,
-}: BottomTabScreenProps<RootStackParamList>) => {
-  const {timelines} = useSavedTimelines();
-  const screenRefs = useRef<RefMap>({});
-
-  useScrollToTop(
-    useRef({
-      scrollToTop: () => {
-        const state = navigation.getState();
-        const tlRoute = state.routes.find(r => r.name === 'Timelines');
-        if (!tlRoute) {
-          return;
-        }
-
-        const index = tlRoute.state?.index;
-        if (typeof index !== 'number') {
-          // assume we're on local
-          screenRefs.current?.Local?.scrollToTop();
-          return;
-        }
-        const childTab = tlRoute.state?.routeNames?.[index];
-        if (!childTab) {
-          return;
-        }
-        const screenRef = screenRefs.current[childTab];
-        if (screenRef) {
-          screenRef.scrollToTop();
-        }
-      },
-    }),
-  );
-
-  const dynamicScreens = useMemo(
-    () =>
-      timelines.reduce(
-        (acc, tl) => {
-          const ScreenComponent = componentForTimelineType(tl, screenRefs);
-          return {
-            ...acc,
-            [tl.name]: ScreenComponent,
-          };
-        },
-        {
-          Explore: (
-            props: NativeStackScreenProps<RootStackParamList, 'Explore'>,
-          ) => (
-            <Explore
-              ref={(nodeRef: ScreenRefHandle) =>
-                (screenRefs.current.Explore = nodeRef)
-              }
-              {...props}
-            />
-          ),
-        } as Record<string, React.ComponentType<any>>,
-      ),
-    [timelines, screenRefs],
-  );
-
-  return (
-    <Drawer.Navigator
-      drawerContent={DrawerMenu}
-      screenOptions={{
-        swipeEdgeWidth: 60,
-        swipeEnabled: true,
-        headerLeft: DrawerHeaderLeft,
-      }}>
-      {timelines.map(tl => (
-        <Drawer.Screen
-          name={tl.name}
-          component={dynamicScreens[tl.name]}
-          initialParams={initialParamsForTimelineType(tl)}
-        />
-      ))}
-      <Drawer.Screen name="Explore" component={dynamicScreens.Explore} />
-    </Drawer.Navigator>
-  );
-};
-
 const TabbedHome = () => {
   const {newNotifCount, tabRead} = useNotifications();
   return (
@@ -263,8 +130,6 @@ const TabbedHome = () => {
     </Tab.Navigator>
   );
 };
-
-const Drawer = createDrawerNavigator();
 
 const NavigationRoot = () => {
   const theme = useTheme();
