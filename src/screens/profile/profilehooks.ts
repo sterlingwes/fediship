@@ -73,7 +73,7 @@ export const useAPProfile = (
               .map(toot => ({...toot, emojis: emojis.current})),
           ),
         );
-        setNextPage(response.pageInfo.next);
+        setNextPage(response.pageInfo?.next ?? false);
       }
     } catch (e: unknown) {
       console.error(e);
@@ -114,7 +114,7 @@ export const useAPProfile = (
         }
 
         pinnedIds.current = result.pinnedIds;
-        setNextPage(result.pageInfo?.next);
+        setNextPage(result.pageInfo?.next ?? false);
       }
 
       await fetchEmojis(idParts.host);
@@ -163,6 +163,7 @@ export const useAPProfile = (
   });
 
   const loadingMore = !!nextPage && loading;
+  const hasMore = nextPage !== false;
 
   return {
     profile,
@@ -172,6 +173,7 @@ export const useAPProfile = (
     error,
     loading,
     loadingMore,
+    hasMore,
     refreshing,
     localId,
     following,

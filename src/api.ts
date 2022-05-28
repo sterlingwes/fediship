@@ -211,8 +211,17 @@ export const useTagTimeline = (host: string, tag: string) => {
   });
 
   const loadingMore = !!nextPage && loading;
+  const hasMore = nextPage !== false;
 
-  return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
+  return {
+    statuses,
+    fetchTimeline,
+    reloadTimeline,
+    error,
+    loading,
+    loadingMore,
+    hasMore,
+  };
 };
 
 export const useFavourites = (type: 'favourites' | 'bookmarks') => {

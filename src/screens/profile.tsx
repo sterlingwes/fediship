@@ -10,12 +10,14 @@ import {
   View,
   ActivityIndicator,
   Image,
+  InteractionManager,
 } from 'react-native';
 import {AvatarImage} from '../components/AvatarImage';
 import {EmptyList} from '../components/EmptyList';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
 import {LockIcon} from '../components/icons/LockIcon';
+import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {SolidButton} from '../components/SolidButton';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
@@ -209,6 +211,8 @@ export const Profile = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Profile'>) => {
   const initialLoad = useRef(true);
+  const scrollRef = useRef<FlatList<TStatus> | null>();
+  const scrollOffsetRef = useRef(0);
   const [headerOpaque, setHeaderOpaque] = useState(false);
   const {account, host, accountHandle, self} = route.params;
   const styles = useThemeStyle(styleCreator);
@@ -219,6 +223,7 @@ export const Profile = ({
     statuses,
     refreshing,
     loadingMore,
+    hasMore,
     fetchTimeline,
     fetchAccountAndTimeline,
     following,
@@ -250,6 +255,27 @@ export const Profile = ({
     }
   }, [initialLoad, loading, profile, statuses, fetchTimeline]);
 
+  const LoadFooter = useMemo(
+    () => (
+      <LoadMoreFooter
+        onPress={() =>
+          fetchTimeline().then(() =>
+            InteractionManager.runAfterInteractions(() => {
+              setTimeout(() => {
+                scrollRef.current?.scrollToOffset({
+                  animated: true,
+                  offset: scrollOffsetRef.current + 250,
+                });
+              }, 10);
+            }),
+          )
+        }
+        loading={loadingMore}
+      />
+    ),
+    [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef],
+  );
+
   if (error && !account) {
     return (
       <ProfileError {...{error, host, headerOpaque, navigation}} showHeader />
@@ -259,11 +285,12 @@ export const Profile = ({
   return (
     <View style={styles.container}>
       <FlatList
+        ref={ref => (scrollRef.current = ref)}
         data={statuses}
         renderItem={renderItem}
         style={styles.container}
-        contentInset={{bottom: 40}}
         onScroll={event => {
+          scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
           const aboveBreakpoint =
             event.nativeEvent.contentOffset.y <=
             headerOpacityVerticalBreakpoint;
@@ -279,6 +306,7 @@ export const Profile = ({
           setHeaderOpaque(true);
         }}
         ListHeaderComponent={headerComponent}
+        ListFooterComponent={statuses.length && hasMore ? LoadFooter : null}
         ListEmptyComponent={() =>
           error ? (
             <ProfileError
@@ -288,7 +316,6 @@ export const Profile = ({
             <EmptyList loading={loading} />
           )
         }
-        onEndReached={fetchTimeline}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -303,13 +330,6 @@ export const Profile = ({
           transparent: !headerOpaque,
         }}
       />
-      {loadingMore && (
-        <View style={styles.loadingMoreBar}>
-          <Type scale="S" medium>
-            Loading More...
-          </Type>
-        </View>
-      )}
     </View>
   );
 };

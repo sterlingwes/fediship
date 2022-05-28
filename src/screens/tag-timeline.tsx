@@ -2,7 +2,7 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import React, {useEffect, useMemo, useRef} from 'react';
+import React, {useMemo, useRef} from 'react';
 import {
   FlatList,
   InteractionManager,
@@ -10,12 +10,11 @@ import {
   RefreshControl,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useTagTimeline} from '../api';
 import {EmptyList} from '../components/EmptyList';
+import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {SaveTimelineButton} from '../components/SaveTimelineButton';
 import {Status} from '../components/Status';
-import {Type} from '../components/Type';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatus} from '../types';
@@ -50,12 +49,17 @@ export const TagTimeline = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'TagTimeline'>) => {
   const scrollOffsetRef = useRef(0);
-  const scrollRef = React.createRef<FlatList<TStatus>>();
-  const lastStatusLenRef = useRef(0);
+  const scrollRef = useRef<FlatList<TStatus> | null>();
   const styles = useThemeStyle(styleCreator);
   const {host, tag} = route.params;
-  const {statuses, loading, loadingMore, fetchTimeline, reloadTimeline} =
-    useTagTimeline(host, tag);
+  const {
+    statuses,
+    loading,
+    loadingMore,
+    fetchTimeline,
+    reloadTimeline,
+    hasMore,
+  } = useTagTimeline(host, tag);
 
   const renderItem = useMemo(
     () => createTimelineRenderer(navigation),
@@ -72,30 +76,31 @@ export const TagTimeline = ({
     });
   });
 
-  useEffect(() => {
-    if (
-      lastStatusLenRef.current > 0 &&
-      statuses.length > lastStatusLenRef.current
-    ) {
-      setTimeout(
-        () =>
-          InteractionManager.runAfterInteractions(() =>
-            scrollRef.current?.scrollToOffset({
-              animated: true,
-              offset: scrollOffsetRef.current + 200,
+  const LoadFooter = useMemo(
+    () => (
+      <LoadMoreFooter
+        onPress={() =>
+          fetchTimeline().then(() =>
+            InteractionManager.runAfterInteractions(() => {
+              setTimeout(() => {
+                scrollRef.current?.scrollToOffset({
+                  animated: true,
+                  offset: scrollOffsetRef.current + 250,
+                });
+              }, 10);
             }),
-          ),
-        100,
-      );
-    }
-
-    lastStatusLenRef.current = statuses.length;
-  }, [lastStatusLenRef, scrollRef, statuses]);
+          )
+        }
+        loading={loadingMore}
+      />
+    ),
+    [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef],
+  );
 
   return (
     <View style={styles.screen}>
       <FlatList
-        ref={scrollRef}
+        ref={ref => (scrollRef.current = ref)}
         data={statuses}
         renderItem={renderItem}
         style={styles.container}
@@ -105,18 +110,9 @@ export const TagTimeline = ({
         onScroll={event => {
           scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
         }}
+        ListFooterComponent={statuses.length && hasMore ? LoadFooter : null}
         ListEmptyComponent={() => <EmptyList loading={loading} />}
-        onEndReached={() => fetchTimeline()}
       />
-      {loadingMore && (
-        <View style={styles.loadingMoreBar}>
-          <SafeAreaView edges={['bottom']}>
-            <Type scale="S" medium>
-              Loading More...
-            </Type>
-          </SafeAreaView>
-        </View>
-      )}
     </View>
   );
 };
