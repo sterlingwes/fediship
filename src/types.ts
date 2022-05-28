@@ -136,6 +136,7 @@ export type RootStackParamList = {
   PeerProfile: {host: string};
   ImageViewer: {index: number; attachments: TMediaAttachment[]};
   FollowerList: {source: 'mine' | 'theirs'};
+  AppearanceSettings: undefined;
 };
 
 export interface Webfinger {

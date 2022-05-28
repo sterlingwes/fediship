@@ -137,6 +137,15 @@ export const User = ({
         ],
       },
       {
+        title: 'Settings',
+        data: [
+          {
+            label: 'Appearance',
+            onPress: () => navigation.push('AppearanceSettings'),
+          },
+        ],
+      },
+      {
         title: 'Testing',
         data: [
           {

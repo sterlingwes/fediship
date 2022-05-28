@@ -1,4 +1,4 @@
-import {ColorValue, StyleSheet} from 'react-native';
+import {ColorSchemeName, ColorValue, StyleSheet} from 'react-native';
 
 export interface TThemeContext {
   palette: {
@@ -16,6 +16,12 @@ export interface TThemeContext {
     baseTextColor: ColorValue;
     contrastTextColor: ColorValue;
   };
+
+  activeScheme: ColorSchemeName;
+  chosenScheme: ColorSchemeName;
+  setChosenScheme: (scheme: ColorSchemeName) => void;
+  systemSetting: boolean;
+  setUseSystemSetting: (use: boolean) => void;
 }
 
 export type ValidColor = keyof TThemeContext['palette'];

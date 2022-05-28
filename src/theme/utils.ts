@@ -22,3 +22,7 @@ export const useThemeStyle = (styleCreator: StyleCreator) => {
 
   return styles;
 };
+
+export const useTheme = () => {
+  return useContext(ThemeContext);
+};
