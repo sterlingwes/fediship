@@ -3,6 +3,7 @@ import {
   TAccount,
   TAccountRelationship,
   TNotification,
+  TPeerInfo,
   TPeerTagTrend,
   TProfileResult,
   TStatus,
@@ -253,6 +254,14 @@ export class MastodonApiClient extends HTTPClient {
 
   async vote(pollId: string, choices: number[]) {
     return this.authedPost(`polls/${pollId}/votes`, this.form({choices}));
+  }
+
+  async getInstanceInfo() {
+    const response = await this.get('instance');
+    if (!response.ok) {
+      return;
+    }
+    return response.body as TPeerInfo;
   }
 
   async getInstancePeers() {

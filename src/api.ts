@@ -1,7 +1,7 @@
-import {useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {TAccount, TPeerInfo, TStatus, TThread} from './types';
 import {useMount} from './utils/hooks';
-import {getPeerStorageKeys, savePeerInfo} from './screens/explore/peer-storage';
+import {getPeerStorageKeys} from './screens/explore/peer-storage';
 import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
 import {parseStatusUrl} from './api/api.utils';
 
@@ -85,46 +85,43 @@ export const usePeers = () => {
   const api = useMyMastodonInstance();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const fullPeersList = useRef<string[]>([]);
   const [peers, setPeers] = useState<string[]>([]);
-  const [peerInfoFetchProgress, setProgress] = useState(0);
-  const [peersToFetch, setPeersToFetch] = useState(0);
-
-  const progressCallback = (count: number, total: number) => {
-    setProgress(count);
-    if (total !== peersToFetch) {
-      setPeersToFetch(total);
-    }
-  };
 
   const fetchPeers = async () => {
     setLoading(true);
     try {
       const peerList = await api.getInstancePeers();
-      setPeers(peerList);
-      await getPeerInfos(peerList, progressCallback, savePeerInfo);
+      setPeers(peerList.sort());
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);
     } finally {
       setLoading(false);
-      setProgress(0);
     }
   };
 
-  let progressMessage = '';
-  if (loading) {
-    if (peersToFetch) {
-      progressMessage = `Found ${peersToFetch} new peer instances`;
-    } else {
-      progressMessage = 'Fetching peers...';
-    }
+  const filterPeers = useCallback(
+    (q: string) => {
+      console.log({q});
+      if (!fullPeersList.current.length) {
+        fullPeersList.current = peers.slice(0);
+      }
 
-    if (peerInfoFetchProgress) {
-      progressMessage = `Fetching peer info ${peerInfoFetchProgress} of ${peersToFetch}`;
-    }
-  }
+      setPeers(
+        fullPeersList.current.filter(peer =>
+          peer.toLowerCase().includes(q.toLowerCase()),
+        ),
+      );
+    },
+    [peers, setPeers],
+  );
 
-  return {peers, fetchPeers, error, loading, progressMessage};
+  useMount(() => {
+    fetchPeers();
+  });
+
+  return {peers, fetchPeers, filterPeers, error, loading};
 };
 
 export const useTimeline = (timeline: 'home' | 'public') => {

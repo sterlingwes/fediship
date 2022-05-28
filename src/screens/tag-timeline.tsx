@@ -63,9 +63,9 @@ export const TagTimeline = ({
   );
 
   useMount(() => {
-    const name = `#${tag} ${host}`;
+    const name = `${tag} ${host}`;
     navigation.setOptions({
-      headerTitle: name,
+      headerTitle: `#${name}`,
       headerRight: () => (
         <SaveTimelineButton params={{name, tag: {tag, host}}} />
       ),

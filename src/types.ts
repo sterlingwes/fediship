@@ -115,6 +115,7 @@ export type RootStackParamList = {
   Local: TimelineParams;
   Federated: TimelineParams;
   Explore: undefined;
+  Compose: undefined;
   User: undefined;
   UserMain: undefined;
   TagTimeline: {host: string; tag: string};
@@ -132,7 +133,7 @@ export type RootStackParamList = {
     self?: boolean;
   };
   Thread: {statusUrl: string; id: string};
-  PeerProfile: TPeerInfo;
+  PeerProfile: {host: string};
   ImageViewer: {index: number; attachments: TMediaAttachment[]};
   FollowerList: {source: 'mine' | 'theirs'};
 };

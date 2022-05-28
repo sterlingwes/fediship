@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 import {View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {StyleCreator} from '../../theme';
@@ -12,7 +12,7 @@ export const DrawerButton = ({
   active,
   onPress,
 }: {
-  children: string;
+  children: ReactNode;
   active?: boolean;
   onPress: () => void;
 }) => {
@@ -43,6 +43,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     paddingHorizontal: 10,
     paddingVertical: 8,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   touchable: {
     borderTopWidth: 1,

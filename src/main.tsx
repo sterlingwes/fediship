@@ -18,7 +18,6 @@ import {RootStackParamList} from './types';
 import {PeerProfile} from './screens/peer-profile';
 import {useThemeGetters} from './theme/utils';
 import {HomeIcon} from './components/icons/HomeIcon';
-import {MapIcon} from './components/icons/MapIcon';
 import {UserIcon} from './components/icons/UserIcon';
 import {User} from './screens/user';
 import {ImageViewer} from './screens/image-viewer';
@@ -36,6 +35,7 @@ import {
   SavedTimelineProvider,
   useSavedTimelines,
 } from './storage/saved-timelines';
+import {MessageIcon} from './components/icons/MessageIcon';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -46,7 +46,7 @@ LogBox.ignoreLogs([
 ]);
 
 const iconForTab =
-  (tab: 'home' | 'explore' | 'user') =>
+  (tab: 'home' | 'compose' | 'user') =>
   ({focused}: {focused: boolean}) => {
     const {getColor} = useThemeGetters();
     switch (tab) {
@@ -56,9 +56,9 @@ const iconForTab =
             color={focused ? getColor('blueAccent') : getColor('primary')}
           />
         );
-      case 'explore':
+      case 'compose':
         return (
-          <MapIcon
+          <MessageIcon
             color={focused ? getColor('blueAccent') : getColor('primary')}
           />
         );
@@ -134,6 +134,7 @@ const TimelineStack = () => {
         swipeEnabled: true,
         headerLeft: DrawerHeaderLeft,
       }}>
+      <Drawer.Screen name="Explore" component={Explore} />
       {timelines.map(tl => (
         <Drawer.Screen
           name={tl.name}
@@ -159,9 +160,9 @@ const TabbedHome = () => {
         }}
       />
       <Tab.Screen
-        name="Explore"
+        name="Compose"
         component={Explore}
-        options={{tabBarIcon: iconForTab('explore'), tabBarShowLabel: false}}
+        options={{tabBarIcon: iconForTab('compose'), tabBarShowLabel: false}}
       />
       <Tab.Screen
         name="User"

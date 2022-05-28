@@ -1,5 +1,5 @@
-import React from 'react';
-import {RootStackParamList} from '../types';
+import React, {useState} from 'react';
+import {RootStackParamList, TPeerInfo} from '../types';
 import {useMount} from '../utils/hooks';
 import {Pressable, ScrollView, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -9,25 +9,44 @@ import {Type} from '../components/Type';
 import {thousandsNumber} from '../utils/numbers';
 import {HTMLView} from '../components/HTMLView';
 import {AvatarImage} from '../components/AvatarImage';
-import {usePeerTags} from './explore/peer-tags';
+import {useRemoteMastodonInstance} from '../api/hooks';
 
 export const PeerProfile = ({
   navigation,
   route,
 }: NativeStackScreenProps<RootStackParamList, 'PeerProfile'>) => {
   const styles = useThemeStyle(styleCreator);
-  const {uri, title, description, stats, thumbnail, languages} = route.params;
-  const {tags} = usePeerTags(uri);
+  const {host} = route.params;
+  const getApi = useRemoteMastodonInstance();
+  const [instanceInfo, setInstanceInfo] = useState<TPeerInfo>();
 
   useMount(() => {
     if (!route.params) {
       return;
     }
-    navigation.setOptions({headerTitle: title});
+
+    const fetchInstanceProfile = async () => {
+      const api = getApi(host);
+      const info = await api.getInstanceInfo();
+      if (info) {
+        setInstanceInfo(info);
+      }
+    };
+
+    fetchInstanceProfile();
+
+    navigation.setOptions({headerTitle: host});
   });
 
+  if (!instanceInfo) {
+    return null;
+  }
+
+  const {thumbnail, description, stats, languages} = instanceInfo;
+  const tags: string[] = [];
+
   const onPressTag = (tag: string) => {
-    navigation.push('TagTimeline', {host: uri, tag});
+    navigation.push('TagTimeline', {host, tag});
   };
 
   const Spacer = () => <View style={styles.spacer} />;
@@ -37,27 +56,34 @@ export const PeerProfile = ({
       <AvatarImage uri={thumbnail} style={styles.avatar} />
       <Spacer />
       <Spacer />
-      <HTMLView value={description} />
-      <Spacer />
-      <Spacer />
       <Type scale="S">Users: {thousandsNumber(stats.user_count)}</Type>
       <Spacer />
       <Type scale="S">Statuses: {thousandsNumber(stats.status_count)}</Type>
       <Spacer />
-      <Type scale="S">Domains: {thousandsNumber(stats.domain_count)}</Type>
+      <Type scale="S">Peers: {thousandsNumber(stats.domain_count)}</Type>
+      <Spacer />
+      <Spacer />
+      <HTMLView value={description} />
       <Spacer />
       <Type scale="S">Languages: {languages.join(', ')}</Type>
       <Spacer />
       <Spacer />
       <Spacer />
-      <Type scale="S">Trending tags:</Type>
-      <View>
-        {tags.map(tag => (
-          <Pressable style={styles.tagRow} onPress={() => onPressTag(tag)}>
-            <Type key={tag} scale="S" style={styles.tagLink}>{`#${tag}`}</Type>
-          </Pressable>
-        ))}
-      </View>
+      {!!tags.length && (
+        <>
+          <Type scale="S">Trending tags:</Type>
+          <View>
+            {tags.map(tag => (
+              <Pressable style={styles.tagRow} onPress={() => onPressTag(tag)}>
+                <Type
+                  key={tag}
+                  scale="S"
+                  style={styles.tagLink}>{`#${tag}`}</Type>
+              </Pressable>
+            ))}
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 };
