@@ -15,6 +15,10 @@ export class ApiResponse {
     return this.json;
   }
 
+  get status() {
+    return this.response.status;
+  }
+
   get pageInfo() {
     const linkHeader = this.response.headers.get('link');
     if (!linkHeader) {
@@ -54,12 +58,8 @@ export class ApiResponse {
       );
     }
 
-    if (!this.body) {
-      throw new Error('No JSON body parsed to check errors against');
-    }
-
-    if (typeof this.body.error !== 'string') {
-      throw new Error('Unexpected error response');
+    if (!this.body || typeof this.body.error !== 'string') {
+      return {error: `Unexpected error received (${this.status})`};
     }
 
     return this.body;
