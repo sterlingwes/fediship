@@ -1,10 +1,16 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {
+  BottomTabScreenProps,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {NavigationContainer, useScrollToTop} from '@react-navigation/native';
+import {
+  createNativeStackNavigator,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import React from 'react';
-import {LogBox, useColorScheme} from 'react-native';
+import React, {MutableRefObject, useMemo, useRef} from 'react';
+import {LogBox} from 'react-native';
 import {Profile} from './screens/profile';
 import {Explore} from './screens/explore';
 import {
@@ -106,17 +112,34 @@ const UserStack = () => (
   </UStack.Navigator>
 );
 
-const componentForTimelineType = (tl: SavedTimeline) => {
+const componentForTimelineType = (
+  tl: SavedTimeline,
+  screenRefs: MutableRefObject<RefMap>,
+) => {
   if (tl.type) {
-    return Timeline;
+    return (
+      props: NativeStackScreenProps<RootStackParamList, 'Local' | 'Federated'>,
+    ) => (
+      <Timeline
+        ref={(nodeRef: ScreenRefHandle) =>
+          (screenRefs.current[tl.name] = nodeRef)
+        }
+        {...props}
+      />
+    );
   }
 
   if (tl.tag) {
-    return TagTimeline;
+    return (
+      props: NativeStackScreenProps<RootStackParamList, 'TagTimeline'>,
+    ) => <TagTimeline {...props} />;
   }
 
   throw new Error(`Unsupported timeline saved: ${tl.name}`);
 };
+
+type ScreenRefHandle = {scrollToTop: () => void} | undefined;
+type RefMap = Record<string, ScreenRefHandle>;
 
 const initialParamsForTimelineType = (tl: SavedTimeline) => {
   if (tl.type) {
@@ -130,8 +153,65 @@ const initialParamsForTimelineType = (tl: SavedTimeline) => {
   return undefined;
 };
 
-const TimelineStack = () => {
+const TimelineStack = ({
+  navigation,
+}: BottomTabScreenProps<RootStackParamList>) => {
   const {timelines} = useSavedTimelines();
+  const screenRefs = useRef<RefMap>({});
+
+  useScrollToTop(
+    useRef({
+      scrollToTop: () => {
+        const state = navigation.getState();
+        const tlRoute = state.routes.find(r => r.name === 'Timelines');
+        if (!tlRoute) {
+          return;
+        }
+
+        const index = tlRoute.state?.index;
+        if (typeof index !== 'number') {
+          // assume we're on local
+          screenRefs.current?.Local?.scrollToTop();
+          return;
+        }
+        const childTab = tlRoute.state?.routeNames?.[index];
+        if (!childTab) {
+          return;
+        }
+        const screenRef = screenRefs.current[childTab];
+        if (screenRef) {
+          screenRef.scrollToTop();
+        }
+      },
+    }),
+  );
+
+  const dynamicScreens = useMemo(
+    () =>
+      timelines.reduce(
+        (acc, tl) => {
+          const ScreenComponent = componentForTimelineType(tl, screenRefs);
+          return {
+            ...acc,
+            [tl.name]: ScreenComponent,
+          };
+        },
+        {
+          Explore: (
+            props: NativeStackScreenProps<RootStackParamList, 'Explore'>,
+          ) => (
+            <Explore
+              ref={(nodeRef: ScreenRefHandle) =>
+                (screenRefs.current.Explore = nodeRef)
+              }
+              {...props}
+            />
+          ),
+        } as Record<string, React.ComponentType<any>>,
+      ),
+    [timelines, screenRefs],
+  );
+
   return (
     <Drawer.Navigator
       drawerContent={DrawerMenu}
@@ -143,11 +223,11 @@ const TimelineStack = () => {
       {timelines.map(tl => (
         <Drawer.Screen
           name={tl.name}
-          component={componentForTimelineType(tl)}
+          component={dynamicScreens[tl.name]}
           initialParams={initialParamsForTimelineType(tl)}
         />
       ))}
-      <Drawer.Screen name="Explore" component={Explore} />
+      <Drawer.Screen name="Explore" component={dynamicScreens.Explore} />
     </Drawer.Navigator>
   );
 };

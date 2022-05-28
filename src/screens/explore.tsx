@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useMemo} from 'react';
+import React, {forwardRef, useImperativeHandle, useMemo, useRef} from 'react';
 import {
   FlatList,
   ListRenderItem,
@@ -17,51 +17,60 @@ import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
 
-export const Explore = ({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Explore'>) => {
-  const styles = useThemeStyle(styleCreator);
-  const {getColor} = useThemeGetters();
-  const {loading, peers, fetchPeers, filterPeers} = usePeers();
+export const Explore = forwardRef(
+  (
+    {navigation}: NativeStackScreenProps<RootStackParamList, 'Explore'>,
+    ref,
+  ) => {
+    const scrollRef = useRef<FlatList<string> | null>();
+    const styles = useThemeStyle(styleCreator);
+    const {getColor} = useThemeGetters();
+    const {loading, peers, fetchPeers, filterPeers} = usePeers();
 
-  const renderItem: ListRenderItem<string> = ({item}) => (
-    <TouchableOpacity
-      style={styles.listRow}
-      activeOpacity={0.5}
-      onPress={() => navigation.navigate('PeerProfile', {host: item})}>
-      <Type scale="S" style={styles.peerName} numberOfLines={1}>
-        {item}
-      </Type>
-      <ChevronInverted color={getColor('primary')} />
-    </TouchableOpacity>
-  );
+    useImperativeHandle(ref, () => ({
+      scrollToTop: () => scrollRef.current?.scrollToOffset({offset: 0}),
+    }));
 
-  const PeerListHeader = useMemo(() => {
+    const renderItem: ListRenderItem<string> = ({item}) => (
+      <TouchableOpacity
+        style={styles.listRow}
+        activeOpacity={0.5}
+        onPress={() => navigation.navigate('PeerProfile', {host: item})}>
+        <Type scale="S" style={styles.peerName} numberOfLines={1}>
+          {item}
+        </Type>
+        <ChevronInverted color={getColor('primary')} />
+      </TouchableOpacity>
+    );
+
+    const PeerListHeader = useMemo(() => {
+      return (
+        <View style={styles.peerListHeader}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search"
+            onSubmitEditing={e => filterPeers(e.nativeEvent.text)}
+          />
+        </View>
+      );
+    }, [filterPeers, styles]);
+
     return (
-      <View style={styles.peerListHeader}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search"
-          onSubmitEditing={e => filterPeers(e.nativeEvent.text)}
+      <View>
+        <FlatList
+          ref={nodeRef => (scrollRef.current = nodeRef)}
+          data={peers}
+          renderItem={renderItem}
+          contentInsetAdjustmentBehavior="automatic"
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={fetchPeers} />
+          }
+          ListHeaderComponent={PeerListHeader}
         />
       </View>
     );
-  }, [filterPeers, styles]);
-
-  return (
-    <View>
-      <FlatList
-        data={peers}
-        renderItem={renderItem}
-        contentInsetAdjustmentBehavior="automatic"
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={fetchPeers} />
-        }
-        ListHeaderComponent={PeerListHeader}
-      />
-    </View>
-  );
-};
+  },
+);
 
 const styleCreator: StyleCreator = ({getColor}) => ({
   container: {

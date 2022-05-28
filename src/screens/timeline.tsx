@@ -1,9 +1,8 @@
-import {useScrollToTop} from '@react-navigation/native';
 import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import React, {useEffect, useMemo, useRef} from 'react';
+import React, {forwardRef, useImperativeHandle, useMemo, useRef} from 'react';
 import {
   FlatList,
   InteractionManager,
@@ -12,8 +11,8 @@ import {
   View,
 } from 'react-native';
 import {useTimeline} from '../api';
+import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {Status} from '../components/Status';
-import {Type} from '../components/Type';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatus} from '../types';
@@ -45,69 +44,69 @@ const createTimelineRenderer =
     );
   };
 
-export const Timeline = ({
-  navigation,
-  route,
-}: NativeStackScreenProps<RootStackParamList, 'Local' | 'Federated'>) => {
-  const scrollOffsetRef = useRef(0);
-  const scrollRef = React.createRef<FlatList<TStatus>>();
-  const lastStatusLenRef = useRef(0);
-  const styles = useThemeStyle(styleCreator);
-  const {statuses, loading, loadingMore, fetchTimeline, reloadTimeline} =
-    useTimeline(route.params.timeline);
+export const Timeline = forwardRef(
+  (
+    {
+      navigation,
+      route,
+    }: NativeStackScreenProps<RootStackParamList, 'Local' | 'Federated'>,
+    ref,
+  ) => {
+    const scrollOffsetRef = useRef(0);
+    const scrollRef = useRef<FlatList<TStatus> | null>();
+    const styles = useThemeStyle(styleCreator);
+    const {statuses, loading, loadingMore, fetchTimeline, reloadTimeline} =
+      useTimeline(route.params.timeline);
 
-  useScrollToTop(scrollRef);
+    useImperativeHandle(ref, () => ({
+      scrollToTop: () => scrollRef.current?.scrollToOffset({offset: 0}),
+    }));
 
-  const renderItem = useMemo(
-    () => createTimelineRenderer(navigation),
-    [navigation],
-  );
+    const renderItem = useMemo(
+      () => createTimelineRenderer(navigation),
+      [navigation],
+    );
 
-  useEffect(() => {
-    if (
-      lastStatusLenRef.current > 0 &&
-      statuses.length > lastStatusLenRef.current
-    ) {
-      setTimeout(
-        () =>
-          InteractionManager.runAfterInteractions(() =>
-            scrollRef.current?.scrollToOffset({
-              animated: true,
-              offset: scrollOffsetRef.current + 200,
-            }),
-          ),
-        100,
-      );
-    }
+    const LoadFooter = useMemo(
+      () => (
+        <LoadMoreFooter
+          onPress={() =>
+            fetchTimeline().then(() =>
+              InteractionManager.runAfterInteractions(() => {
+                setTimeout(() => {
+                  scrollRef.current?.scrollToOffset({
+                    animated: true,
+                    offset: scrollOffsetRef.current + 250,
+                  });
+                }, 10);
+              }),
+            )
+          }
+          loading={loadingMore}
+        />
+      ),
+      [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef],
+    );
 
-    lastStatusLenRef.current = statuses.length;
-  }, [lastStatusLenRef, scrollRef, statuses]);
-
-  return (
-    <View style={styles.screen}>
-      <FlatList
-        ref={scrollRef}
-        data={statuses}
-        renderItem={renderItem}
-        style={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={reloadTimeline} />
-        }
-        onScroll={event => {
-          scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
-        }}
-        onEndReached={() => fetchTimeline()}
-      />
-      {loadingMore && (
-        <View style={styles.loadingMoreBar}>
-          <Type scale="S" medium>
-            Loading More...
-          </Type>
-        </View>
-      )}
-    </View>
-  );
-};
+    return (
+      <View style={styles.screen}>
+        <FlatList
+          ref={nodeRef => (scrollRef.current = nodeRef)}
+          data={statuses}
+          renderItem={renderItem}
+          style={styles.container}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={reloadTimeline} />
+          }
+          onScroll={event => {
+            scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
+          }}
+          ListFooterComponent={statuses.length ? LoadFooter : null}
+        />
+      </View>
+    );
+  },
+);
 
 const styleCreator: StyleCreator = ({getColor}) => ({
   screen: {

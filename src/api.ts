@@ -103,7 +103,6 @@ export const usePeers = () => {
 
   const filterPeers = useCallback(
     (q: string) => {
-      console.log({q});
       if (!fullPeersList.current.length) {
         fullPeersList.current = peers.slice(0);
       }

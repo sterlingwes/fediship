@@ -261,10 +261,6 @@ export const Status = (
     [mainStatus],
   );
 
-  if (mainStatus.content.includes('is so very')) {
-    console.log('emojis>>', emojis.length);
-  }
-
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
       <View

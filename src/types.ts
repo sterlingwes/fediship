@@ -1,3 +1,5 @@
+import type {Ref} from 'react';
+
 export interface TAccount {
   id: string; // instance specific
   acct: string; // same as username
@@ -107,11 +109,13 @@ export interface Emoji {
 
 interface TimelineParams {
   timeline: 'home' | 'public';
+  ref: Ref<unknown>;
 }
 
 export type RootStackParamList = {
   Tabs: undefined;
   Drawer: undefined;
+  Timelines: undefined;
   Local: TimelineParams;
   Federated: TimelineParams;
   Explore: undefined;
