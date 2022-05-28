@@ -134,7 +134,6 @@ const TimelineStack = () => {
         swipeEnabled: true,
         headerLeft: DrawerHeaderLeft,
       }}>
-      <Drawer.Screen name="Explore" component={Explore} />
       {timelines.map(tl => (
         <Drawer.Screen
           name={tl.name}
@@ -142,6 +141,7 @@ const TimelineStack = () => {
           initialParams={initialParamsForTimelineType(tl)}
         />
       ))}
+      <Drawer.Screen name="Explore" component={Explore} />
     </Drawer.Navigator>
   );
 };
