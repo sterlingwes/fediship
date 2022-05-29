@@ -4,7 +4,7 @@ import {
   useRemoteActivityPubInstance,
   useRemoteMastodonInstance,
 } from '../../api/hooks';
-import {Emoji, TAccount, TStatus} from '../../types';
+import {Emoji, TAccount, TStatus, TStatusMapped} from '../../types';
 import {useMount} from '../../utils/hooks';
 import {getHostAndHandle} from '../../utils/mastodon';
 
@@ -24,7 +24,7 @@ export const useAPProfile = (
   const [following, setFollowing] = useState<boolean | undefined>();
   const [error, setError] = useState('');
   const [profile, setProfile] = useState<TAccount>();
-  const [statuses, setStatuses] = useState<TStatus[]>([]);
+  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
   const [nextPage, setNextPage] = useState<string | false>();
   const pinnedIds = useRef<string[]>([]);
 

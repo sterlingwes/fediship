@@ -11,7 +11,7 @@ import {useThread} from '../api';
 import {InfoBanner} from '../components/InfoBanner';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
-import {RootStackParamList, TStatus} from '../types';
+import {RootStackParamList, TStatusMapped} from '../types';
 import {resolveTerminatingTootIds} from './thread/thread.util';
 
 export const Thread = ({
@@ -65,7 +65,7 @@ export const Thread = ({
     return statuses;
   }, [initialLoad, statuses, statusUrl]);
 
-  const renderItem: ListRenderItem<TStatus> = ({item, index}) => {
+  const renderItem: ListRenderItem<TStatusMapped> = ({item, index}) => {
     const localStatus = thread?.localStatuses?.[item.uri];
 
     return (

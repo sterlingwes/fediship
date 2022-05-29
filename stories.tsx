@@ -20,7 +20,7 @@ import {useThemeStyle} from './src/theme/utils';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ImageViewer} from './src/screens/image-viewer';
-import {TStatus} from './src/types';
+import {TStatus, TStatusMapped} from './src/types';
 
 import statusOneImage from './fixtures/status-one-image.json';
 import statusThreeImage from './fixtures/status-three-image.json';
@@ -38,7 +38,7 @@ const defaultAdditionalProps = {
   onPress: () => {},
 };
 
-const statuses = [
+const statuses: TStatusMapped[] = [
   statusLong,
   statusOneImage,
   statusTwoImage,
@@ -49,12 +49,16 @@ const statuses = [
   statusFiveImage,
   statusPixelfed,
   statusBrPs,
-];
+].map(s => ({
+  ...s,
+  sourceHost: '',
+  reblog: s.reblog ? {...s.reblog, sourceHost: ''} : null,
+}));
 
 const StatusStory = () => {
   const styles = useThemeStyle(styleCreator);
 
-  const renderStatus: ListRenderItem<TStatus> = ({item}) => (
+  const renderStatus: ListRenderItem<TStatusMapped> = ({item}) => (
     <Status {...{...item, ...defaultAdditionalProps}} />
   );
 

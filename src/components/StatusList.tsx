@@ -11,21 +11,22 @@ import {
 import {useTimeline} from '../api';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {Status} from '../components/Status';
+import {mastoHost} from '../constants';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
-import {RootStackParamList, TStatus} from '../types';
+import {RootStackParamList, TStatusMapped} from '../types';
 
 const createTimelineRenderer =
   (
     navigation: NativeStackNavigationProp<RootStackParamList>,
-  ): ListRenderItem<TStatus> =>
+  ): ListRenderItem<TStatusMapped> =>
   row => {
     const status = row.item;
     const nextStatusUrl = status.reblog ? status.reblog.uri : status.uri;
     return (
       <Status
         key={status.id}
-        isLocal
+        isLocal={status.sourceHost === mastoHost}
         {...status}
         onPress={() => {
           navigation.push('Thread', {statusUrl: nextStatusUrl, id: status.id});
@@ -55,7 +56,7 @@ export const StatusList = forwardRef(
     const navigation =
       useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const scrollOffsetRef = useRef(0);
-    const scrollRef = useRef<FlatList<TStatus> | null>();
+    const scrollRef = useRef<FlatList<TStatusMapped> | null>();
     const styles = useThemeStyle(styleCreator);
 
     useImperativeHandle(ref, () => ({

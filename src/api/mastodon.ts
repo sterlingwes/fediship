@@ -7,6 +7,8 @@ import {
   TPeerTagTrend,
   TProfileResult,
   TStatus,
+  TStatusContext,
+  TStatusMapped,
   TThread,
 } from '../types';
 
@@ -38,9 +40,10 @@ export class MastodonApiClient extends HTTPClient {
       throw new Error('Failed to fetch timeline');
     }
 
-    const list = response.body
-      .filter((status: TStatus) => !status.in_reply_to_id)
-      .sort((a: TStatus, b: TStatus) => b.id.localeCompare(a.id)) as TStatus[];
+    const list = (response.body as TStatus[])
+      .filter(status => !status.in_reply_to_id)
+      .map(status => ({...status, sourceHost: this.host}))
+      .sort((a, b) => b.id.localeCompare(a.id));
 
     return {
       list,
@@ -54,9 +57,10 @@ export class MastodonApiClient extends HTTPClient {
       throw new Error('Failed to fetch tag timeline for: ' + tag);
     }
 
-    const list = response.body
-      .filter((status: TStatus) => !status.in_reply_to_id)
-      .sort((a: TStatus, b: TStatus) => b.id.localeCompare(a.id)) as TStatus[];
+    const list = (response.body as TStatus[])
+      .filter(status => !status.in_reply_to_id)
+      .map(status => ({...status, sourceHost: this.host}))
+      .sort((a, b) => b.id.localeCompare(a.id));
 
     return {
       list,
@@ -66,7 +70,9 @@ export class MastodonApiClient extends HTTPClient {
 
   async getStatus(statusId: string) {
     const response = await this.get(`statuses/${statusId}`);
-    return response.ok ? response.body : undefined;
+    return response.ok
+      ? ({...response.body, sourceHost: this.host} as TStatusMapped)
+      : undefined;
   }
 
   async getThread(statusId: string, options?: {skipTargetStatus: boolean}) {
@@ -82,7 +88,15 @@ export class MastodonApiClient extends HTTPClient {
         error: `getThread error: ${errorMessage}`,
       };
     }
-    const statusContext = await contextResponse.parseBody();
+    const statusContext = (await contextResponse.parseBody()) as TStatusContext;
+    statusContext.ancestors = statusContext.ancestors?.map(status => ({
+      ...status,
+      sourceHost: this.host,
+    }));
+    statusContext.descendants = statusContext.descendants?.map(status => ({
+      ...status,
+      sourceHost: this.host,
+    }));
 
     return {
       type: 'success',
@@ -165,7 +179,7 @@ export class MastodonApiClient extends HTTPClient {
   }
 
   async getProfile(accountId: string) {
-    let toots: TStatus[] = [];
+    let toots: TStatusMapped[] = [];
 
     try {
       const accountTimeline = await this.get(
@@ -180,12 +194,14 @@ export class MastodonApiClient extends HTTPClient {
         pinnedIds.push(toot.id);
         return {
           ...toot,
+          sourceHost: this.host,
+          reblog: toot.reblog ? {...toot.reblog, sourceHost: this.host} : null,
           pinned: true,
         };
       });
-      const filteredTimeline = (accountTimeline.body as TStatus[]).filter(
-        toot => pinnedIds.includes(toot.id) === false,
-      );
+      const filteredTimeline = (accountTimeline.body as TStatus[])
+        .filter(toot => pinnedIds.includes(toot.id) === false)
+        .map(status => ({...status, sourceHost: this.host}));
 
       toots = [...pinnedToots, ...filteredTimeline];
     } catch (e) {
@@ -205,7 +221,10 @@ export class MastodonApiClient extends HTTPClient {
     }
 
     return {
-      list: response.body as TStatus[],
+      list: (response.body as TStatus[]).map(status => ({
+        ...status,
+        sourceHost: this.host,
+      })),
       pageInfo: response.pageInfo,
     };
   }
@@ -217,7 +236,10 @@ export class MastodonApiClient extends HTTPClient {
     }
 
     return {
-      list: response.body as TStatus[],
+      list: (response.body as TStatus[]).map(status => ({
+        ...status,
+        sourceHost: this.host,
+      })),
       pageInfo: response.pageInfo,
     };
   }

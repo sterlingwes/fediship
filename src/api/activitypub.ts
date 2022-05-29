@@ -1,6 +1,6 @@
 import {HTTPClient} from './http-client';
 
-import {APPerson, TAccount, TStatus, Webfinger} from '../types';
+import {APPerson, TAccount, TStatus, TStatusMapped, Webfinger} from '../types';
 
 import {
   isOrderedCollection,
@@ -46,7 +46,7 @@ export class ActivityPubClient extends HTTPClient {
         );
         const outboxUrl = `${result.body.outbox}?page=true`;
         const tlResult = await this.getProfileTimeline(outboxUrl, account);
-        let timeline: TStatus[] = tlResult?.result ?? [];
+        let timeline: TStatusMapped[] = tlResult?.result ?? [];
 
         const pinnedIds: string[] = [];
         if (result.body.featured) {
@@ -55,7 +55,11 @@ export class ActivityPubClient extends HTTPClient {
             timeline = featuredCollection.body.orderedItems
               .map(item => {
                 pinnedIds.push(item.id);
-                return transformActivity(item, {account, pinned: true});
+                return transformActivity(item, {
+                  account,
+                  host: this.host,
+                  pinned: true,
+                });
               })
               .concat(
                 (tlResult?.result ?? []).filter(
@@ -80,7 +84,7 @@ export class ActivityPubClient extends HTTPClient {
     if (isOutboxCollection(activityPage.body)) {
       const {next} = activityPage.body;
       return {
-        result: transformActivityPage(activityPage.body, account),
+        result: transformActivityPage(activityPage.body, account, this.host),
         pageInfo: {next},
       };
     }

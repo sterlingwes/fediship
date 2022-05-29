@@ -14,6 +14,10 @@ export class HTTPClient {
     this.options = options;
   }
 
+  get host() {
+    return this.options.host;
+  }
+
   async authedPost(info: RequestInfo, extra?: RequestInit) {
     this.assertToken();
     return this.post(info, {

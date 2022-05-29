@@ -8,6 +8,7 @@ import {
   TAccount,
   TMediaAttachment,
   TStatus,
+  TStatusMapped,
 } from '../types';
 
 export const transformPerson = (
@@ -86,8 +87,8 @@ const transformDocument = ({
 
 export const transformActivity = (
   {id, published, content, url, sensitive, attachment}: APNote,
-  {account, pinned}: {account: TAccount; pinned?: boolean},
-): TStatus => ({
+  {account, host, pinned}: {account: TAccount; host: string; pinned?: boolean},
+): TStatusMapped => ({
   id,
   created_at: published,
   content,
@@ -101,6 +102,7 @@ export const transformActivity = (
   in_reply_to_id: null,
   poll: null, // TODO: figure out
   sensitive,
+  sourceHost: host,
   media_attachments: attachment
     ? attachment.map(doc => transformDocument(doc))
     : [],
@@ -109,11 +111,14 @@ export const transformActivity = (
 export const transformActivityPage = (
   activities: APOrderedCollectionPage<APCreate>,
   account: TAccount,
+  host: string,
 ) =>
   activities.orderedItems
     // filter out boosts & replies to simplify
     .filter(item => item.object.type === 'Note' && !item.object.inReplyTo)
-    .map(activity => transformActivity(activity.object as APNote, {account}));
+    .map(activity =>
+      transformActivity(activity.object as APNote, {account, host}),
+    );
 
 export const isPerson = (object: any): object is APPerson =>
   typeof object === 'object' && object.type === 'Person';

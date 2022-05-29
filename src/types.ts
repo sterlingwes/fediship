@@ -30,7 +30,7 @@ export interface TStatus {
   content: string; // html
   account: TAccount;
   favourited?: boolean;
-  reblog: TStatus | null;
+  reblog: TStatusMapped | null;
   reblogged?: boolean;
   url: string | null;
   uri: string;
@@ -41,6 +41,10 @@ export interface TStatus {
   spoiler_text?: string | null;
   emojis?: Emoji[] | null;
   media_attachments?: TMediaAttachment[];
+}
+
+export interface TStatusMapped extends TStatus {
+  sourceHost: string;
 }
 
 // misskey "status"
@@ -274,13 +278,13 @@ export interface APAttachment extends APObject {
 }
 
 export interface TStatusContext {
-  ancestors?: TStatus[] | undefined;
-  descendants?: TStatus[] | undefined;
+  ancestors?: TStatusMapped[] | undefined;
+  descendants?: TStatusMapped[] | undefined;
 }
 
 export interface TThread extends TStatusContext {
-  status?: TStatus | undefined;
-  localStatuses: Record<string, TStatus>;
+  status?: TStatusMapped | undefined;
+  localStatuses: Record<string, TStatusMapped>;
   localResponse: Omit<TThread, 'localStatuses'> | undefined;
 }
 
@@ -361,5 +365,5 @@ interface TagTrendStat {
 
 export interface TProfileResult {
   account: TAccount;
-  timeline: TStatus[];
+  timeline: TStatusMapped[];
 }

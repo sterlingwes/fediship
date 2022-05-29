@@ -24,7 +24,7 @@ import {Type} from '../components/Type';
 import {screenHeight} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
-import {RootStackParamList, TAccount, TStatus} from '../types';
+import {RootStackParamList, TAccount, TStatus, TStatusMapped} from '../types';
 import {useAPProfile} from './profile/profilehooks';
 
 interface ProfileHeaderProps {
@@ -120,7 +120,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
 const createProfileTimelineRenderer =
   (
     navigation: NativeStackNavigationProp<RootStackParamList, 'Profile'>,
-  ): ListRenderItem<TStatus> =>
+  ): ListRenderItem<TStatusMapped> =>
   row => {
     const status = row.item;
     const nextStatusUrl = status.reblog ? status.reblog.uri : status.uri;
@@ -211,7 +211,7 @@ export const Profile = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Profile'>) => {
   const initialLoad = useRef(true);
-  const scrollRef = useRef<FlatList<TStatus> | null>();
+  const scrollRef = useRef<FlatList<TStatusMapped> | null>();
   const scrollOffsetRef = useRef(0);
   const [headerOpaque, setHeaderOpaque] = useState(false);
   const {account, host, accountHandle, self} = route.params;

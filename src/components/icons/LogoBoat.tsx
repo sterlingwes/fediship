@@ -42,8 +42,8 @@ export const LogoBoat = ({size}: {size?: number}) => {
             />
           </G>
           <G>
-            <G id="shape-02b063c0-db00-11ec-b6c9-e12af9118ad8" rx="0" ry="0">
-              <G id="shape-576d2130-db02-11ec-b6c9-e12af9118ad8" rx="0" ry="0">
+            <G id="shape-02b063c0-db00-11ec-b6c9-e12af9118ad8">
+              <G id="shape-576d2130-db02-11ec-b6c9-e12af9118ad8">
                 <G id="shape-4e814b00-dafd-11ec-b6c9-e12af9118ad8">
                   <G id="fills-4e814b00-dafd-11ec-b6c9-e12af9118ad8">
                     <Path
@@ -67,7 +67,7 @@ export const LogoBoat = ({size}: {size?: number}) => {
                   </G>
                 </G>
               </G>
-              <G id="shape-399b2850-db02-11ec-b6c9-e12af9118ad8" rx="0" ry="0">
+              <G id="shape-399b2850-db02-11ec-b6c9-e12af9118ad8">
                 <G id="shape-90850321-dafd-11ec-b6c9-e12af9118ad8">
                   <G id="fills-90850321-dafd-11ec-b6c9-e12af9118ad8">
                     <Path

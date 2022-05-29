@@ -18,7 +18,7 @@ import {Status} from '../../components/Status';
 import {Type} from '../../components/Type';
 import {StyleCreator} from '../../theme';
 import {useThemeStyle} from '../../theme/utils';
-import {RootStackParamList, TStatus} from '../../types';
+import {RootStackParamList, TStatusMapped} from '../../types';
 import {useMount} from '../../utils/hooks';
 
 const createTimelineRenderer =
@@ -27,7 +27,7 @@ const createTimelineRenderer =
       RootStackParamList,
       'FavouritesTimeline'
     >,
-  ): ListRenderItem<TStatus> =>
+  ): ListRenderItem<TStatusMapped> =>
   row => {
     const status = row.item;
     const nextStatusUrl = status.reblog ? status.reblog.uri : status.uri;
@@ -53,7 +53,7 @@ export const FavouritesTimeline = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'FavouritesTimeline'>) => {
   const scrollOffsetRef = useRef(0);
-  const scrollRef = React.createRef<FlatList<TStatus>>();
+  const scrollRef = React.createRef<FlatList<TStatusMapped>>();
   const lastStatusLenRef = useRef(0);
   const styles = useThemeStyle(styleCreator);
   const {type} = route.params;

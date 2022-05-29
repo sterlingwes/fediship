@@ -1,5 +1,5 @@
 import {useCallback, useRef, useState} from 'react';
-import {TAccount, TPeerInfo, TStatus, TThread} from './types';
+import {TAccount, TPeerInfo, TStatus, TStatusMapped, TThread} from './types';
 import {useMount} from './utils/hooks';
 import {getPeerStorageKeys} from './screens/explore/peer-storage';
 import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
@@ -128,7 +128,7 @@ export const useTimeline = (timeline: 'home' | 'public') => {
   const api = useMyMastodonInstance();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [statuses, setStatuses] = useState<TStatus[]>([]);
+  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
   const [nextPage, setNextPage] = useState<string | false>();
 
   const fetchTimeline = async (reset?: boolean) => {
@@ -184,7 +184,7 @@ export const useTagTimeline = (host: string, tag: string) => {
   const getRemote = useRemoteMastodonInstance();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [statuses, setStatuses] = useState<TStatus[]>([]);
+  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
   const [nextPage, setNextPage] = useState<string | false>();
 
   const fetchTimeline = async (reset?: boolean) => {
@@ -242,7 +242,7 @@ export const useFavourites = (type: 'favourites' | 'bookmarks') => {
   const api = useMyMastodonInstance();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [statuses, setStatuses] = useState<TStatus[]>([]);
+  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
   const [nextPage, setNextPage] = useState<string | false>();
 
   const fetchTimeline = async (reset?: boolean) => {
@@ -309,7 +309,7 @@ export const useThread = (statusUrl: string, localId: string) => {
       const localResult = localId.startsWith('http')
         ? undefined
         : await api.getThread(localId);
-      const localStatuses: Record<string, TStatus> = {};
+      const localStatuses: Record<string, TStatusMapped> = {};
       if (localResult && localResult.response) {
         const {ancestors, descendants} = localResult.response;
         [
