@@ -4,6 +4,7 @@ import {useMount} from './utils/hooks';
 import {getPeerStorageKeys} from './screens/explore/peer-storage';
 import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
 import {parseStatusUrl} from './api/api.utils';
+import {mastoHost} from './constants';
 
 export const useFollowers = (source = 'mine') => {
   const api = useMyMastodonInstance();
@@ -92,7 +93,7 @@ export const usePeers = () => {
     setLoading(true);
     try {
       const peerList = await api.getInstancePeers();
-      setPeers(peerList.sort());
+      setPeers([mastoHost].concat(peerList).sort());
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);

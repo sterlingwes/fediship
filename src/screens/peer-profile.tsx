@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {RootStackParamList, TPeerInfo} from '../types';
 import {useMount} from '../utils/hooks';
-import {Pressable, ScrollView, View} from 'react-native';
+import {ActivityIndicator, Pressable, ScrollView, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useThemeStyle} from '../theme/utils';
 import {StyleCreator} from '../theme';
@@ -10,6 +10,7 @@ import {thousandsNumber} from '../utils/numbers';
 import {HTMLView} from '../components/HTMLView';
 import {AvatarImage} from '../components/AvatarImage';
 import {useRemoteMastodonInstance} from '../api/hooks';
+import {mastoHost} from '../constants';
 
 export const PeerProfile = ({
   navigation,
@@ -19,6 +20,8 @@ export const PeerProfile = ({
   const {host} = route.params;
   const getApi = useRemoteMastodonInstance();
   const [instanceInfo, setInstanceInfo] = useState<TPeerInfo>();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useMount(() => {
     if (!route.params) {
@@ -27,10 +30,14 @@ export const PeerProfile = ({
 
     const fetchInstanceProfile = async () => {
       const api = getApi(host);
+      setLoading(true);
       const info = await api.getInstanceInfo();
       if (info) {
         setInstanceInfo(info);
+      } else {
+        setError('Failed to fetch instance info.');
       }
+      setLoading(false);
     };
 
     fetchInstanceProfile();
@@ -38,8 +45,20 @@ export const PeerProfile = ({
     navigation.setOptions({headerTitle: host});
   });
 
-  if (!instanceInfo) {
-    return null;
+  if (loading) {
+    return (
+      <View style={{justifyContent: 'center', marginTop: 50}}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (error || !instanceInfo) {
+    return (
+      <View style={{marginTop: 20, marginHorizontal: 10}}>
+        <Type scale="S">{error}</Type>
+      </View>
+    );
   }
 
   const {thumbnail, description, stats, languages} = instanceInfo;
@@ -56,6 +75,14 @@ export const PeerProfile = ({
       <AvatarImage uri={thumbnail} style={styles.avatar} />
       <Spacer />
       <Spacer />
+      {mastoHost === host && (
+        <>
+          <Type scale="S" semiBold>
+            (you are here)
+          </Type>
+          <Spacer />
+        </>
+      )}
       <Type scale="S">Users: {thousandsNumber(stats.user_count)}</Type>
       <Spacer />
       <Type scale="S">Statuses: {thousandsNumber(stats.status_count)}</Type>
