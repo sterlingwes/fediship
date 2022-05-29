@@ -44,7 +44,6 @@ export const DrawerMenu = ({
   const currentRoute = state.routeNames[state.index];
   const onPress = (route: keyof RootStackParamList) => {
     navigation.navigate(route);
-    setTimeout(() => navigation.closeDrawer(), 150);
   };
   const onPressExplore = () => navigation.navigate('Explore');
 

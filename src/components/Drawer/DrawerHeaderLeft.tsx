@@ -1,7 +1,7 @@
 import {DrawerNavigationProp} from '@react-navigation/drawer';
 import {useNavigation} from '@react-navigation/native';
 import React from 'react';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native';
 import {StyleCreator} from '../../theme/types';
 import {useThemeGetters, useThemeStyle} from '../../theme/utils';
 import {RootStackParamList} from '../../types';

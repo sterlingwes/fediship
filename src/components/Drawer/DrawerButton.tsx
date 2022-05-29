@@ -1,6 +1,5 @@
 import React, {ReactNode} from 'react';
-import {View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {View, TouchableOpacity} from 'react-native';
 import {StyleCreator} from '../../theme';
 import {useThemeGetters, useThemeStyle} from '../../theme/utils';
 import {flex} from '../../utils/styles';

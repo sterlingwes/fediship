@@ -1,6 +1,5 @@
 import React from 'react';
-import {ActivityIndicator} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ActivityIndicator, TouchableOpacity} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {Type} from './Type';

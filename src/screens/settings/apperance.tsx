@@ -1,6 +1,12 @@
-import React, {ReactNode, useMemo, useState} from 'react';
-import {ListRenderItem, SectionList, StyleSheet, View} from 'react-native';
-import {Switch, TouchableOpacity} from 'react-native-gesture-handler';
+import React, {ReactNode, useMemo} from 'react';
+import {
+  ListRenderItem,
+  SectionList,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Switch,
+} from 'react-native';
 import {Type} from '../../components/Type';
 import {StyleCreator} from '../../theme';
 import {useTheme, useThemeStyle} from '../../theme/utils';
