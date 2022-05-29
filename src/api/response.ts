@@ -1,6 +1,7 @@
 export class ApiResponse {
   private response: Response;
   private json: any;
+  private text: string | undefined;
   private jsonParseFailed = false;
 
   constructor(response: Response) {
@@ -28,7 +29,18 @@ export class ApiResponse {
     return this.parseHeaderLink(linkHeader);
   }
 
+  get contentType() {
+    return this.response.headers.get('Content-Type') || 'unknown';
+  }
+
   async parseBody() {
+    if (this.contentType.includes('text/plain')) {
+      const textResponse = await this.response.text();
+      this.text = textResponse;
+      this.jsonParseFailed = true;
+      return;
+    }
+
     try {
       this.json = await this.response.json();
     } catch (e) {
@@ -52,7 +64,13 @@ export class ApiResponse {
       await this.parseBody();
     }
 
-    if (this.jsonParseFailed) {
+    const contentType = this.contentType;
+
+    if (this.text) {
+      throw new Error(`${this.response.status}: ${this.text.slice(0, 1000)}`);
+    }
+
+    if (this.jsonParseFailed && contentType.includes('json')) {
       throw new Error(
         'JSON parse failed for response to: ' + this.response.url,
       );
