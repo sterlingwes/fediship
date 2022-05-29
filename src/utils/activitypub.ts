@@ -121,7 +121,9 @@ export const isPerson = (object: any): object is APPerson =>
 export const isOutboxCollection = (
   object: any,
 ): object is APOrderedCollectionPage<APCreate> =>
-  typeof object === 'object' && object.type === 'OrderedCollectionPage';
+  typeof object === 'object' &&
+  (object.type === 'OrderedCollectionPage' ||
+    object.type === 'OrderedCollection');
 
 export const isOrderedCollection = (
   object: any,

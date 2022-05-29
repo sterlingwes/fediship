@@ -45,22 +45,24 @@ export class ActivityPubClient extends HTTPClient {
           result.body as APPerson,
         );
         const outboxUrl = `${result.body.outbox}?page=true`;
-        let timeline: TStatus[] = [];
         const tlResult = await this.getProfileTimeline(outboxUrl, account);
+        let timeline: TStatus[] = tlResult?.result ?? [];
 
         const pinnedIds: string[] = [];
-        const featuredCollection = await this.get(result.body.featured);
-        if (isOrderedCollection(featuredCollection.body)) {
-          timeline = featuredCollection.body.orderedItems
-            .map(item => {
-              pinnedIds.push(item.id);
-              return transformActivity(item, {account, pinned: true});
-            })
-            .concat(
-              (tlResult?.result ?? []).filter(
-                toot => !pinnedIds.includes(toot.id),
-              ),
-            );
+        if (result.body.featured) {
+          const featuredCollection = await this.get(result.body.featured);
+          if (isOrderedCollection(featuredCollection.body)) {
+            timeline = featuredCollection.body.orderedItems
+              .map(item => {
+                pinnedIds.push(item.id);
+                return transformActivity(item, {account, pinned: true});
+              })
+              .concat(
+                (tlResult?.result ?? []).filter(
+                  toot => !pinnedIds.includes(toot.id),
+                ),
+              );
+          }
         }
 
         return {
@@ -75,7 +77,6 @@ export class ActivityPubClient extends HTTPClient {
 
   async getProfileTimeline(outboxPageUrl: string, account: TAccount) {
     const activityPage = await this.get(outboxPageUrl);
-
     if (isOutboxCollection(activityPage.body)) {
       const {next} = activityPage.body;
       return {
