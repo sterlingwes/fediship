@@ -50,10 +50,7 @@ export const Explore = forwardRef(
             style={styles.searchInput}
             placeholder="Search"
             clearButtonMode="always"
-            onChangeText={text => {
-              !text && filterPeers('');
-            }}
-            onSubmitEditing={e => filterPeers(e.nativeEvent.text)}
+            onChangeText={text => filterPeers(text)}
           />
         </View>
       );
