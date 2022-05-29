@@ -31,7 +31,14 @@ const componentForTimelineType = (
   if (tl.tag) {
     return (
       props: NativeStackScreenProps<RootStackParamList, 'TagTimeline'>,
-    ) => <TagTimeline {...props} />;
+    ) => (
+      <TagTimeline
+        ref={(nodeRef: ScreenRefHandle) =>
+          (screenRefs.current[tl.name] = nodeRef)
+        }
+        {...props}
+      />
+    );
   }
 
   throw new Error(`Unsupported timeline saved: ${tl.name}`);

@@ -164,9 +164,20 @@ export const useTimeline = (timeline: 'home' | 'public') => {
     fetchTimeline(true);
   });
 
+  const reloading = typeof nextPage === 'undefined' && loading;
   const loadingMore = !!nextPage && loading;
+  const hasMore = nextPage !== false;
 
-  return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
+  return {
+    statuses,
+    fetchTimeline,
+    reloadTimeline,
+    reloading,
+    error,
+    loading,
+    loadingMore,
+    hasMore,
+  };
 };
 
 export const useTagTimeline = (host: string, tag: string) => {
@@ -212,6 +223,7 @@ export const useTagTimeline = (host: string, tag: string) => {
   });
 
   const loadingMore = !!nextPage && loading;
+  const reloading = typeof nextPage === 'undefined' && loading;
   const hasMore = nextPage !== false;
 
   return {
@@ -221,6 +233,7 @@ export const useTagTimeline = (host: string, tag: string) => {
     error,
     loading,
     loadingMore,
+    reloading,
     hasMore,
   };
 };
@@ -264,9 +277,18 @@ export const useFavourites = (type: 'favourites' | 'bookmarks') => {
     fetchTimeline(true);
   });
 
+  const reloading = typeof nextPage === 'undefined' && loading;
   const loadingMore = !!nextPage && loading;
 
-  return {statuses, fetchTimeline, reloadTimeline, error, loading, loadingMore};
+  return {
+    statuses,
+    fetchTimeline,
+    reloadTimeline,
+    reloading,
+    error,
+    loading,
+    loadingMore,
+  };
 };
 
 export const useThread = (statusUrl: string, localId: string) => {
