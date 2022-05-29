@@ -26,10 +26,10 @@ import {Type} from './Type';
 
 const CollapsedStatus = (props: TStatus & {collapsed: boolean}) => {
   const styles = useThemeStyle(styleCreator);
-
+  const spoilerText = (props.spoiler_text ?? '').trim();
   return (
     <View>
-      {!!(props.spoiler_text ?? '').trim() && (
+      {!!spoilerText && (
         <Type style={styles.spoilerText} scale="S">
           ⚠️ {props.spoiler_text}
         </Type>
@@ -43,7 +43,7 @@ const CollapsedStatus = (props: TStatus & {collapsed: boolean}) => {
           )}
         </>
       )}
-      {props.collapsed && <ViewMoreButton />}
+      {props.collapsed && <ViewMoreButton left={!spoilerText} />}
     </View>
   );
 };
@@ -173,11 +173,11 @@ const ReplyLine = ({
   );
 };
 
-const ViewMoreButton = () => {
+const ViewMoreButton = ({left}: {left?: boolean}) => {
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
   return (
-    <View style={styles.viewMore}>
+    <View style={[styles.viewMore, left && styles.viewMoreLeft]}>
       <Type scale="XS" semiBold style={styles.viewMoreText}>
         View More
       </Type>
@@ -472,6 +472,9 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  viewMoreLeft: {
+    justifyContent: 'flex-start',
   },
   viewMoreText: {
     marginRight: 2,
