@@ -1,3 +1,4 @@
+import {oauthScopes} from '../constants';
 import {
   Emoji,
   TAccount,
@@ -310,7 +311,7 @@ export class MastodonApiClient extends HTTPClient {
       this.form({
         client_name: name,
         redirect_uris: 'urn:ietf:wg:oauth:2.0:oob',
-        scopes: 'read write',
+        scopes: oauthScopes,
         website: 'https://fediship.app',
       }),
     );

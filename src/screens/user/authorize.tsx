@@ -4,6 +4,7 @@ import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {WebView} from 'react-native-webview';
 import {useMyMastodonInstance} from '../../api/hooks';
 import {Type} from '../../components/Type';
+import {oauthScopes} from '../../constants';
 import {getClientApp, setClientApp, useAuth} from '../../storage/auth';
 import {useThemeGetters} from '../../theme/utils';
 import {RootStackParamList} from '../../types';
@@ -60,7 +61,7 @@ export const Authorize = ({
         client_id,
         client_secret,
         code: authCode,
-        scope: 'read write',
+        scope: oauthScopes,
       });
 
       if (!token) {

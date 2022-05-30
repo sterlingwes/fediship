@@ -3,6 +3,7 @@ import React from 'react';
 import {View} from 'react-native';
 import {SolidButton} from '../components/SolidButton';
 import {Type} from '../components/Type';
+import {oauthScopes} from '../constants';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
@@ -14,7 +15,7 @@ export const Login = ({
   const styles = useThemeStyle(styleCreator);
 
   const onLogin = () => {
-    navigation.navigate('Authorize', {host: 'swj.io', scope: 'read write'});
+    navigation.navigate('Authorize', {host: 'swj.io', scope: oauthScopes});
   };
 
   return (
