@@ -86,13 +86,16 @@ const renderNode =
     }
   };
 
-const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) =>
-  (props.emojis ?? []).reduce((content, emoji) => {
+const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) => {
+  const reduced = (props.emojis ?? []).reduce((content, emoji) => {
     return content.replace(
       `:${emoji.shortcode}:`,
-      `<emoji src="${emoji.url}" />`,
+      `<emoji src="${emoji.url}"></emoji>`,
     );
   }, props.content);
+  console.log({reduced});
+  return reduced;
+};
 
 export const HTMLView = ({
   value,
