@@ -1,5 +1,11 @@
 import {useCallback, useRef, useState} from 'react';
-import {TAccount, TPeerInfo, TStatus, TStatusMapped, TThread} from './types';
+import {
+  TAccount,
+  TPeerInfo,
+  TStatusContext,
+  TStatusMapped,
+  TThread,
+} from './types';
 import {useMount} from './utils/hooks';
 import {getPeerStorageKeys} from './screens/explore/peer-storage';
 import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
@@ -291,6 +297,32 @@ export const useFavourites = (type: 'favourites' | 'bookmarks') => {
   };
 };
 
+const mostDetailedContext = (
+  localContext: TStatusContext | undefined,
+  remoteContext: TStatusContext | undefined,
+) => {
+  if (!localContext && !remoteContext) {
+    return undefined;
+  }
+
+  if (!localContext) {
+    return remoteContext;
+  }
+
+  if (!remoteContext) {
+    return remoteContext;
+  }
+
+  const localContextCount =
+    (localContext.ancestors?.length ?? 0) +
+    (localContext.descendants?.length ?? 0);
+  const remoteContextCount =
+    (remoteContext.ancestors?.length ?? 0) +
+    (remoteContext.descendants?.length ?? 0);
+
+  return localContextCount > remoteContextCount ? localContext : remoteContext;
+};
+
 export const useThread = (statusUrl: string, localId: string) => {
   const api = useMyMastodonInstance();
   const getRemoteMasto = useRemoteMastodonInstance();
@@ -347,10 +379,15 @@ export const useThread = (statusUrl: string, localId: string) => {
         localStatus = localStatus?.reblog;
       }
 
+      const highestFidelityResult = mostDetailedContext(
+        localResult?.response,
+        remoteResult.response,
+      );
+
       const result = {
         ...remoteResult,
         response: {
-          ...remoteResult.response,
+          ...highestFidelityResult,
           ...(localStatus ? {status: localStatus} : undefined),
           localStatuses,
           localResponse: localResult?.response,

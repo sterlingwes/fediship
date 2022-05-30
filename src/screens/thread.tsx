@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {useThread} from '../api';
 import {InfoBanner} from '../components/InfoBanner';
+import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
 import {RootStackParamList, TStatusMapped} from '../types';
@@ -94,6 +95,11 @@ export const Thread = ({
     );
   };
 
+  const LoadHeader = useMemo(
+    () => <LoadMoreFooter onPress={() => setInitialLoad(false)} />,
+    [setInitialLoad],
+  );
+
   if (error) {
     return (
       <View>
@@ -115,13 +121,11 @@ export const Thread = ({
         renderItem={renderItem}
         style={styles.container}
         contentInset={{bottom: 40}}
-        onScroll={event => {
-          if (event.nativeEvent.contentOffset.y <= 0 && filtered.current) {
-            setInitialLoad(false);
-          }
-        }}
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={fetchThread} />
+        }
+        ListHeaderComponent={
+          initialLoad && filtered.current ? LoadHeader : null
         }
       />
     </>
