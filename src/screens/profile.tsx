@@ -191,7 +191,11 @@ const ProfileError = ({
   return (
     <>
       <View style={[styles.container, styles.centered, {margin: 20}]}>
-        {typeof message === 'string' ? <Type>{message}</Type> : message}
+        {typeof message === 'string' ? (
+          <Type scale="S">{message}</Type>
+        ) : (
+          message
+        )}
       </View>
       {showHeader && (
         <FloatingHeader

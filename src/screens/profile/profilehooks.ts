@@ -103,7 +103,7 @@ export const useAPProfile = (
         idParts.host,
         idParts.handle,
       );
-      if (result) {
+      if (result.ok) {
         const localAccount = await api.findAccount(
           `${idParts.handle}@${idParts.host}`,
         );
@@ -119,8 +119,9 @@ export const useAPProfile = (
 
       await fetchEmojis(idParts.host);
 
-      if (!result) {
+      if (!result.ok) {
         setLoading(false);
+        setError(result.error);
         return;
       }
 

@@ -23,10 +23,25 @@ export class ActivityPubClient extends HTTPClient {
     });
   }
 
-  async getProfileByHandle(host: string, handle: string) {
+  async getProfileByHandle(
+    host: string,
+    handle: string,
+  ): Promise<
+    | {
+        ok: true;
+        account: TAccount;
+        timeline: TStatusMapped[];
+        pinnedIds: string[];
+        pageInfo: {next: string} | undefined;
+      }
+    | {ok: false; error: string}
+  > {
     const webfinger = await this.getWebfinger(host, handle);
     if (!webfinger) {
-      return;
+      return {
+        ok: false,
+        error: `Unable to find ${handle}@${host}. Webfinger unresolvable.`,
+      };
     }
     const profileLink = webfinger.links.find(
       link => link.rel === 'self' && link.type.includes('json'),
@@ -36,7 +51,15 @@ export class ActivityPubClient extends HTTPClient {
 
       if (!result.ok) {
         const error = await result.getError();
-        throw new Error(error ?? 'Failed to fetch remote profile');
+        return {
+          ok: false,
+          error: error ?? 'Failed to fetch remote profile',
+        };
+      } else if (result.status !== 200) {
+        return {
+          ok: false,
+          error: "User's instance does not support the ActivityPub protocol.",
+        };
       }
 
       if (isPerson(result.body)) {
@@ -70,6 +93,7 @@ export class ActivityPubClient extends HTTPClient {
         }
 
         return {
+          ok: true,
           account,
           timeline,
           pinnedIds,
@@ -77,6 +101,11 @@ export class ActivityPubClient extends HTTPClient {
         };
       }
     }
+
+    return {
+      ok: false,
+      error: `Unexpected response from ${host}`,
+    };
   }
 
   async getProfileTimeline(outboxPageUrl: string, account: TAccount) {
