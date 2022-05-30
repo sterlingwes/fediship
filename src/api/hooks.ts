@@ -1,13 +1,15 @@
 import {useRef} from 'react';
-import {mastoActorId, mastoBearerToken, mastoHost} from '../constants';
+import {mastoActorId, mastoHost} from '../constants';
+import {useAuth} from '../storage/auth';
 import {ActivityPubClient} from './activitypub';
 import {MastodonApiClient} from './mastodon';
 
 export const useMyMastodonInstance = () => {
+  const auth = useAuth();
   const api = useRef(
     new MastodonApiClient({
       host: mastoHost,
-      token: mastoBearerToken,
+      token: auth.token,
       actorId: mastoActorId,
     }),
   );

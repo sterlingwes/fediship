@@ -18,6 +18,10 @@ export class HTTPClient {
     return this.options.host;
   }
 
+  set token(token: string) {
+    this.options.token = token;
+  }
+
   async authedPost(info: RequestInfo, extra?: RequestInit) {
     this.assertToken();
     return this.post(info, {

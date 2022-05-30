@@ -24,6 +24,23 @@ export interface TAccount {
   username: string;
 }
 
+export interface TApp {
+  id: string;
+  name: string;
+  website: string | null;
+  redirect_uri: string;
+  client_id: string;
+  client_secret: string;
+  vapid_key: string;
+}
+
+export interface TToken {
+  access_token: string;
+  token_type: string; // Bearer
+  scope: string;
+  created_at: number;
+}
+
 export interface TStatus {
   id: string;
   created_at: string;
@@ -125,6 +142,8 @@ export type RootStackParamList = {
   Explore: undefined;
   Compose: undefined;
   User: undefined;
+  Login: undefined;
+  Authorize: {host: string; scope: string};
   UserMain: undefined;
   TagTimeline: {host: string; tag: string};
   FavouritesTimeline: {type: 'favourites' | 'bookmarks'};

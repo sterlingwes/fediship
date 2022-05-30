@@ -30,9 +30,11 @@ import {SavedTimelineProvider} from './storage/saved-timelines';
 import {MessageIcon} from './components/icons/MessageIcon';
 import {AppearanceSettings} from './screens/settings/apperance';
 import {TimelineStack} from './timeline-stack';
+import {Authorize} from './screens/user/authorize';
+import {AuthProvider, useAuth} from './storage/auth';
+import {Login} from './screens/login';
 
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator<RootStackParamList>();
 
 LogBox.ignoreLogs([
   // TODO: need to silence this for HTMLView specifically...
@@ -131,8 +133,50 @@ const TabbedHome = () => {
   );
 };
 
+const LIStack = createNativeStackNavigator<RootStackParamList>();
+const LoggedInStack = () => (
+  <LIStack.Navigator>
+    <LIStack.Screen
+      name="Tabs"
+      component={TabbedHome}
+      options={{headerShown: false}}
+    />
+
+    <LIStack.Screen
+      name="Profile"
+      component={Profile}
+      options={{headerShown: false}}
+    />
+    <LIStack.Screen name="Thread" component={Thread} />
+    <LIStack.Screen name="PeerProfile" component={PeerProfile} />
+    <LIStack.Screen name="TagTimeline" component={TagTimeline} />
+    <LIStack.Screen
+      name="ImageViewer"
+      component={ImageViewer}
+      options={{
+        presentation: 'containedTransparentModal',
+        headerShown: false,
+      }}
+    />
+  </LIStack.Navigator>
+);
+
+const LOStack = createNativeStackNavigator<RootStackParamList>();
+const LoggedOutStack = () => (
+  <LOStack.Navigator>
+    <LOStack.Screen
+      name="Login"
+      component={Login}
+      options={{headerShown: false}}
+    />
+    <LOStack.Screen name="Authorize" component={Authorize} />
+  </LOStack.Navigator>
+);
+
 const NavigationRoot = () => {
   const theme = useTheme();
+  const auth = useAuth();
+
   return (
     <NavigationContainer
       theme={
@@ -140,30 +184,7 @@ const NavigationRoot = () => {
           ? darkNavigationTheme
           : lightNavigationTheme
       }>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Tabs"
-          component={TabbedHome}
-          options={{headerShown: false}}
-        />
-
-        <Stack.Screen
-          name="Profile"
-          component={Profile}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen name="Thread" component={Thread} />
-        <Stack.Screen name="PeerProfile" component={PeerProfile} />
-        <Stack.Screen name="TagTimeline" component={TagTimeline} />
-        <Stack.Screen
-          name="ImageViewer"
-          component={ImageViewer}
-          options={{
-            presentation: 'containedTransparentModal',
-            headerShown: false,
-          }}
-        />
-      </Stack.Navigator>
+      {auth.token ? <LoggedInStack /> : <LoggedOutStack />}
     </NavigationContainer>
   );
 };
@@ -171,15 +192,17 @@ const NavigationRoot = () => {
 export const App = () => {
   return (
     <ErrorBoundary>
-      <NotificationProvider>
-        <SavedTimelineProvider>
-          <FavouritesProvider>
-            <ThemeProvider>
-              <NavigationRoot />
-            </ThemeProvider>
-          </FavouritesProvider>
-        </SavedTimelineProvider>
-      </NotificationProvider>
+      <AuthProvider>
+        <NotificationProvider>
+          <SavedTimelineProvider>
+            <FavouritesProvider>
+              <ThemeProvider>
+                <NavigationRoot />
+              </ThemeProvider>
+            </FavouritesProvider>
+          </SavedTimelineProvider>
+        </NotificationProvider>
+      </AuthProvider>
       <Toast />
     </ErrorBoundary>
   );

@@ -2,6 +2,7 @@ import {
   Emoji,
   TAccount,
   TAccountRelationship,
+  TApp,
   TNotification,
   TPeerInfo,
   TPeerTagTrend,
@@ -10,6 +11,7 @@ import {
   TStatusContext,
   TStatusMapped,
   TThread,
+  TToken,
 } from '../types';
 
 import {HTTPClient} from './http-client';
@@ -300,5 +302,83 @@ export class MastodonApiClient extends HTTPClient {
       return [];
     }
     return response.body as TPeerTagTrend[];
+  }
+
+  async createApplication({name}: {name: string}) {
+    const response = await this.post(
+      'apps',
+      this.form({
+        client_name: name,
+        redirect_uris: 'urn:ietf:wg:oauth:2.0:oob',
+        scopes: 'read write',
+        website: 'https://fediship.app',
+      }),
+    );
+
+    if (!response.ok) {
+      return;
+    }
+
+    return response.body as TApp;
+  }
+
+  async createToken({
+    client_id,
+    client_secret,
+    code,
+    scope,
+  }: {
+    client_id: string;
+    client_secret: string;
+    code?: string;
+    scope?: string;
+  }) {
+    const response = await this.post(
+      `https://${this.mastoOptions.host}/oauth/token`,
+      this.form({
+        client_id,
+        client_secret,
+        redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+        grant_type: code ? 'authorization_code' : 'client_credentials',
+        scope: scope ?? 'read',
+        ...(code ? {code} : undefined),
+      }),
+    );
+
+    if (!response.ok) {
+      return;
+    }
+
+    return response.body as TToken;
+  }
+
+  async verifyAuth() {
+    const response = await this.authedGet('accounts/verify_credentials');
+    if (!response.ok) {
+      return;
+    }
+
+    return response.body as TAccount;
+  }
+
+  async logout({
+    client_id,
+    client_secret,
+    token,
+  }: {
+    client_id: string;
+    client_secret: string;
+    token: string;
+  }) {
+    const response = await this.post(
+      `https://${this.mastoOptions.host}/oauth/revoke`,
+      this.form({
+        client_id,
+        client_secret,
+        token,
+      }),
+    );
+
+    return response.ok;
   }
 }

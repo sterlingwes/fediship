@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {ReactNode, useMemo} from 'react';
+import React, {ReactNode, useMemo, useState} from 'react';
 import {
   DevSettings,
   ListRenderItem,
@@ -8,9 +8,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {useMyMastodonInstance} from '../api/hooks';
 import {ChevronInverted} from '../components/icons/Chevron';
 import {Type} from '../components/Type';
 import {actorDetails} from '../constants';
+import {clearUserAuth, useAuth} from '../storage/auth';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {NotificationGroups, RootStackParamList} from '../types';
@@ -65,9 +67,12 @@ interface MenuItem {
 export const User = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Explore'>) => {
+  const auth = useAuth();
+  const api = useMyMastodonInstance();
   const {notifs, readTab, readType} = useNotifications();
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useMount(() => readTab());
 
@@ -133,6 +138,32 @@ export const User = ({
             label: 'Your Profile',
             onPress: () =>
               navigation.push('MyProfile', {...actorDetails, self: true}),
+          },
+          {
+            label: 'Logout',
+            hideChevron: true,
+            onPress: async () => {
+              if (loggingOut || !auth.app || !auth.token || !auth.userIdent) {
+                return;
+              }
+              setLoggingOut(true);
+
+              const {
+                app: {client_id, client_secret},
+                token,
+                userIdent,
+              } = auth;
+              const loggedOut = await api.logout({
+                client_id,
+                client_secret,
+                token,
+              });
+              if (loggedOut) {
+                clearUserAuth(userIdent);
+              }
+
+              setLoggingOut(false);
+            },
           },
         ],
       },
