@@ -1,11 +1,12 @@
 import React from 'react';
-import {Pressable, ViewStyle} from 'react-native';
+import {ActivityIndicator, Pressable, ViewStyle} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {Type} from './Type';
 
 interface ButtonProps {
   disabled?: boolean;
+  loading?: boolean;
   onPress: () => any;
   children: string;
   style?: ViewStyle;
@@ -18,14 +19,18 @@ export const SolidButton = (props: ButtonProps) => {
       style={[styles.buttonContainer, props.style]}
       disabled={props.disabled}
       onPress={props.onPress}>
-      <Type
-        scale="S"
-        style={[
-          styles.buttonLabel,
-          props.disabled && styles.buttonLabelDisabled,
-        ]}>
-        {props.children}
-      </Type>
+      {props.loading ? (
+        <ActivityIndicator />
+      ) : (
+        <Type
+          scale="S"
+          style={[
+            styles.buttonLabel,
+            props.disabled && styles.buttonLabelDisabled,
+          ]}>
+          {props.children}
+        </Type>
+      )}
     </Pressable>
   );
 };

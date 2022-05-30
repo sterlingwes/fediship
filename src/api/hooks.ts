@@ -2,6 +2,7 @@ import {useRef} from 'react';
 import {mastoActorId, mastoHost} from '../constants';
 import {useAuth} from '../storage/auth';
 import {ActivityPubClient} from './activitypub';
+import {FediWorkerApiClient} from './fediworker';
 import {MastodonApiClient} from './mastodon';
 
 export const useMyMastodonInstance = () => {
@@ -27,4 +28,8 @@ export const useRemoteActivityPubInstance = () => {
   return (host: string) => {
     return new ActivityPubClient({host});
   };
+};
+
+export const useWorkerApi = () => {
+  return new FediWorkerApiClient();
 };

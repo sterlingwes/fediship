@@ -95,4 +95,13 @@ export class HTTPClient {
       body,
     };
   }
+
+  json(data: Record<string, any>) {
+    return {
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+  }
 }
