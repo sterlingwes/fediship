@@ -1,18 +1,11 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React from 'react';
-import {
-  Image,
-  ImageStyle,
-  Linking,
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
+import Video from 'react-native-video';
+import React, {useState} from 'react';
+import {Image, ImageStyle, Pressable, StyleSheet, View} from 'react-native';
 import {StyleCreator} from '../theme';
-import {useThemeGetters, useThemeStyle} from '../theme/utils';
+import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TMediaAttachment} from '../types';
-import {PlayCircleIcon} from './icons/PlayCircleIcon';
 import {Type} from './Type';
 
 const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
@@ -23,10 +16,12 @@ const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
 const Media = (
   props: TMediaAttachment & {imageStyle?: ImageStyle; onOpenImage: () => void},
 ) => {
+  const [vidPaused, setVidPaused] = useState(true);
   const styles = useThemeStyle(styleCreator);
-  const {getColor} = useThemeGetters();
 
-  const onOpen = () => Linking.openURL(props.url);
+  const onPlay = () => {
+    setVidPaused(!vidPaused);
+  };
 
   const componentForType = (type: TMediaAttachment['type']) => {
     switch (type) {
@@ -45,17 +40,14 @@ const Media = (
       case 'gifv':
       case 'video':
         return (
-          <Pressable style={styles.mediaThumbnail} onPress={onOpen}>
-            <Image
-              source={{
-                uri: props.preview_url,
-                ...dimensProps(props.meta.small),
-              }}
-              style={[styles.previewImage, props.imageStyle]}
+          <Pressable style={styles.mediaThumbnail} onPress={onPlay}>
+            <Video
+              controls
+              paused={vidPaused}
+              onEnd={() => setVidPaused(true)}
+              source={{uri: props.url}}
+              style={[styles.video, props.imageStyle]}
             />
-            <View style={styles.mediaPlayableIcon}>
-              <PlayCircleIcon color={getColor('contrastTextColor')} />
-            </View>
           </Pressable>
         );
       default:
@@ -204,6 +196,10 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     height: 125,
     width: '100%',
     resizeMode: 'cover',
+  },
+  video: {
+    height: 150,
+    width: '100%',
   },
   previewImageTwoRows: {
     height: 75,

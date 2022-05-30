@@ -46,6 +46,7 @@
     "@types/jest": "^26.0.23",
     "@types/react-native": "^0.67.3",
     "@types/react-native-htmlview": "^0.16.0",
+    "@types/react-native-video": "^5.0.13",
     "@types/react-test-renderer": "^17.0.1",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",
