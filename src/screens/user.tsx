@@ -12,7 +12,7 @@ import {useMyMastodonInstance} from '../api/hooks';
 import {ChevronInverted} from '../components/icons/Chevron';
 import {Type} from '../components/Type';
 import {actorDetails} from '../constants';
-import {clearUserAuth, useAuth} from '../storage/auth';
+import {useAuth} from '../storage/auth';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {NotificationGroups, RootStackParamList} from '../types';
@@ -68,7 +68,6 @@ export const User = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Explore'>) => {
   const auth = useAuth();
-  const api = useMyMastodonInstance();
   const {notifs, readTab, readType} = useNotifications();
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
@@ -147,21 +146,7 @@ export const User = ({
                 return;
               }
               setLoggingOut(true);
-
-              const {
-                app: {client_id, client_secret},
-                token,
-                userIdent,
-              } = auth;
-              const loggedOut = await api.logout({
-                client_id,
-                client_secret,
-                token,
-              });
-              if (loggedOut) {
-                clearUserAuth(userIdent);
-              }
-
+              await auth.clearAuth();
               setLoggingOut(false);
             },
           },
@@ -192,7 +177,7 @@ export const User = ({
         ],
       },
     ],
-    [navigation, notifs, readType],
+    [navigation, notifs, readType, setLoggingOut, auth, loggingOut],
   );
 
   const renderItem: ListRenderItem<typeof menuItems[0]['data'][0]> = ({

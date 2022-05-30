@@ -1,5 +1,12 @@
-import React, {createContext, ReactNode, useContext, useState} from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 import {MMKV} from 'react-native-mmkv';
+import {useMyMastodonInstance} from '../api/hooks';
 import {TApp, TToken} from '../types';
 
 import {readJson} from './utils';
@@ -27,6 +34,10 @@ export const setActiveUser = (user: string) => activeStorage.set('user', user);
 export const getActiveApp = () => activeStorage.getString('app');
 export const setActiveApp = (appHost: string) =>
   activeStorage.set('app', appHost);
+export const clearActiveAuth = () => {
+  activeStorage.delete('app');
+  activeStorage.delete('user');
+};
 
 interface Auth {
   app?: TApp;
@@ -43,9 +54,13 @@ interface Auth {
     oauthApp: TApp;
     tokenResult: TToken;
   }) => void;
+  clearAuth: () => Promise<void>;
 }
 
-const AuthContext = createContext<Auth>({setAuth: () => {}});
+const AuthContext = createContext<Auth>({
+  setAuth: () => {},
+  clearAuth: () => Promise.resolve(),
+});
 
 const rehydrateAuth = () => {
   const activeApp = getActiveApp();
@@ -65,22 +80,57 @@ const rehydrateAuth = () => {
 };
 
 export const AuthProvider = ({children}: {children: ReactNode}) => {
-  const [auth, setAuth] = useState<{
+  const api = useMyMastodonInstance();
+  const [auth, setAuthState] = useState<{
     userIdent?: string;
     token?: string;
     app?: TApp;
   }>(rehydrateAuth());
+
+  const setAuth = useCallback(
+    ({user, host, oauthApp, tokenResult}) => {
+      const userIdent = `${user}@${host}`;
+      setAuthState({token: tokenResult.access_token, app: oauthApp});
+      setUserAuth(userIdent, tokenResult);
+      setActiveApp(host);
+      setActiveUser(userIdent);
+    },
+    [setAuthState],
+  );
+
+  const clearAuth = useCallback(async () => {
+    const activeUser = getActiveUser();
+
+    if (!activeUser || !auth.userIdent || !auth.token || !auth.app) {
+      return;
+    }
+
+    const {
+      app: {client_id, client_secret},
+      token,
+    } = auth;
+
+    const loggedOut = await api.logout({
+      client_id,
+      client_secret,
+      token,
+    });
+    if (!loggedOut) {
+      return false;
+    }
+
+    clearUserAuth(activeUser ?? auth.userIdent);
+    setAuth({});
+    clearActiveAuth();
+    return true;
+  }, [auth, setAuth, api]);
+
   return (
     <AuthContext.Provider
       value={{
         ...auth,
-        setAuth: ({user, host, oauthApp, tokenResult}) => {
-          const userIdent = `${user}@${host}`;
-          setAuth({token: tokenResult.access_token, app: oauthApp});
-          setUserAuth(userIdent, tokenResult);
-          setActiveApp(host);
-          setActiveUser(userIdent);
-        },
+        setAuth,
+        clearAuth,
       }}>
       {children}
     </AuthContext.Provider>
