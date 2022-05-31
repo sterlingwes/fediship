@@ -33,6 +33,7 @@ import statusPixelfed from './fixtures/status-pixelfed-linebreaks.json';
 import statusBrPs from './fixtures/status-paragraphs-and-linebreaks.json';
 import statusLong from './fixtures/status-long.json';
 import statusVideo from './fixtures/status-video.json';
+import statusMicroformatsHcard from './fixtures/status-microformats-hcard.json';
 
 const defaultAdditionalProps = {
   isLocal: true,
@@ -40,6 +41,7 @@ const defaultAdditionalProps = {
 };
 
 const statuses: TStatusMapped[] = [
+  statusMicroformatsHcard,
   statusVideo,
   statusLong,
   statusOneImage,
