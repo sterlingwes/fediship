@@ -22,6 +22,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     borderRadius: 5,
     borderWidth: 2,
     borderColor: getColor('secondary'),
+    elevation: 4,
     shadowColor: getColor('base'),
     shadowOpacity: 0.05,
     shadowRadius: 18,

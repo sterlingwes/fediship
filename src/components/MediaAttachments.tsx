@@ -4,9 +4,10 @@ import Video from 'react-native-video';
 import React, {useState} from 'react';
 import {Image, ImageStyle, Pressable, StyleSheet, View} from 'react-native';
 import {StyleCreator} from '../theme';
-import {useThemeStyle} from '../theme/utils';
+import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TMediaAttachment} from '../types';
 import {Type} from './Type';
+import {PlayCircleIcon} from './icons/PlayCircleIcon';
 
 const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
   width,
@@ -18,6 +19,7 @@ const Media = (
 ) => {
   const [vidPaused, setVidPaused] = useState(true);
   const styles = useThemeStyle(styleCreator);
+  const {getColor} = useThemeGetters();
 
   const onPlay = () => {
     setVidPaused(!vidPaused);
@@ -38,16 +40,31 @@ const Media = (
           </Pressable>
         );
       case 'gifv':
+        return (
+          <Pressable style={styles.mediaThumbnail} onPress={onPlay}>
+            <Video
+              repeat
+              paused={vidPaused}
+              source={{uri: props.url}}
+              style={[styles.video, props.imageStyle]}
+            />
+            <View style={styles.mediaPlayableIcon}>
+              <PlayCircleIcon color={getColor('contrastTextColor')} />
+            </View>
+          </Pressable>
+        );
       case 'video':
         return (
           <Pressable style={styles.mediaThumbnail} onPress={onPlay}>
             <Video
-              controls
               paused={vidPaused}
               onEnd={() => setVidPaused(true)}
               source={{uri: props.url}}
               style={[styles.video, props.imageStyle]}
             />
+            <View style={styles.mediaPlayableIcon}>
+              <PlayCircleIcon color={getColor('contrastTextColor')} />
+            </View>
           </Pressable>
         );
       default:
