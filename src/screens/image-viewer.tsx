@@ -1,7 +1,7 @@
 import {ReactNativeZoomableView} from '@openspacelabs/react-native-zoomable-view';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, View, ViewStyle} from 'react-native';
 import Video from 'react-native-video';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {OutlineButton} from '../components/OutlineButton';
@@ -10,6 +10,23 @@ import {screenHeight, screenWidth} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
+
+const ZoomPanView = ({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style: ViewStyle;
+}) => (
+  <ReactNativeZoomableView
+    style={style}
+    maxZoom={3}
+    minZoom={0.5}
+    initialZoom={1}
+    bindToBorders>
+    {children}
+  </ReactNativeZoomableView>
+);
 
 export const ImageViewer = (
   props: NativeStackScreenProps<RootStackParamList, 'ImageViewer'>,
@@ -28,17 +45,12 @@ export const ImageViewer = (
   };
 
   const target = attachments[currentIndex];
+  const Wrapper = target.type === 'image' ? ZoomPanView : View;
 
   return (
     <View style={styles.container}>
       <View style={styles.shadowBox} />
-      <ReactNativeZoomableView
-        style={styles.zoomView}
-        maxZoom={3}
-        minZoom={0.5}
-        initialZoom={1}
-        zoomEnabled={target.type !== 'video'}
-        bindToBorders>
+      <Wrapper style={styles.zoomView}>
         {['video', 'gifv'].includes(target.type) ? (
           <Video
             controls
@@ -62,7 +74,7 @@ export const ImageViewer = (
           />
         )}
         {loading && <ActivityIndicator size="large" style={styles.loading} />}
-      </ReactNativeZoomableView>
+      </Wrapper>
       <SafeAreaView edges={['bottom']} style={styles.button}>
         {attachments.length > 1 && (
           <OutlineButton

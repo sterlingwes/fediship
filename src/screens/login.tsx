@@ -29,6 +29,10 @@ export const Login = ({
         onChangeText={setHost}
         style={styles.input}
         placeholder="example.com"
+        keyboardType="url"
+        autoCorrect={false}
+        spellCheck={false}
+        autoCapitalize="none"
       />
       <View style={styles.spacer} />
       <SolidButton onPress={onLogin} disabled={!host}>

@@ -51,7 +51,7 @@ const callListeners = async () => {
 };
 
 export const KeyboardBannerProvider = ({children}: {children: ReactNode}) => {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [keyboardShown, setKeyboardShown] = useState(false);
 
   useMount(() => {
