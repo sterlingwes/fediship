@@ -106,8 +106,8 @@ export interface TMediaAttachment {
     original: {
       width: number;
       height: number;
-      size: string;
-      aspect: number;
+      size?: string;
+      aspect?: number;
     };
     small: {
       width: number;

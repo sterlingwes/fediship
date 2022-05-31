@@ -1,0 +1,106 @@
+{
+  "id": "108393299984665166",
+  "created_at": "2022-05-30T22:41:24.000Z",
+  "in_reply_to_id": null,
+  "in_reply_to_account_id": null,
+  "sensitive": false,
+  "spoiler_text": "",
+  "visibility": "public",
+  "language": "en",
+  "uri": "https://oslo.town/users/matt/statuses/108393298927260165",
+  "url": "https://oslo.town/@matt/108393298927260165",
+  "replies_count": 0,
+  "reblogs_count": 0,
+  "favourites_count": 0,
+  "favourited": false,
+  "reblogged": false,
+  "muted": false,
+  "bookmarked": false,
+  "content": "\u003cp\u003eI just need to stop clicking. \u003ca href=\"https://oslo.town/tags/KingOfTheHill\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"\u003e#\u003cspan\u003eKingOfTheHill\u003c/span\u003e\u003c/a\u003e \u003ca href=\"https://oslo.town/tags/Internet\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"\u003e#\u003cspan\u003eInternet\u003c/span\u003e\u003c/a\u003e\u003c/p\u003e",
+  "reblog": null,
+  "account": {
+    "id": "10088",
+    "username": "matt",
+    "acct": "matt@oslo.town",
+    "display_name": "Matt 💙💛",
+    "locked": false,
+    "bot": false,
+    "discoverable": true,
+    "group": false,
+    "created_at": "2022-05-05T05:42:03.483Z",
+    "note": "\u003cp\u003eI'm a job stealing, tax paying immigrant. British person living in \u003ca href=\"https://oslo.town/tags/Oslo\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"\u003e#\u003cspan\u003eOslo\u003c/span\u003e\u003c/a\u003e 🇳🇴 doing \u003ca href=\"https://oslo.town/tags/design\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"\u003e#\u003cspan\u003edesign\u003c/span\u003e\u003c/a\u003e 🎨 at \u003ca href=\"https://oslo.town/tags/Microsoft\" class=\"mention hashtag\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"\u003e#\u003cspan\u003eMicrosoft\u003c/span\u003e\u003c/a\u003e 🧑‍💻and there are rumours that I'm the voice behind \u003cspan class=\"h-card\"\u003e\u003ca href=\"https://oslo.town/@themayor\" class=\"u-url mention\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"\u003e@\u003cspan\u003ethemayor\u003c/span\u003e\u003c/a\u003e\u003c/span\u003e 🎩\u003c/p\u003e",
+    "url": "https://oslo.town/@matt",
+    "avatar": "https://swj.io/system/accounts/avatars/000/010/088/original/1cf3463afcb43d5a.png?1652563452",
+    "avatar_static": "https://swj.io/system/accounts/avatars/000/010/088/original/1cf3463afcb43d5a.png?1652563452",
+    "header": "https://swj.io/system/accounts/headers/000/010/088/original/304a91b0dd6408dc.jpeg?1651729321",
+    "header_static": "https://swj.io/system/accounts/headers/000/010/088/original/304a91b0dd6408dc.jpeg?1651729321",
+    "followers_count": 1066,
+    "following_count": 677,
+    "statuses_count": 1945,
+    "last_status_at": "2022-05-30",
+    "emojis": [],
+    "fields": [
+      {
+        "name": "Blog",
+        "value": "\u003ca href=\"https://coxy.co\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"\u003e\u003cspan class=\"invisible\"\u003ehttps://\u003c/span\u003e\u003cspan class=\"\"\u003ecoxy.co\u003c/span\u003e\u003cspan class=\"invisible\"\u003e\u003c/span\u003e\u003c/a\u003e",
+        "verified_at": null
+      },
+      {
+        "name": "Matrix",
+        "value": "\u003cspan class=\"h-card\"\u003e\u003ca href=\"https://oslo.town/@matt\" class=\"u-url mention\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"\u003e@\u003cspan\u003ematt\u003c/span\u003e\u003c/a\u003e\u003c/span\u003e:gossip.land",
+        "verified_at": null
+      },
+      {
+        "name": "$ZEC",
+        "value": "zs1j8xe29ag302t4ueswef48uklgs6v28g53yfnq4p62rznffr8l07temh77wz485tzqda2kvq5z8l",
+        "verified_at": null
+      },
+      {"name": "Pronouns", "value": "He/Him", "verified_at": null}
+    ]
+  },
+  "media_attachments": [
+    {
+      "id": "47961",
+      "type": "video",
+      "url": "https://swj.io/system/media_attachments/files/000/047/961/original/49cb9e44c63ff30b.mp4?1653950499",
+      "preview_url": "https://swj.io/system/media_attachments/files/000/047/961/small/49cb9e44c63ff30b.png?1653950499",
+      "remote_url": "https://cdn.masto.host/oslotown/media_attachments/files/108/393/286/000/584/517/original/7d49372e9b40569d.mp4",
+      "text_url": null,
+      "meta": {
+        "length": "0:00:10.97",
+        "duration": 10.97,
+        "fps": 30,
+        "size": "1280x720",
+        "width": 1280,
+        "height": 720,
+        "aspect": 1.7777777777777777,
+        "audio_encode": "aac (LC) (mp4a / 0x6134706D)",
+        "audio_bitrate": "44100 Hz",
+        "audio_channels": "stereo",
+        "original": {
+          "width": 1280,
+          "height": 720,
+          "frame_rate": "30/1",
+          "duration": 10.967,
+          "bitrate": 6021500
+        },
+        "small": {
+          "width": 400,
+          "height": 225,
+          "size": "400x225",
+          "aspect": 1.7777777777777777
+        }
+      },
+      "description": null,
+      "blurhash": "UPGIM{yC0KR4Tza~nOf8%$aKRPkXFfWAwHWU"
+    }
+  ],
+  "mentions": [],
+  "tags": [
+    {"name": "internet", "url": "https://swj.io/tags/internet"},
+    {"name": "KingOfTheHill", "url": "https://swj.io/tags/KingOfTheHill"}
+  ],
+  "emojis": [],
+  "card": null,
+  "poll": null
+}

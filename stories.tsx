@@ -20,7 +20,7 @@ import {useThemeStyle} from './src/theme/utils';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ImageViewer} from './src/screens/image-viewer';
-import {TStatus, TStatusMapped} from './src/types';
+import {TStatusMapped} from './src/types';
 
 import statusOneImage from './fixtures/status-one-image.json';
 import statusThreeImage from './fixtures/status-three-image.json';
@@ -32,6 +32,7 @@ import statusTwoImage from './fixtures/status-two-image.json';
 import statusPixelfed from './fixtures/status-pixelfed-linebreaks.json';
 import statusBrPs from './fixtures/status-paragraphs-and-linebreaks.json';
 import statusLong from './fixtures/status-long.json';
+import statusVideo from './fixtures/status-video.json';
 
 const defaultAdditionalProps = {
   isLocal: true,
@@ -39,6 +40,7 @@ const defaultAdditionalProps = {
 };
 
 const statuses: TStatusMapped[] = [
+  statusVideo,
   statusLong,
   statusOneImage,
   statusTwoImage,

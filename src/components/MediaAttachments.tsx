@@ -1,13 +1,13 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import Video from 'react-native-video';
-import React, {useState} from 'react';
+import React from 'react';
 import {Image, ImageStyle, Pressable, StyleSheet, View} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TMediaAttachment} from '../types';
 import {Type} from './Type';
 import {PlayCircleIcon} from './icons/PlayCircleIcon';
+import {RedundantImage} from './RedundantImage';
 
 const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
   width,
@@ -15,22 +15,23 @@ const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
 });
 
 const Media = (
-  props: TMediaAttachment & {imageStyle?: ImageStyle; onOpenImage: () => void},
+  props: TMediaAttachment & {
+    imageStyle?: ImageStyle;
+    onOpenAttachment: () => void;
+  },
 ) => {
-  const [vidPaused, setVidPaused] = useState(true);
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
-
-  const onPlay = () => {
-    setVidPaused(!vidPaused);
-  };
 
   const componentForType = (type: TMediaAttachment['type']) => {
     switch (type) {
       case 'image':
         return (
-          <Pressable style={styles.mediaThumbnail} onPress={props.onOpenImage}>
-            <Image
+          <Pressable
+            style={styles.mediaThumbnail}
+            onPress={props.onOpenAttachment}>
+            <RedundantImage
+              fallbackUri={props.remote_url}
               source={{
                 uri: props.preview_url,
                 ...dimensProps(props.meta.small),
@@ -40,27 +41,14 @@ const Media = (
           </Pressable>
         );
       case 'gifv':
-        return (
-          <Pressable style={styles.mediaThumbnail} onPress={onPlay}>
-            <Video
-              repeat
-              paused={vidPaused}
-              source={{uri: props.url}}
-              style={[styles.video, props.imageStyle]}
-            />
-            <View style={styles.mediaPlayableIcon}>
-              <PlayCircleIcon color={getColor('contrastTextColor')} />
-            </View>
-          </Pressable>
-        );
       case 'video':
         return (
-          <Pressable style={styles.mediaThumbnail} onPress={onPlay}>
-            <Video
-              paused={vidPaused}
-              onEnd={() => setVidPaused(true)}
-              source={{uri: props.url}}
-              style={[styles.video, props.imageStyle]}
+          <Pressable
+            style={styles.mediaThumbnail}
+            onPress={props.onOpenAttachment}>
+            <Image
+              source={{uri: props.preview_url}}
+              style={[styles.previewImage, props.imageStyle]}
             />
             <View style={styles.mediaPlayableIcon}>
               <PlayCircleIcon color={getColor('contrastTextColor')} />
@@ -72,7 +60,7 @@ const Media = (
     }
   };
 
-  return <View>{componentForType(props.type)}</View>;
+  return componentForType(props.type);
 };
 
 export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
@@ -80,7 +68,7 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
 
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const onOpenImage = (index: number) =>
+  const onOpenAttachment = (index: number) =>
     navigation.navigate('ImageViewer', {index, attachments: props.media});
 
   if (props.media.length === 1) {
@@ -90,7 +78,7 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
           <Media
             {...{
               ...props.media[0],
-              onOpenImage: () => onOpenImage(0),
+              onOpenAttachment: () => onOpenAttachment(0),
             }}
           />
         </View>
@@ -103,7 +91,9 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
       <View style={styles.mediaTwo}>
         {props.media.map((attachment, i) => (
           <View key={attachment.id} style={styles.flexColumn}>
-            <Media {...{...attachment, onOpenImage: () => onOpenImage(i)}} />
+            <Media
+              {...{...attachment, onOpenAttachment: () => onOpenAttachment(i)}}
+            />
           </View>
         ))}
       </View>
@@ -118,16 +108,19 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
           <View style={styles.flexColumn}>
             <View key={first.id} style={styles.flexColumn}>
               <Media
-                {...{...first, onOpenImage: () => onOpenImage(0)}}
+                {...{...first, onOpenAttachment: () => onOpenAttachment(0)}}
                 imageStyle={styles.previewImageSpanTwoRows}
               />
             </View>
           </View>
           <View style={styles.flexColumn}>
             {[second, third].map((attachment, i) => (
-              <View style={styles.flexColumn}>
+              <View key={attachment.id} style={styles.flexColumn}>
                 <Media
-                  {...{...attachment, onOpenImage: () => onOpenImage(i + 1)}}
+                  {...{
+                    ...attachment,
+                    onOpenAttachment: () => onOpenAttachment(i + 1),
+                  }}
                   imageStyle={styles.previewImageTwoRows}
                 />
               </View>
@@ -146,7 +139,10 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
           {[first, second].map((attachment, i) => (
             <View key={attachment.id} style={styles.flexColumn}>
               <Media
-                {...{...attachment, onOpenImage: () => onOpenImage(i)}}
+                {...{
+                  ...attachment,
+                  onOpenAttachment: () => onOpenAttachment(i),
+                }}
                 imageStyle={styles.previewImageTwoRows}
               />
             </View>
@@ -156,7 +152,10 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
           {[third, fourth].map((attachment, i) => (
             <View key={attachment.id} style={styles.flexColumn}>
               <Media
-                {...{...attachment, onOpenImage: () => onOpenImage(i + 2)}}
+                {...{
+                  ...attachment,
+                  onOpenAttachment: () => onOpenAttachment(i + 2),
+                }}
                 imageStyle={styles.previewImageTwoRows}
               />
               {props.media.length > 4 && i === 1 && (
@@ -177,7 +176,7 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
       {props.media.map((attachment, i) => (
         <Media
           key={attachment.id}
-          {...{...attachment, onOpenImage: () => onOpenImage(i)}}
+          {...{...attachment, onOpenAttachment: () => onOpenAttachment(i)}}
         />
       ))}
     </View>
@@ -215,7 +214,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     resizeMode: 'cover',
   },
   video: {
-    height: 150,
+    minHeight: 150,
     width: '100%',
   },
   previewImageTwoRows: {
