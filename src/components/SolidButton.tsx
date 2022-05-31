@@ -17,7 +17,7 @@ export const SolidButton = (props: ButtonProps) => {
   return (
     <Pressable
       style={[styles.buttonContainer, props.style]}
-      disabled={props.disabled}
+      disabled={props.disabled || props.loading}
       onPress={props.onPress}>
       {props.loading ? (
         <ActivityIndicator />

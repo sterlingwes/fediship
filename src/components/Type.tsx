@@ -3,7 +3,7 @@ import {ColorValue, Text, TextProps} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 
-const fontScales = Object.freeze({
+export const fontScales = Object.freeze({
   MEGA: 32,
   XL: 28,
   L: 24,

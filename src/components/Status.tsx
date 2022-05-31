@@ -5,7 +5,6 @@ import {
   Pressable,
   View,
   ImageStyle,
-  ViewStyle,
   ActivityIndicator,
 } from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
@@ -21,6 +20,7 @@ import {LockIcon} from './icons/LockIcon';
 import {StarIcon} from './icons/StarIcon';
 import {MediaAttachments} from './MediaAttachments';
 import {Poll} from './Poll';
+import {ReplyLine} from './ReplyLine';
 import {getType} from './status.util';
 import {Type} from './Type';
 
@@ -143,32 +143,6 @@ const StatusHeader = (props: StatusHeaderProps) => {
         </Type>
       </View>
       <Type scale="XS">{timeAgo(props.sendDate)}</Type>
-    </View>
-  );
-};
-
-const ReplyLine = ({
-  stretch,
-  height,
-  visible,
-  style,
-}: {
-  height?: number;
-  stretch?: boolean;
-  visible?: boolean;
-  style?: ViewStyle;
-}) => {
-  const styles = useThemeStyle(styleCreator);
-
-  return (
-    <View
-      style={[
-        styles.replyLineContainer,
-        stretch && styles.replyLineStretch,
-        height && {height},
-        style,
-      ]}>
-      {visible && <View style={styles.replyLine} />}
     </View>
   );
 };
@@ -454,19 +428,8 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   starButtonFaved: {
     borderColor: getColor('goldAccent'),
   },
-  replyLineContainer: {
-    alignItems: 'center',
-  },
   replyLineLeader: {
     marginRight: 15,
-  },
-  replyLineStretch: {
-    flex: 1,
-  },
-  replyLine: {
-    width: 1,
-    flex: 1,
-    backgroundColor: getColor('baseAccent'),
   },
   viewMore: {
     flexDirection: 'row',

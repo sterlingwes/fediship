@@ -1,24 +1,20 @@
 import React from 'react';
-import {Image, ImageStyle} from 'react-native';
+import {Image, View, ViewStyle} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 
-export const AvatarImage = ({
-  uri,
-  style,
-}: {
-  uri: string;
-  style?: ImageStyle;
-}) => {
+export const AvatarImage = ({uri, style}: {uri: string; style?: ViewStyle}) => {
   const styles = useThemeStyle(styleCreator);
-  return <Image source={{uri}} style={[styles.headerAvatar, style]} />;
+  return (
+    <View style={[styles.headerAvatar, style]}>
+      <Image source={{uri}} style={[styles.img]} />
+    </View>
+  );
 };
 
 const styleCreator: StyleCreator = ({getColor}) => ({
   headerAvatar: {
     backgroundColor: getColor('base'),
-    width: 100,
-    height: 100,
     borderRadius: 5,
     borderWidth: 2,
     borderColor: getColor('secondary'),
@@ -30,5 +26,9 @@ const styleCreator: StyleCreator = ({getColor}) => ({
       width: 0,
       height: 10,
     },
+  },
+  img: {
+    width: 100,
+    height: 100,
   },
 });

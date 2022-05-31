@@ -197,7 +197,9 @@ export const App = () => {
           <SavedTimelineProvider>
             <FavouritesProvider>
               <ThemeProvider>
-                <NavigationRoot />
+                <KeyboardBannerProvider>
+                  <NavigationRoot />
+                </KeyboardBannerProvider>
               </ThemeProvider>
             </FavouritesProvider>
           </SavedTimelineProvider>

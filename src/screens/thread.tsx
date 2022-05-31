@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {useThread} from '../api';
 import {InfoBanner} from '../components/InfoBanner';
+import {InlineReply} from '../components/InlineReply';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
@@ -68,13 +69,14 @@ export const Thread = ({
 
   const renderItem: ListRenderItem<TStatusMapped> = ({item, index}) => {
     const localStatus = thread?.localStatuses?.[item.uri];
+    const focused = thread?.status?.id === item.id;
 
-    return (
+    const statusComponent = (
       <Status
         key={item.id}
         collapsed={false}
         isLocal={!!localStatus}
-        focused={thread?.status?.id === item.id}
+        focused={focused}
         {...(localStatus ?? item)}
         hasReplies={!!statuses[index + 1]}
         lastStatus={
@@ -92,6 +94,17 @@ export const Thread = ({
           });
         }}
       />
+    );
+
+    if (!focused || !localStatus) {
+      return statusComponent;
+    }
+
+    return (
+      <>
+        {statusComponent}
+        <InlineReply inReplyToId={item.id} />
+      </>
     );
   };
 

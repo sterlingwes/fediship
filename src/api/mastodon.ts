@@ -36,6 +36,21 @@ export class MastodonApiClient extends HTTPClient {
     this.mastoOptions = options;
   }
 
+  sendStatus(
+    input: {
+      status: string;
+      in_reply_to_id?: string;
+    },
+    idempotencyKey?: string,
+  ) {
+    return this.authedPost('statuses', {
+      ...(idempotencyKey
+        ? {headers: {'Idempotency-Key': idempotencyKey}}
+        : undefined),
+      ...this.form(input),
+    });
+  }
+
   async getTimeline(timeline: 'home' | 'public', nextPage?: string) {
     const method = timeline === 'home' ? 'authedGet' : 'get';
     const response = await this[method](nextPage ?? `timelines/${timeline}`);
