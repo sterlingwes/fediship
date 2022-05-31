@@ -33,6 +33,7 @@ import {TimelineStack} from './timeline-stack';
 import {Authorize} from './screens/user/authorize';
 import {AuthProvider, useAuth} from './storage/auth';
 import {Login} from './screens/login';
+import {KeyboardBannerProvider} from './components/KeyboardBanner';
 
 const Tab = createBottomTabNavigator();
 
