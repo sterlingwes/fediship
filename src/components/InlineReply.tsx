@@ -40,6 +40,10 @@ export const InlineReply = ({
 
   useEffect(() => {
     const onSend = async () => {
+      if (!textValue.trim()) {
+        return false;
+      }
+
       await api.sendStatus(
         {status: textValue, in_reply_to_id: inReplyToId},
         idempotency.current, // TODO: merge headers properly in HTTPClient

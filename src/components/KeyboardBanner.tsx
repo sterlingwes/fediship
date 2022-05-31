@@ -5,7 +5,7 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import {Keyboard, KeyboardAvoidingView, View} from 'react-native';
+import {Keyboard, KeyboardAvoidingView, Platform, View} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {useMount} from '../utils/hooks';
@@ -82,7 +82,9 @@ export const KeyboardBannerProvider = ({children}: {children: ReactNode}) => {
 
   return (
     <KeyboardBannerContext.Provider value={{visible, hide, show}}>
-      <KeyboardAvoidingView style={flex} behavior="padding">
+      <KeyboardAvoidingView
+        style={flex}
+        behavior={Platform.OS === 'android' ? undefined : 'padding'}>
         {children}
         {visible && keyboardShown && (
           <KeyboardBanner onPressSend={callListeners} onHide={hide} />
