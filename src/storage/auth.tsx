@@ -54,7 +54,7 @@ interface Auth {
     oauthApp: TApp;
     tokenResult: TToken;
   }) => void;
-  clearAuth: () => Promise<void>;
+  clearAuth: () => Promise<boolean | undefined>;
 }
 
 const AuthContext = createContext<Auth>({
