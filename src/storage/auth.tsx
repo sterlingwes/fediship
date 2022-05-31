@@ -59,7 +59,7 @@ interface Auth {
 
 const AuthContext = createContext<Auth>({
   setAuth: () => {},
-  clearAuth: () => Promise.resolve(),
+  clearAuth: () => Promise.resolve(undefined),
 });
 
 const rehydrateAuth = () => {
