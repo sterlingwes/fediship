@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import {MMKV} from 'react-native-mmkv';
 import {useMyMastodonInstance} from '../api/hooks';
-import {TApp, TToken} from '../types';
+import {TAccount, TApp, TToken} from '../types';
 
 import {readJson} from './utils';
 
@@ -38,6 +38,10 @@ export const clearActiveAuth = () => {
   activeStorage.delete('app');
   activeStorage.delete('user');
 };
+export const setActiveUserProfile = (user: TAccount) =>
+  activeStorage.set('user_profile', JSON.stringify(user));
+export const getActiveUserProfile = () =>
+  readJson<TAccount>('user_profile', activeStorage);
 
 interface Auth {
   app?: TApp;

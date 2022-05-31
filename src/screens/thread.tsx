@@ -103,7 +103,10 @@ export const Thread = ({
     return (
       <>
         {statusComponent}
-        <InlineReply inReplyToId={item.id} />
+        <InlineReply
+          inReplyToId={item.id}
+          onlyReply={index === statuses.length - 1}
+        />
       </>
     );
   };

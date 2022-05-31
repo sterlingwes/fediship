@@ -1,10 +1,9 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import {Image, TextInput, TouchableOpacity, View} from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {useMount} from '../utils/hooks';
-import {flex} from '../utils/styles';
 import {nanoid} from '../utils/nanoid';
 import {Input} from './Input';
 import {
@@ -14,14 +13,23 @@ import {
 } from './KeyboardBanner';
 import {ReplyLine} from './ReplyLine';
 import {Type} from './Type';
+import {useUserProfile} from '../storage/user';
 
-export const InlineReply = ({inReplyToId}: {inReplyToId: string}) => {
+export const InlineReply = ({
+  inReplyToId,
+  onlyReply,
+}: {
+  inReplyToId: string;
+  onlyReply?: boolean;
+}) => {
   const keyboardBanner = useKeyboardBanner();
   const [textValue, setTextValue] = useState('');
   const [replying, setReplying] = useState(false);
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
   const idempotency = useRef(nanoid());
+  const activeUser = useUserProfile();
+  const inputRef = useRef<TextInput | null>();
 
   const api = useMyMastodonInstance();
 
@@ -37,29 +45,51 @@ export const InlineReply = ({inReplyToId}: {inReplyToId: string}) => {
         idempotency.current, // TODO: merge headers properly in HTTPClient
       );
       // TODO: refresh thread and ensure just-sent response is at the top
-      keyboardBanner.hide(true);
+      return true;
     };
 
     registerSendListener(onSend);
     return () => removeSendListener(onSend);
   }, [textValue, api, inReplyToId, keyboardBanner]);
 
+  const onPressReply = () => {
+    setReplying(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 10);
+  };
+
+  const onLeaveInput = () => {
+    if (!textValue.trim()) {
+      setReplying(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.leftCol}>
-        <ReplyLine visible stretch />
+      <View>
+        <ReplyLine visible height={15} />
+        {activeUser && (
+          <Image
+            source={{uri: activeUser?.avatar_static}}
+            style={styles.userAvatar}
+          />
+        )}
+        {!onlyReply && <ReplyLine visible height={25} stretch />}
       </View>
-      <View style={flex}>
+      <View style={styles.rightCol}>
         {replying ? (
           <>
             <Type style={styles.yourReply} scale="S" semiBold>
               Your reply:
             </Type>
             <Input
+              ref={ref => (inputRef.current = ref)}
               scale="S"
               style={styles.input}
               placeholder="Say something!"
               onChangeText={setTextValue}
+              onBlur={onLeaveInput}
               value={textValue}
               multiline
             />
@@ -68,7 +98,7 @@ export const InlineReply = ({inReplyToId}: {inReplyToId: string}) => {
           <TouchableOpacity
             activeOpacity={0.5}
             style={styles.replyBtn}
-            onPress={() => setReplying(true)}>
+            onPress={onPressReply}>
             <Type color={getColor('baseAccent')}>Reply</Type>
           </TouchableOpacity>
         )}
@@ -80,11 +110,12 @@ export const InlineReply = ({inReplyToId}: {inReplyToId: string}) => {
 const styleCreator: StyleCreator = ({getColor}) => ({
   container: {
     flexDirection: 'row',
-    paddingLeft: 44.5, // TODO: find a better way to align
+    paddingLeft: 15,
   },
-  leftCol: {
-    flexDirection: 'column',
-    marginRight: 34,
+  rightCol: {
+    flex: 1,
+    paddingTop: 6,
+    paddingLeft: 5,
   },
   replyBtn: {
     padding: 10,
@@ -97,6 +128,13 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   input: {
     paddingHorizontal: 12,
-    marginBottom: 10,
+    marginBottom: 20,
+  },
+  userAvatar: {
+    width: 60,
+    height: 60,
+    resizeMode: 'cover',
+    borderRadius: 5,
+    backgroundColor: getColor('baseAccent'),
   },
 });

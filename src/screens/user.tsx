@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useMyMastodonInstance} from '../api/hooks';
 import {ChevronInverted} from '../components/icons/Chevron';
 import {Type} from '../components/Type';
 import {actorDetails} from '../constants';

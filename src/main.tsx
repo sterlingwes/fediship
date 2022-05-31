@@ -34,12 +34,15 @@ import {Authorize} from './screens/user/authorize';
 import {AuthProvider, useAuth} from './storage/auth';
 import {Login} from './screens/login';
 import {KeyboardBannerProvider} from './components/KeyboardBanner';
+import {useUserProfile} from './storage/user';
 
 const Tab = createBottomTabNavigator();
 
 LogBox.ignoreLogs([
   // TODO: need to silence this for HTMLView specifically...
   'Warning: Each child in a list should have a unique "key" prop.',
+  // TODO: need to patch rn video
+  'ViewPropTypes will be removed from React Native',
 ]);
 
 const iconForTab =
@@ -177,6 +180,7 @@ const LoggedOutStack = () => (
 const NavigationRoot = () => {
   const theme = useTheme();
   const auth = useAuth();
+  useUserProfile();
 
   return (
     <NavigationContainer

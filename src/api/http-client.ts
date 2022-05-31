@@ -26,7 +26,10 @@ export class HTTPClient {
     this.assertToken();
     return this.post(info, {
       ...extra,
-      headers: {Authorization: `Bearer ${this.options.token}`},
+      headers: {
+        ...extra?.headers,
+        Authorization: `Bearer ${this.options.token}`,
+      },
     });
   }
 
@@ -34,7 +37,10 @@ export class HTTPClient {
     this.assertToken();
     return this.get(info, {
       ...extra,
-      headers: {Authorization: `Bearer ${this.options.token}`},
+      headers: {
+        ...extra?.headers,
+        Authorization: `Bearer ${this.options.token}`,
+      },
     });
   }
 
