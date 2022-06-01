@@ -5,7 +5,12 @@ import {WebView} from 'react-native-webview';
 import {useMyMastodonInstance} from '../../api/hooks';
 import {Type} from '../../components/Type';
 import {oauthScopes} from '../../constants';
-import {getClientApp, setClientApp, useAuth} from '../../storage/auth';
+import {
+  getClientApp,
+  setActiveUserProfile,
+  setClientApp,
+  useAuth,
+} from '../../storage/auth';
 import {useThemeGetters} from '../../theme/utils';
 import {RootStackParamList} from '../../types';
 import {useMount} from '../../utils/hooks';
@@ -76,6 +81,7 @@ export const Authorize = ({
         return;
       }
 
+      setActiveUserProfile(user);
       auth.setAuth({user: user.acct, host, oauthApp: app, tokenResult: token});
     };
 
