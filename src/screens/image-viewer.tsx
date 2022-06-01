@@ -28,6 +28,8 @@ const ZoomPanView = ({
   </ReactNativeZoomableView>
 );
 
+const imagePadding = 20;
+
 export const ImageViewer = (
   props: NativeStackScreenProps<RootStackParamList, 'ImageViewer'>,
 ) => {
@@ -59,7 +61,7 @@ export const ImageViewer = (
             poster={target.preview_url}
             posterResizeMode="cover"
             style={{
-              width: screenWidth,
+              width: screenWidth - imagePadding * 2,
               aspectRatio:
                 target.meta.original.width / target.meta.original.height,
             }}
@@ -118,7 +120,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   zoomView: {
     flex: 1,
-    padding: 20,
+    padding: imagePadding,
   },
   img: {
     width: '100%',
@@ -126,6 +128,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     resizeMode: 'contain',
   },
   button: {
+    backgroundColor: getColor('base'),
     flexDirection: 'row',
     alignItems: 'center',
   },
