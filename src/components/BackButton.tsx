@@ -29,8 +29,8 @@ export const BackButton = (props: BackButtonProps) => {
               ? getColor('contrastTextColor')
               : getColor('primary')
           }
-          width={'40'}
-          height={'40'}
+          width={'35'}
+          height={'35'}
           style={styles.icon}
         />
       </View>
@@ -49,6 +49,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     backgroundColor: 'transparent',
   },
   icon: {
+    top: 5,
     left: -2,
   },
 });
