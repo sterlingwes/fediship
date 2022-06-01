@@ -15,6 +15,7 @@ import {mastoHost} from '../constants';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatusMapped} from '../types';
+import {ErrorBoundary} from './ErrorBoundary';
 
 const createTimelineRenderer =
   (
@@ -91,21 +92,26 @@ export const StatusList = forwardRef(
     );
 
     return (
-      <View style={styles.screen}>
-        <FlatList
-          ref={nodeRef => (scrollRef.current = nodeRef)}
-          data={statuses}
-          renderItem={renderItem}
-          style={styles.container}
-          refreshControl={
-            <RefreshControl refreshing={reloading} onRefresh={reloadTimeline} />
-          }
-          onScroll={event => {
-            scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
-          }}
-          ListFooterComponent={statuses.length ? LoadFooter : null}
-        />
-      </View>
+      <ErrorBoundary>
+        <View style={styles.screen}>
+          <FlatList
+            ref={nodeRef => (scrollRef.current = nodeRef)}
+            data={statuses}
+            renderItem={renderItem}
+            style={styles.container}
+            refreshControl={
+              <RefreshControl
+                refreshing={reloading}
+                onRefresh={reloadTimeline}
+              />
+            }
+            onScroll={event => {
+              scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
+            }}
+            ListFooterComponent={statuses.length ? LoadFooter : null}
+          />
+        </View>
+      </ErrorBoundary>
     );
   },
 );
