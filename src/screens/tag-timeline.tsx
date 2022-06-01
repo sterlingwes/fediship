@@ -1,6 +1,7 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {forwardRef} from 'react';
 import {useTagTimeline} from '../api';
+import {ErrorBoundary} from '../components/ErrorBoundary';
 import {SaveTimelineButton} from '../components/SaveTimelineButton';
 import {StatusList} from '../components/StatusList';
 import {RootStackParamList} from '../types';
@@ -27,6 +28,10 @@ export const TagTimeline = forwardRef(
       });
     });
 
-    return <StatusList ref={ref} {...timeline} />;
+    return (
+      <ErrorBoundary>
+        <StatusList ref={ref} {...timeline} />;
+      </ErrorBoundary>
+    );
   },
 );

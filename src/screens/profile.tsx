@@ -24,7 +24,7 @@ import {Type} from '../components/Type';
 import {screenHeight} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
-import {RootStackParamList, TAccount, TStatus, TStatusMapped} from '../types';
+import {RootStackParamList, TAccount, TStatusMapped} from '../types';
 import {useAPProfile} from './profile/profilehooks';
 
 interface ProfileHeaderProps {

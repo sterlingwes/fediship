@@ -1,6 +1,7 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {forwardRef} from 'react';
 import {useTimeline} from '../api';
+import {ErrorBoundary} from '../components/ErrorBoundary';
 import {StatusList} from '../components/StatusList';
 import {RootStackParamList} from '../types';
 
@@ -11,6 +12,10 @@ export const Timeline = forwardRef(
   ) => {
     const timeline = useTimeline(route.params.timeline);
 
-    return <StatusList ref={ref} {...timeline} />;
+    return (
+      <ErrorBoundary>
+        <StatusList ref={ref} {...timeline} />;
+      </ErrorBoundary>
+    );
   },
 );
