@@ -138,7 +138,7 @@ export const User = ({
               navigation.push('MyProfile', {...actorDetails, self: true}),
           },
           {
-            label: 'Logout',
+            label: loggingOut ? 'Logging out...' : 'Logout',
             hideChevron: true,
             onPress: async () => {
               if (loggingOut || !auth.app || !auth.token || !auth.userIdent) {
@@ -146,7 +146,6 @@ export const User = ({
               }
               setLoggingOut(true);
               await auth.clearAuth();
-              setLoggingOut(false);
             },
           },
         ],
