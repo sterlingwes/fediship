@@ -124,13 +124,14 @@ const createProfileTimelineRenderer =
   row => {
     const status = row.item;
     const nextStatusUrl = status.reblog ? status.reblog.uri : status.uri;
+    const nextId = status.reblog ? status.reblog.id : status.id;
     return (
       <Status
         isLocal={false}
         key={status.id}
         {...status}
         onPress={() => {
-          navigation.push('Thread', {statusUrl: nextStatusUrl, id: status.id});
+          navigation.push('Thread', {statusUrl: nextStatusUrl, id: nextId});
         }}
         onPressAvatar={
           (/*account */) => {

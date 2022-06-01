@@ -69,7 +69,8 @@ export const Thread = ({
 
   const renderItem: ListRenderItem<TStatusMapped> = ({item, index}) => {
     const localStatus = thread?.localStatuses?.[item.uri];
-    const focused = thread?.status?.id === item.id;
+    const resolvedStatus = localStatus ?? item;
+    const focused = thread?.status?.id === resolvedStatus.id;
 
     const statusComponent = (
       <Status
@@ -77,7 +78,7 @@ export const Thread = ({
         collapsed={false}
         isLocal={!!localStatus}
         focused={focused}
-        {...(localStatus ?? item)}
+        {...resolvedStatus}
         hasReplies={!!statuses[index + 1]}
         lastStatus={
           terminatingIds.includes(item.id) || statuses.length - 1 === index
@@ -124,29 +125,30 @@ export const Thread = ({
     );
   }
 
+  const incompleteThreadBanner = localFallback ? <IncompleteThread /> : null;
+
   return (
-    <>
-      {localFallback && (
-        <InfoBanner>
-          This thread could not be retrieved from the user's instance so you may
-          be seeing a partial view of it.
-        </InfoBanner>
-      )}
-      <FlatList
-        data={focusedThread}
-        renderItem={renderItem}
-        style={styles.container}
-        contentInset={{bottom: 40}}
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={fetchThread} />
-        }
-        ListHeaderComponent={
-          initialLoad && filtered.current ? LoadHeader : null
-        }
-      />
-    </>
+    <FlatList
+      data={focusedThread}
+      renderItem={renderItem}
+      style={styles.container}
+      contentInset={{bottom: 40}}
+      refreshControl={
+        <RefreshControl refreshing={loading} onRefresh={fetchThread} />
+      }
+      ListHeaderComponent={
+        initialLoad && filtered.current ? LoadHeader : incompleteThreadBanner
+      }
+    />
   );
 };
+
+const IncompleteThread = () => (
+  <InfoBanner>
+    This thread could not be retrieved from the user's instance so you may be
+    seeing a partial view of it.
+  </InfoBanner>
+);
 
 const styles = StyleSheet.create({
   container: {
