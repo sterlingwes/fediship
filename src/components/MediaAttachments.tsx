@@ -34,7 +34,7 @@ const Media = (
               fallbackUri={props.remote_url}
               source={{
                 uri: props.preview_url,
-                ...dimensProps(props.meta.small),
+                ...dimensProps(props.meta.small ?? {}),
               }}
               style={[styles.previewImage, props.imageStyle]}
             />

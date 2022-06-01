@@ -217,7 +217,7 @@ export const Status = (
   };
 
   const [content, truncated] = useMemo(() => {
-    const plainText = mainStatus.content.replace(/<\/?[^<>]+>/g, '');
+    const plainText = (mainStatus.content ?? '').replace(/<\/?[^<>]+>/g, '');
 
     if (props.focused) {
       return [mainStatus.content, false];
