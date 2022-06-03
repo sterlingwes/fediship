@@ -1,13 +1,6 @@
 import {useCallback, useRef, useState} from 'react';
-import {
-  TAccount,
-  TPeerInfo,
-  TStatusContext,
-  TStatusMapped,
-  TThread,
-} from './types';
+import {TAccount, TStatusContext, TStatusMapped, TThread} from './types';
 import {useMount} from './utils/hooks';
-import {getPeerStorageKeys} from './screens/explore/peer-storage';
 import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
 import {parseStatusUrl} from './api/api.utils';
 import {mastoHost} from './constants';
@@ -52,40 +45,6 @@ export const useFollowers = (source = 'mine') => {
   });
 
   return {accounts, fetchFollowers, reloadFollowers, error, loading};
-};
-
-export const getPeerInfo = async (peer: string) => {
-  try {
-    const abortControl = new AbortController();
-    const abortTimeout = setTimeout(() => abortControl.abort(), 2500);
-    const response = await fetch(`https://${peer}/api/v1/instance`, {
-      signal: abortControl.signal,
-    });
-    clearTimeout(abortTimeout);
-    const json = await response.json();
-    return json as TPeerInfo;
-  } catch {
-    return null;
-  }
-};
-
-export const getPeerInfos = async (
-  peers: string[],
-  updateProgress: (count: number, of: number) => void,
-  savePeer: (peer: string, info: TPeerInfo | null) => void,
-) => {
-  let fetchCount = 0;
-  const existingPeerInfo = getPeerStorageKeys();
-  const filteredPeers = peers.filter(
-    peer => existingPeerInfo.includes(peer) === false,
-  );
-  return filteredPeers.reduce(async (chain, peer) => {
-    await chain;
-    const result = await getPeerInfo(peer);
-    fetchCount++;
-    updateProgress(fetchCount, filteredPeers.length);
-    savePeer(peer, result);
-  }, Promise.resolve() as unknown);
 };
 
 export const usePeers = () => {
