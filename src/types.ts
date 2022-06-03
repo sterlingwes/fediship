@@ -325,6 +325,20 @@ export interface TPoll {
   // "emojis": []
 }
 
+export type TTrendingTags = TrendingTag[];
+
+interface GraphDataPoint {
+  day: string; // seconds unix timestamp
+  accounts: string; // count, int
+  uses: string; // count, int
+}
+
+export interface TrendingTag {
+  name: string; // no hashtag
+  url: Url; // tags/ link
+  history: GraphDataPoint[]; // descending date order
+}
+
 export interface TNotification {
   id: string;
   type:
