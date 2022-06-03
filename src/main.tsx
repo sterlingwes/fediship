@@ -5,7 +5,6 @@ import Toast from 'react-native-toast-message';
 import React from 'react';
 import {LogBox} from 'react-native';
 import {Profile} from './screens/profile';
-import {Explore} from './screens/explore';
 import {
   ThemeProvider,
   darkNavigationTheme,
@@ -35,6 +34,7 @@ import {AuthProvider, useAuth} from './storage/auth';
 import {Login} from './screens/login';
 import {KeyboardBannerProvider} from './components/KeyboardBanner';
 import {useUserProfile} from './storage/user';
+import {Composer} from './screens/composer';
 
 const Tab = createBottomTabNavigator();
 
@@ -120,7 +120,7 @@ const TabbedHome = () => {
       />
       <Tab.Screen
         name="Compose"
-        component={Explore}
+        component={Composer}
         options={{tabBarIcon: iconForTab('compose'), tabBarShowLabel: false}}
       />
       <Tab.Screen
