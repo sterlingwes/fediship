@@ -3,6 +3,7 @@ import React from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   ListRenderItem,
   RefreshControl,
   StyleSheet,
@@ -47,12 +48,15 @@ export const FollowerList = ({
       onPress={() =>
         navigation.navigate('Profile', {...getHostAndHandle(item)})
       }>
-      <Type scale="S" style={styles.userName} medium numberOfLines={1}>
-        {item.display_name || item.username}
-      </Type>
-      {!!item.display_name && !!item.username && (
-        <Type scale="S">{item.acct}</Type>
-      )}
+      <Image source={{uri: item.avatar_static}} style={styles.avatar} />
+      <View style={styles.userDetails}>
+        <Type scale="S" style={styles.userName} medium numberOfLines={1}>
+          {item.display_name || item.username}
+        </Type>
+        {!!item.display_name && !!item.username && (
+          <Type scale="S">{item.acct}</Type>
+        )}
+      </View>
     </TouchableOpacity>
   );
 
@@ -88,12 +92,24 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
 
   listRow: {
-    justifyContent: 'center',
+    flexDirection: 'row',
     minHeight: 65,
     paddingVertical: 15,
     paddingHorizontal: 15,
     borderBottomColor: getColor('baseAccent'),
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    resizeMode: 'cover',
+    marginRight: 15,
+    borderRadius: 5,
+    backgroundColor: getColor('baseAccent'),
+  },
+  userDetails: {
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
   userName: {
     marginBottom: 5,

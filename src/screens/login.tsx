@@ -49,5 +49,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     width: '80%',
     borderRadius: 10,
     paddingHorizontal: 16,
+    paddingVertical: 12,
   },
 });

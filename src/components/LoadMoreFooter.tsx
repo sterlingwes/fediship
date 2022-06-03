@@ -1,5 +1,6 @@
 import React from 'react';
 import {ActivityIndicator, TouchableOpacity} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {Type} from './Type';
@@ -25,13 +26,15 @@ export const LoadMoreFooter = ({
       style={styles.container}
       onPress={onPress}
       activeOpacity={0.5}>
-      {loading ? (
-        <ActivityIndicator />
-      ) : (
-        <Type scale="S" medium style={styles.label}>
-          Load More
-        </Type>
-      )}
+      <SafeAreaView edges={['bottom']}>
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
+          <Type scale="S" medium style={styles.label}>
+            Load More
+          </Type>
+        )}
+      </SafeAreaView>
     </TouchableOpacity>
   );
 };

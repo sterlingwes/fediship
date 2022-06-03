@@ -19,7 +19,7 @@ export const BackButton = (props: BackButtonProps) => {
 
   return (
     <TouchableOpacity {...props}>
-      <View>
+      <View style={styles.root}>
         <View
           style={[styles.container, !props.transparent && styles.transparent]}
         />
@@ -39,6 +39,9 @@ export const BackButton = (props: BackButtonProps) => {
 };
 
 const styleCreator: StyleCreator = ({getColor}) => ({
+  root: {
+    top: 5,
+  },
   container: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: getColor('baseTextColor'),
@@ -49,7 +52,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     backgroundColor: 'transparent',
   },
   icon: {
-    top: 5,
+    top: 0,
     left: -2,
   },
 });

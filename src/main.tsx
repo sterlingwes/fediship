@@ -35,6 +35,7 @@ import {Login} from './screens/login';
 import {KeyboardBannerProvider} from './components/KeyboardBanner';
 import {useUserProfile} from './storage/user';
 import {Composer} from './screens/composer';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
@@ -106,9 +107,11 @@ const UserStack = () => (
 );
 
 const TabbedHome = () => {
+  const {bottom} = useSafeAreaInsets();
   const {newNotifCount, tabRead} = useNotifications();
   return (
-    <Tab.Navigator screenOptions={{tabBarStyle: {height: tabBarHeight}}}>
+    <Tab.Navigator
+      screenOptions={{tabBarStyle: {height: tabBarHeight + bottom}}}>
       <Tab.Screen
         name="Timelines"
         component={TimelineStack}
