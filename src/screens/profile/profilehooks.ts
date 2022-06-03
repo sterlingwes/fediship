@@ -4,7 +4,7 @@ import {
   useRemoteActivityPubInstance,
   useRemoteMastodonInstance,
 } from '../../api/hooks';
-import {Emoji, TAccount, TStatus, TStatusMapped} from '../../types';
+import {Emoji, TAccount, TStatusMapped} from '../../types';
 import {useMount} from '../../utils/hooks';
 import {getHostAndHandle} from '../../utils/mastodon';
 
@@ -22,7 +22,7 @@ export const useAPProfile = (
   const [refreshing, setRefreshing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [following, setFollowing] = useState<boolean | undefined>();
-  const [error, setError] = useState('');
+  const [error, setError] = useState<Error>();
   const [profile, setProfile] = useState<TAccount>();
   const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
   const [nextPage, setNextPage] = useState<string | false>();
@@ -77,7 +77,7 @@ export const useAPProfile = (
       }
     } catch (e: unknown) {
       console.error(e);
-      setError((e as Error).message);
+      setError(e as Error);
     } finally {
       setLoading(false);
     }
@@ -103,10 +103,9 @@ export const useAPProfile = (
         idParts.host,
         idParts.handle,
       );
+      const userIdent = `${idParts.handle}@${idParts.host}`;
       if (result.ok) {
-        const localAccount = await api.findAccount(
-          `${idParts.handle}@${idParts.host}`,
-        );
+        const localAccount = await api.findAccount(userIdent);
         if (localAccount?.id) {
           const relationship = await api.getRelationship(localAccount.id);
           setLocalId(localAccount.id);
@@ -120,8 +119,11 @@ export const useAPProfile = (
       await fetchEmojis(idParts.host);
 
       if (!result.ok) {
+        const e = new Error(result.error);
+        // @ts-ignore
+        e.meta = {userIdent};
         setLoading(false);
-        setError(result.error);
+        setError(e);
         return;
       }
 
@@ -133,7 +135,7 @@ export const useAPProfile = (
       setProfile(profileWithEmojis);
     } catch (e: unknown) {
       console.error(e);
-      setError((e as Error).message);
+      setError(e as Error);
     } finally {
       setRefreshing(false);
       setLoading(false);

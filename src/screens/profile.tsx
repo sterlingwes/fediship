@@ -12,6 +12,7 @@ import {
   Image,
   InteractionManager,
 } from 'react-native';
+import {useErrorReporter} from '../api/worker.hooks';
 import {AvatarImage} from '../components/AvatarImage';
 import {EmptyList} from '../components/EmptyList';
 import {FloatingHeader} from '../components/FloatingHeader';
@@ -145,17 +146,17 @@ const createProfileTimelineRenderer =
 const headerOpacityVerticalBreakpoint = 120;
 
 const errorMessage = (
-  error: string,
+  error: Error,
   host: string | undefined,
   account: TAccount | undefined,
 ) => {
-  if (error.includes('Network request failed')) {
+  if (error.message.includes('Network request failed')) {
     return `Unable to reach ${
       host ?? instanceHostName(account?.url)
     } (this user's instance). Please try again later!`;
   }
 
-  if (error.includes('not authorized')) {
+  if (error.message.includes('not authorized')) {
     const url = account ? account.url : `https://${host}`;
     return (
       <View>
@@ -169,6 +170,10 @@ const errorMessage = (
     );
   }
 
+  if (typeof error !== 'string') {
+    return error.message;
+  }
+
   return error;
 };
 
@@ -180,13 +185,14 @@ const ProfileError = ({
   headerOpaque,
   showHeader,
 }: {
-  error: string;
+  error: Error;
   host: string | undefined;
   account?: TAccount | undefined;
   headerOpaque: boolean;
   navigation: NativeStackNavigationProp<RootStackParamList>;
   showHeader?: boolean;
 }) => {
+  const {loading, sent, sendErrorReport} = useErrorReporter();
   const styles = useThemeStyle(styleCreator);
   const message = errorMessage(error, host, account);
   return (
@@ -197,6 +203,12 @@ const ProfileError = ({
         ) : (
           message
         )}
+        <SolidButton
+          disabled={loading || sent}
+          loading={loading}
+          onPress={() => sendErrorReport(error, {hasAccount: !!account, host})}>
+          {sent ? 'Sent ✅' : 'Send Report'}
+        </SolidButton>
       </View>
       {showHeader && (
         <FloatingHeader

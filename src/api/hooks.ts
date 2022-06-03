@@ -30,6 +30,8 @@ export const useRemoteActivityPubInstance = () => {
   };
 };
 
-export const useWorkerApi = () => {
-  return new FediWorkerApiClient();
+export const useWorkerApi = (
+  {host, pathBase}: {host?: string; pathBase?: string} = {host: undefined},
+) => {
+  return new FediWorkerApiClient({host, pathBase});
 };

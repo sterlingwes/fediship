@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-import {useWorkerApi} from '../api/hooks';
+import {useErrorReporter} from '../api/worker.hooks';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {SolidButton} from './SolidButton';
@@ -39,21 +39,9 @@ export class ErrorBoundary extends React.Component {
 }
 
 export const BlockerError = ({error}: {error: Error | undefined}) => {
-  const api = useWorkerApi();
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  const {loading, sent, sendErrorReport} = useErrorReporter();
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
-
-  const onSend = async (e: Error | undefined) => {
-    if (!e) {
-      return;
-    }
-    setLoading(true);
-    const didSend = await api.sendError(e);
-    setLoading(false);
-    setSent(didSend);
-  };
 
   return (
     <View style={styles.container}>
@@ -81,8 +69,8 @@ export const BlockerError = ({error}: {error: Error | undefined}) => {
       </ScrollView>
       <View style={styles.buttonContainer}>
         <SolidButton
-          onPress={() => onSend(error)}
-          disabled={sent}
+          onPress={() => sendErrorReport(error)}
+          disabled={sent || !error}
           loading={loading}>
           {sent ? 'Sent ✅' : 'Send'}
         </SolidButton>
