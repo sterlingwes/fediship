@@ -21,7 +21,7 @@ export interface SavedTimeline {
   type?: 'home' | 'public';
 }
 
-const storage = new MMKV({id: 'notifications'});
+const storage = new MMKV({id: 'timelines'});
 const timelineListKey = 'timeline_list';
 
 const defaultTimelines = [

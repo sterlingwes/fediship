@@ -2,11 +2,12 @@ import {MMKV} from 'react-native-mmkv';
 import Toast from 'react-native-toast-message';
 
 const clearable = [
-  'settings:appearance',
+  'active',
   'notifications',
   'oauth_apps',
   'oauth_users',
-  'active',
+  'settings:appearance',
+  'timelines',
 ];
 
 export const clearStorage = () => {
