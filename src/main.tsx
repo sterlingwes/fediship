@@ -36,6 +36,7 @@ import {KeyboardBannerProvider} from './components/KeyboardBanner';
 import {useUserProfile} from './storage/user';
 import {Composer} from './screens/composer';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {NoNetworkCheck} from './components/NoNetworkCheck';
 
 const Tab = createBottomTabNavigator();
 
@@ -200,19 +201,21 @@ const NavigationRoot = () => {
 export const App = () => {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <NotificationProvider>
-          <SavedTimelineProvider>
-            <FavouritesProvider>
-              <ThemeProvider>
-                <KeyboardBannerProvider>
-                  <NavigationRoot />
-                </KeyboardBannerProvider>
-              </ThemeProvider>
-            </FavouritesProvider>
-          </SavedTimelineProvider>
-        </NotificationProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <NoNetworkCheck disabled>
+          <AuthProvider>
+            <NotificationProvider>
+              <SavedTimelineProvider>
+                <FavouritesProvider>
+                  <KeyboardBannerProvider>
+                    <NavigationRoot />
+                  </KeyboardBannerProvider>
+                </FavouritesProvider>
+              </SavedTimelineProvider>
+            </NotificationProvider>
+          </AuthProvider>
+        </NoNetworkCheck>
+      </ThemeProvider>
       <Toast />
     </ErrorBoundary>
   );

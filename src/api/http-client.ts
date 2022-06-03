@@ -1,3 +1,4 @@
+import {createFetchProxy} from './fetch-proxy';
 import {ApiResponse} from './response';
 
 interface ClientOptions {
@@ -9,9 +10,11 @@ interface ClientOptions {
 
 export class HTTPClient {
   private options: ClientOptions;
+  private fetch: GlobalFetch['fetch'];
 
   constructor(options: ClientOptions) {
     this.options = options;
+    this.fetch = createFetchProxy();
   }
 
   get host() {
@@ -54,7 +57,7 @@ export class HTTPClient {
 
   private async req(info: RequestInfo, extra?: RequestInit) {
     const urlOrRequest = typeof info === 'string' ? this.url(info) : info;
-    const response = await fetch(urlOrRequest, {
+    const response = await this.fetch(urlOrRequest, {
       ...extra,
       headers: {
         Accept: this.options.acceptHeader ?? 'application/json',
