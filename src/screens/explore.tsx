@@ -1,35 +1,58 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {forwardRef, useImperativeHandle, useMemo, useRef} from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   FlatList,
   ListRenderItem,
   RefreshControl,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import {usePeers} from '../api';
+import {useRemoteMastodonInstance} from '../api/hooks';
+import {Box} from '../components/Box';
 import {ChevronInverted} from '../components/icons/Chevron';
 import {Type} from '../components/Type';
 import {screenWidth} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
+import {useMount} from '../utils/hooks';
 
 export const Explore = forwardRef(
   (
     {navigation}: NativeStackScreenProps<RootStackParamList, 'Explore'>,
     ref,
   ) => {
+    const api = useRemoteMastodonInstance();
     const scrollRef = useRef<FlatList<string> | null>();
     const styles = useThemeStyle(styleCreator);
     const {getColor} = useThemeGetters();
     const {loading, peers, fetchPeers, filterPeers} = usePeers();
+    const [tags, setTags] = useState<string[]>([]);
 
     useImperativeHandle(ref, () => ({
       scrollToTop: () => scrollRef.current?.scrollToOffset({offset: 0}),
     }));
+
+    useMount(() => {
+      const fetchTrends = async () => {
+        const tagTrends = await api('mastodon.online').getInstanceTrends();
+        const tagNames = tagTrends.map(trend => trend.name);
+        setTags(tagNames);
+      };
+
+      fetchTrends();
+    });
 
     const renderItem: ListRenderItem<string> = ({item}) => (
       <TouchableOpacity
@@ -43,18 +66,35 @@ export const Explore = forwardRef(
       </TouchableOpacity>
     );
 
+    const onTagPress = useCallback(
+      (tag: string) =>
+        navigation.push('TagTimeline', {host: 'mastodon.online', tag}),
+      [navigation],
+    );
+
     const PeerListHeader = useMemo(() => {
       return (
-        <View style={styles.peerListHeader}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search"
-            clearButtonMode="always"
-            onChangeText={text => filterPeers(text)}
-          />
+        <View style={styles.header}>
+          <Box p={10}>
+            <Text>
+              {tags.map(tag => (
+                <Type scale="S" onPress={() => onTagPress(tag)}>
+                  #{tag}{' '}
+                </Type>
+              ))}
+            </Text>
+          </Box>
+          <View style={styles.peerListHeader}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search"
+              clearButtonMode="always"
+              onChangeText={text => filterPeers(text)}
+            />
+          </View>
         </View>
       );
-    }, [filterPeers, styles]);
+    }, [filterPeers, styles, tags, onTagPress]);
 
     return (
       <View>
@@ -85,9 +125,13 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   loadingMessage: {
     marginTop: 20,
   },
+  header: {
+    backgroundColor: getColor('baseHighlight'),
+  },
   peerListHeader: {
     padding: 15,
-    backgroundColor: getColor('baseHighlight'),
+    borderTopColor: getColor('base'),
+    borderTopWidth: 2,
   },
   peerListHeaderSubTitle: {
     marginTop: 5,
