@@ -12,6 +12,8 @@ import {AvatarImage} from '../components/AvatarImage';
 import {useRemoteMastodonInstance} from '../api/hooks';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import {useAuth} from '../storage/auth';
+import {useInstanceTrends} from '../api/explore.hooks';
+import {Box} from '../components/Box';
 
 export const PeerProfile = ({
   navigation,
@@ -22,6 +24,7 @@ export const PeerProfile = ({
   const {host} = route.params;
   const getApi = useRemoteMastodonInstance();
   const [instanceInfo, setInstanceInfo] = useState<TPeerInfo>();
+  const {tags, loadingTags} = useInstanceTrends(host);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -53,61 +56,57 @@ export const PeerProfile = ({
     navigation.setOptions({headerTitle: host});
   });
 
-  if (loading) {
+  if (loading || loadingTags) {
     return (
-      <View style={{justifyContent: 'center', marginTop: 50}}>
+      <Box mt={50} c>
         <LoadingSpinner />
-      </View>
+      </Box>
     );
   }
 
   if (error || !instanceInfo) {
     return (
-      <View style={{marginTop: 20, marginHorizontal: 10}}>
+      <Box mt={20} mh={10}>
         <Type scale="S">{error}</Type>
-      </View>
+      </Box>
     );
   }
 
   const {thumbnail, description, stats, languages} = instanceInfo;
-  const tags: string[] = [];
 
   const onPressTag = (tag: string) => {
     navigation.push('TagTimeline', {host, tag});
   };
 
-  const Spacer = () => <View style={styles.spacer} />;
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <AvatarImage uri={thumbnail} style={styles.avatar} />
-      <Spacer />
-      <Spacer />
-      {auth.host === host && (
-        <>
+      <Box mt={20}>
+        {auth.host === host && (
           <Type scale="S" semiBold>
             (you are here)
           </Type>
-          <Spacer />
-        </>
-      )}
-      <Type scale="S">Users: {thousandsNumber(stats.user_count)}</Type>
-      <Spacer />
-      <Type scale="S">Statuses: {thousandsNumber(stats.status_count)}</Type>
-      <Spacer />
-      <Type scale="S">Peers: {thousandsNumber(stats.domain_count)}</Type>
-      <Spacer />
-      <Spacer />
-      <HTMLView value={description} />
-      <Spacer />
-      <Type scale="S">Languages: {languages.join(', ')}</Type>
-      <Spacer />
-      <Spacer />
-      <Spacer />
+        )}
+        <Type scale="S">Users: {thousandsNumber(stats.user_count)}</Type>
+      </Box>
+      <Box mv={10}>
+        <Type scale="S">Statuses: {thousandsNumber(stats.status_count)}</Type>
+      </Box>
+      <Box mv={10}>
+        <Type scale="S">Peers: {thousandsNumber(stats.domain_count)}</Type>
+      </Box>
+      <Box mt={20} mb={10}>
+        <HTMLView value={description} />
+      </Box>
+      <Box mt={10} mb={30}>
+        <Type scale="S">Languages: {languages.join(', ')}</Type>
+      </Box>
       {!!tags.length && (
-        <>
-          <Type scale="S">Trending tags:</Type>
-          <View>
+        <Box style={styles.trendBox} pt={30}>
+          <Type scale="S" semiBold>
+            Trending tags:
+          </Type>
+          <Box mv={10}>
             {tags.map(tag => (
               <Pressable style={styles.tagRow} onPress={() => onPressTag(tag)}>
                 <Type
@@ -116,8 +115,8 @@ export const PeerProfile = ({
                   style={styles.tagLink}>{`#${tag}`}</Type>
               </Pressable>
             ))}
-          </View>
-        </>
+          </Box>
+        </Box>
       )}
     </ScrollView>
   );
@@ -131,13 +130,14 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     padding: 20,
     paddingBottom: 100,
   },
-  spacer: {
-    height: 10,
-  },
   tagRow: {
     marginVertical: 8,
   },
   tagLink: {
     color: getColor('primary'),
+  },
+  trendBox: {
+    borderTopColor: getColor('baseHighlight'),
+    borderTopWidth: 1,
   },
 });

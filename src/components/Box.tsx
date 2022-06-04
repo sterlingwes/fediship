@@ -1,7 +1,7 @@
 import React, {ReactNode, useMemo} from 'react';
 import {View, ViewStyle} from 'react-native';
 
-interface BoxProps {
+interface SpacingBoxProps {
   m?: number;
   mh?: number;
   mv?: number;
@@ -18,25 +18,33 @@ interface BoxProps {
   pb?: number;
 }
 
-const propStyleMap: Record<keyof BoxProps, keyof ViewStyle> = Object.freeze({
-  m: 'margin',
-  mh: 'marginHorizontal',
-  mv: 'marginVertical',
-  ml: 'marginLeft',
-  mr: 'marginRight',
-  mt: 'marginTop',
-  mb: 'marginBottom',
-  p: 'padding',
-  ph: 'paddingHorizontal',
-  pv: 'paddingVertical',
-  pl: 'paddingLeft',
-  pr: 'paddingRight',
-  pt: 'paddingTop',
-  pb: 'paddingBottom',
-});
+interface BoxProps extends SpacingBoxProps {
+  fd?: 'row' | 'column';
+  c?: boolean;
+  ch?: boolean;
+  cv?: boolean;
+}
+
+const propStyleMap: Record<keyof SpacingBoxProps, keyof ViewStyle> =
+  Object.freeze({
+    m: 'margin',
+    mh: 'marginHorizontal',
+    mv: 'marginVertical',
+    ml: 'marginLeft',
+    mr: 'marginRight',
+    mt: 'marginTop',
+    mb: 'marginBottom',
+    p: 'padding',
+    ph: 'paddingHorizontal',
+    pv: 'paddingVertical',
+    pl: 'paddingLeft',
+    pr: 'paddingRight',
+    pt: 'paddingTop',
+    pb: 'paddingBottom',
+  });
 
 const styleFor = (props: BoxProps) => {
-  const keys = Object.keys(propStyleMap) as Array<keyof BoxProps>;
+  const keys = Object.keys(propStyleMap) as Array<keyof SpacingBoxProps>;
   return keys.reduce((acc, key) => {
     const styleProp = propStyleMap[key];
 
@@ -51,11 +59,46 @@ const styleFor = (props: BoxProps) => {
   }, {} as ViewStyle);
 };
 
+const alignmentStyle = (props: BoxProps): ViewStyle => {
+  if (props.c) {
+    return {
+      justifyContent: 'center',
+      alignItems: 'center',
+    };
+  }
+
+  if (props.ch && props.fd === 'row') {
+    return {
+      justifyContent: 'center',
+    };
+  }
+
+  if (props.ch) {
+    return {
+      alignItems: 'center',
+    };
+  }
+
+  if (props.cv && props.fd === 'row') {
+    return {
+      alignItems: 'center',
+    };
+  }
+
+  if (props.cv) {
+    return {
+      justifyContent: 'center',
+    };
+  }
+
+  return {};
+};
+
 export const Box = ({
   children,
   style,
   ...props
 }: BoxProps & {children: ReactNode; style?: ViewStyle}) => {
   const styles = useMemo(() => styleFor(props), [props]);
-  return <View style={[styles, style]}>{children}</View>;
+  return <View style={[styles, style, alignmentStyle(props)]}>{children}</View>;
 };

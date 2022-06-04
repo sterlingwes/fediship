@@ -5,7 +5,6 @@ import React, {
   useImperativeHandle,
   useMemo,
   useRef,
-  useState,
 } from 'react';
 import {
   FlatList,
@@ -18,7 +17,7 @@ import {
   View,
 } from 'react-native';
 import {usePeers} from '../api';
-import {useRemoteMastodonInstance} from '../api/hooks';
+import {useInstanceTrends} from '../api/explore.hooks';
 import {Box} from '../components/Box';
 import {ChevronInverted} from '../components/icons/Chevron';
 import {LoadingSpinner} from '../components/LoadingSpinner';
@@ -27,40 +26,21 @@ import {screenWidth} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
-import {useMount} from '../utils/hooks';
 
 export const Explore = forwardRef(
   (
     {navigation}: NativeStackScreenProps<RootStackParamList, 'Explore'>,
     ref,
   ) => {
-    const api = useRemoteMastodonInstance();
     const scrollRef = useRef<FlatList<string> | null>();
     const styles = useThemeStyle(styleCreator);
     const {getColor} = useThemeGetters();
     const {loading, peers, fetchPeers, filterPeers} = usePeers();
-    const [loadingTags, setLoadingTags] = useState(false);
-    const [tags, setTags] = useState<string[]>([]);
+    const {loadingTags, tags} = useInstanceTrends('mastodon.online');
 
     useImperativeHandle(ref, () => ({
       scrollToTop: () => scrollRef.current?.scrollToOffset({offset: 0}),
     }));
-
-    useMount(() => {
-      const fetchTrends = async () => {
-        try {
-          setLoadingTags(true);
-          const tagTrends = await api('mastodon.online').getInstanceTrends();
-          const tagNames = tagTrends.map(trend => trend.name);
-          setTags(tagNames);
-        } catch (e) {
-          console.warn('Could not load tags from instance');
-        }
-        setLoadingTags(false);
-      };
-
-      fetchTrends();
-    });
 
     const renderItem: ListRenderItem<string> = ({item}) => (
       <TouchableOpacity
