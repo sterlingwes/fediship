@@ -21,6 +21,7 @@ import {usePeers} from '../api';
 import {useRemoteMastodonInstance} from '../api/hooks';
 import {Box} from '../components/Box';
 import {ChevronInverted} from '../components/icons/Chevron';
+import {LoadingSpinner} from '../components/LoadingSpinner';
 import {Type} from '../components/Type';
 import {screenWidth} from '../dimensions';
 import {StyleCreator} from '../theme';
@@ -38,6 +39,7 @@ export const Explore = forwardRef(
     const styles = useThemeStyle(styleCreator);
     const {getColor} = useThemeGetters();
     const {loading, peers, fetchPeers, filterPeers} = usePeers();
+    const [loadingTags, setLoadingTags] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
 
     useImperativeHandle(ref, () => ({
@@ -46,9 +48,15 @@ export const Explore = forwardRef(
 
     useMount(() => {
       const fetchTrends = async () => {
-        const tagTrends = await api('mastodon.online').getInstanceTrends();
-        const tagNames = tagTrends.map(trend => trend.name);
-        setTags(tagNames);
+        try {
+          setLoadingTags(true);
+          const tagTrends = await api('mastodon.online').getInstanceTrends();
+          const tagNames = tagTrends.map(trend => trend.name);
+          setTags(tagNames);
+        } catch (e) {
+          console.warn('Could not load tags from instance');
+        }
+        setLoadingTags(false);
       };
 
       fetchTrends();
@@ -76,13 +84,24 @@ export const Explore = forwardRef(
       return (
         <View style={styles.header}>
           <Box p={10}>
-            <Text>
-              {tags.map(tag => (
-                <Type scale="S" onPress={() => onTagPress(tag)}>
-                  #{tag}{' '}
-                </Type>
-              ))}
-            </Text>
+            {loadingTags ? (
+              <LoadingSpinner />
+            ) : (
+              <View style={styles.trends}>
+                <Box mb={10}>
+                  <Type semiBold scale="S" color={getColor('primary')}>
+                    Trends Today
+                  </Type>
+                </Box>
+                <Text>
+                  {tags.map(tag => (
+                    <Type scale="S" onPress={() => onTagPress(tag)}>
+                      #{tag}{' '}
+                    </Type>
+                  ))}
+                </Text>
+              </View>
+            )}
           </Box>
           <View style={styles.peerListHeader}>
             <TextInput
@@ -94,7 +113,7 @@ export const Explore = forwardRef(
           </View>
         </View>
       );
-    }, [filterPeers, styles, tags, onTagPress]);
+    }, [filterPeers, styles, tags, onTagPress, loadingTags]);
 
     return (
       <View>
