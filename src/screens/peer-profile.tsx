@@ -33,11 +33,17 @@ export const PeerProfile = ({
     const fetchInstanceProfile = async () => {
       const api = getApi(host);
       setLoading(true);
-      const info = await api.getInstanceInfo();
-      if (info) {
-        setInstanceInfo(info);
-      } else {
-        setError('Failed to fetch instance info.');
+      let info: TPeerInfo | undefined;
+      try {
+        info = await api.getInstanceInfo();
+
+        if (info) {
+          setInstanceInfo(info);
+        } else {
+          setError('Failed to fetch instance info.');
+        }
+      } catch (e) {
+        setError('This instance is unresponsive.');
       }
       setLoading(false);
     };

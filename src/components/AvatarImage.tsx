@@ -26,9 +26,11 @@ const styleCreator: StyleCreator = ({getColor}) => ({
       width: 0,
       height: 10,
     },
-  },
-  img: {
     width: 100,
     height: 100,
+  },
+  img: {
+    width: '100%',
+    height: '100%',
   },
 });
