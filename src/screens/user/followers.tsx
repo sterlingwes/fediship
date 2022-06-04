@@ -1,17 +1,9 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
-import {
-  FlatList,
-  Image,
-  ListRenderItem,
-  RefreshControl,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, ListRenderItem, RefreshControl, View} from 'react-native';
 import {useFollowers} from '../../api';
 import {LoadingSpinner} from '../../components/LoadingSpinner';
-import {Type} from '../../components/Type';
+import {ProfileRowItem} from '../../components/ProfileRowItem';
 import {StyleCreator} from '../../theme';
 import {useThemeStyle} from '../../theme/utils';
 import {RootStackParamList, TAccount} from '../../types';
@@ -42,22 +34,12 @@ export const FollowerList = ({
   }
 
   const renderItem: ListRenderItem<TAccount> = ({item}) => (
-    <TouchableOpacity
-      style={styles.listRow}
-      activeOpacity={0.5}
+    <ProfileRowItem
       onPress={() =>
         navigation.navigate('Profile', {...getHostAndHandle(item)})
-      }>
-      <Image source={{uri: item.avatar_static}} style={styles.avatar} />
-      <View style={styles.userDetails}>
-        <Type scale="S" style={styles.userName} medium numberOfLines={1}>
-          {item.display_name || item.username}
-        </Type>
-        {!!item.display_name && !!item.username && (
-          <Type scale="S">{item.acct}</Type>
-        )}
-      </View>
-    </TouchableOpacity>
+      }
+      item={item}
+    />
   );
 
   return (
@@ -78,7 +60,7 @@ export const FollowerList = ({
   );
 };
 
-const styleCreator: StyleCreator = ({getColor}) => ({
+const styleCreator: StyleCreator = () => ({
   container: {
     flex: 1,
     padding: 20,
@@ -89,29 +71,5 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   loadingMessage: {
     marginTop: 20,
-  },
-
-  listRow: {
-    flexDirection: 'row',
-    minHeight: 65,
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    borderBottomColor: getColor('baseAccent'),
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    resizeMode: 'cover',
-    marginRight: 15,
-    borderRadius: 5,
-    backgroundColor: getColor('baseAccent'),
-  },
-  userDetails: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  userName: {
-    marginBottom: 5,
   },
 });

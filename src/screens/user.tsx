@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {ChevronInverted} from '../components/icons/Chevron';
 import {Type} from '../components/Type';
-import {getActiveApp, getActiveUserProfile, useAuth} from '../storage/auth';
+import {useAuth} from '../storage/auth';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {NotificationGroups, RootStackParamList} from '../types';

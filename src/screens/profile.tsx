@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import {useErrorReporter} from '../api/worker.hooks';
 import {AvatarImage} from '../components/AvatarImage';
+import {Box} from '../components/Box';
 import {EmptyList} from '../components/EmptyList';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
@@ -195,22 +196,32 @@ const ProfileError = ({
 }) => {
   const {loading, sent, sendErrorReport} = useErrorReporter();
   const styles = useThemeStyle(styleCreator);
+  const {getColor} = useThemeGetters();
   const message = errorMessage(error, host, account);
   return (
     <>
-      <View style={[styles.container, styles.centered, {margin: 20}]}>
+      <Box m={20} style={[styles.container, styles.centered]}>
+        <Box mv={10}>
+          <Type semiBold color={getColor('error')}>
+            Sorry, an error occurred.
+          </Type>
+        </Box>
         {typeof message === 'string' ? (
           <Type scale="S">{message}</Type>
         ) : (
           message
         )}
-        <SolidButton
-          disabled={loading || sent}
-          loading={loading}
-          onPress={() => sendErrorReport(error, {hasAccount: !!account, host})}>
-          {sent ? 'Sent ✅' : 'Send Report'}
-        </SolidButton>
-      </View>
+        <Box mv={20}>
+          <SolidButton
+            disabled={loading || sent}
+            loading={loading}
+            onPress={() =>
+              sendErrorReport(error, {hasAccount: !!account, host})
+            }>
+            {sent ? 'Sent ✅' : 'Send Report'}
+          </SolidButton>
+        </Box>
+      </Box>
       {showHeader && (
         <FloatingHeader
           {...{

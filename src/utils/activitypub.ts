@@ -120,7 +120,9 @@ export const transformActivityPage = (
     );
 
 export const isPerson = (object: any): object is APPerson =>
-  typeof object === 'object' && ['Person', 'Service'].includes(object.type);
+  typeof object === 'object' &&
+  ['Person', 'Service'].includes(object.type) &&
+  object.outbox;
 
 export const isOutboxCollection = (
   object: any,

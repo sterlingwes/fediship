@@ -1,6 +1,7 @@
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
+import {TSearchResults} from '../types';
 import {useMount} from '../utils/hooks';
-import {useRemoteMastodonInstance} from './hooks';
+import {useMyMastodonInstance, useRemoteMastodonInstance} from './hooks';
 
 export const useInstanceTrends = (host: string) => {
   const getApi = useRemoteMastodonInstance();
@@ -24,4 +25,24 @@ export const useInstanceTrends = (host: string) => {
   });
 
   return {loadingTags, tags};
+};
+
+export const useSearch = () => {
+  const api = useMyMastodonInstance();
+  const [searching, setSearching] = useState(false);
+  const [searchResults, setResults] = useState<TSearchResults>();
+
+  const search = useCallback(
+    async (query: string) => {
+      setSearching(true);
+      const results = await api.search(query);
+      if (results) {
+        setResults(results);
+      }
+      setSearching(false);
+    },
+    [api, setResults],
+  );
+
+  return {search, searchResults, searching};
 };

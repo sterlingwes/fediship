@@ -98,7 +98,7 @@ export const Box = ({
   children,
   style,
   ...props
-}: BoxProps & {children: ReactNode; style?: ViewStyle}) => {
+}: BoxProps & {children: ReactNode; style?: ViewStyle | ViewStyle[]}) => {
   const styles = useMemo(() => styleFor(props), [props]);
   return <View style={[styles, style, alignmentStyle(props)]}>{children}</View>;
 };

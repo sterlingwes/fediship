@@ -8,6 +8,7 @@ import {
   TPeerInfo,
   TPeerTagTrend,
   TProfileResult,
+  TSearchResults,
   TStatus,
   TStatusContext,
   TStatusMapped,
@@ -319,6 +320,17 @@ export class MastodonApiClient extends HTTPClient {
       return [];
     }
     return response.body as TPeerTagTrend[];
+  }
+
+  async search(query: string, limit = 10): Promise<TSearchResults> {
+    const response = await this.authedGet(
+      `/api/v2/search?q=${query}&limit=${limit}`,
+    );
+    if (!response.ok) {
+      return {accounts: [], statuses: [], hashtags: []};
+    }
+
+    return response.body as TSearchResults;
   }
 
   async createApplication({name}: {name: string}) {

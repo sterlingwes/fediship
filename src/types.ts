@@ -386,3 +386,9 @@ export interface TProfileResult {
   account: TAccount;
   timeline: TStatusMapped[];
 }
+
+export interface TSearchResults {
+  accounts: TAccount[];
+  statuses: TStatus[];
+  hashtags: TPeerTagTrend[];
+}
