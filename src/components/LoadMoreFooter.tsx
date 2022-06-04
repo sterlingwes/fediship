@@ -1,8 +1,9 @@
 import React from 'react';
-import {ActivityIndicator, TouchableOpacity} from 'react-native';
+import {TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
+import {LoadingSpinner} from './LoadingSpinner';
 import {Type} from './Type';
 
 export const LoadMoreFooter = ({
@@ -28,7 +29,7 @@ export const LoadMoreFooter = ({
       activeOpacity={0.5}>
       <SafeAreaView edges={['bottom']}>
         {loading ? (
-          <ActivityIndicator />
+          <LoadingSpinner />
         ) : (
           <Type scale="S" medium style={styles.label}>
             Load More

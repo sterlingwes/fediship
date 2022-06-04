@@ -8,7 +8,6 @@ import {
   FlatList,
   ListRenderItem,
   View,
-  ActivityIndicator,
   Image,
   InteractionManager,
 } from 'react-native';
@@ -18,6 +17,7 @@ import {EmptyList} from '../components/EmptyList';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
 import {LockIcon} from '../components/icons/LockIcon';
+import {LoadingSpinner} from '../components/LoadingSpinner';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {SolidButton} from '../components/SolidButton';
 import {Status} from '../components/Status';
@@ -65,7 +65,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
   if (!props.profile) {
     return (
       <View style={[styles.header, styles.centered]}>
-        <ActivityIndicator />
+        <LoadingSpinner />
       </View>
     );
   }

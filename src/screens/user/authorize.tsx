@@ -1,8 +1,9 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useEffect, useMemo, useState} from 'react';
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {WebView} from 'react-native-webview';
 import {useMyMastodonInstance} from '../../api/hooks';
+import {LoadingSpinner} from '../../components/LoadingSpinner';
 import {Type} from '../../components/Type';
 import {oauthScopes} from '../../constants';
 import {
@@ -116,7 +117,7 @@ export const Authorize = ({
   if (!clientId || authCode) {
     return (
       <View style={[flex, {backgroundColor: getColor('base')}]}>
-        <ActivityIndicator />
+        <LoadingSpinner />
       </View>
     );
   }
@@ -159,7 +160,7 @@ export const Authorize = ({
               alignItems: 'center',
             },
           ]}>
-          <ActivityIndicator />
+          <LoadingSpinner />
         </View>
       )}
     </View>

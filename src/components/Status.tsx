@@ -1,12 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {
-  Image,
-  StyleSheet,
-  Pressable,
-  View,
-  ImageStyle,
-  ActivityIndicator,
-} from 'react-native';
+import {Image, StyleSheet, Pressable, View, ImageStyle} from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
 import {useRecentFavourites} from '../storage/recent-favourites';
 
@@ -18,6 +11,7 @@ import {HTMLView} from './HTMLView';
 import {ChevronInverted} from './icons/Chevron';
 import {LockIcon} from './icons/LockIcon';
 import {StarIcon} from './icons/StarIcon';
+import {LoadingSpinner} from './LoadingSpinner';
 import {MediaAttachments} from './MediaAttachments';
 import {Poll} from './Poll';
 import {ReplyLine} from './ReplyLine';
@@ -274,7 +268,7 @@ export const Status = (
                   favourited && styles.starButtonFaved,
                 ]}>
                 {loadingFav ? (
-                  <ActivityIndicator />
+                  <LoadingSpinner />
                 ) : (
                   <StarIcon
                     width="18"

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {RootStackParamList, TPeerInfo} from '../types';
 import {useMount} from '../utils/hooks';
-import {ActivityIndicator, Pressable, ScrollView, View} from 'react-native';
+import {Pressable, ScrollView, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useThemeStyle} from '../theme/utils';
 import {StyleCreator} from '../theme';
@@ -11,6 +11,7 @@ import {HTMLView} from '../components/HTMLView';
 import {AvatarImage} from '../components/AvatarImage';
 import {useRemoteMastodonInstance} from '../api/hooks';
 import {mastoHost} from '../constants';
+import {LoadingSpinner} from '../components/LoadingSpinner';
 
 export const PeerProfile = ({
   navigation,
@@ -48,7 +49,7 @@ export const PeerProfile = ({
   if (loading) {
     return (
       <View style={{justifyContent: 'center', marginTop: 50}}>
-        <ActivityIndicator />
+        <LoadingSpinner />
       </View>
     );
   }

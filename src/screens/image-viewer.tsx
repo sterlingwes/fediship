@@ -1,7 +1,7 @@
 import {ReactNativeZoomableView} from '@openspacelabs/react-native-zoomable-view';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
-import {ActivityIndicator, StyleSheet, View, ViewStyle} from 'react-native';
+import {StyleSheet, View, ViewStyle} from 'react-native';
 import Video from 'react-native-video';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {OutlineButton} from '../components/OutlineButton';
@@ -10,6 +10,7 @@ import {screenHeight, screenWidth} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
+import {LoadingSpinner} from '../components/LoadingSpinner';
 
 const ZoomPanView = ({
   children,
@@ -75,7 +76,7 @@ export const ImageViewer = (
             style={styles.img}
           />
         )}
-        {loading && <ActivityIndicator size="large" style={styles.loading} />}
+        {loading && <LoadingSpinner size="large" style={styles.loading} />}
       </Wrapper>
       <SafeAreaView edges={['bottom']} style={styles.button}>
         {attachments.length > 1 && (

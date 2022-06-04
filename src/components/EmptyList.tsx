@@ -1,17 +1,17 @@
 import React from 'react';
-import {ActivityIndicator, View} from 'react-native';
+import {View} from 'react-native';
 import {StyleCreator} from '../theme';
-import {useThemeGetters, useThemeStyle} from '../theme/utils';
+import {useThemeStyle} from '../theme/utils';
+import {LoadingSpinner} from './LoadingSpinner';
 import {Type} from './Type';
 
 export const EmptyList = ({loading}: {loading?: boolean}) => {
   const styles = useThemeStyle(styleCreator);
-  const {getColor} = useThemeGetters();
 
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color={getColor('primary')} />
+        <LoadingSpinner size="large" />
       ) : (
         <Type style={styles.text}>Nothing to see here!</Type>
       )}

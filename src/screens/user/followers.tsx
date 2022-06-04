@@ -1,7 +1,6 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React from 'react';
 import {
-  ActivityIndicator,
   FlatList,
   Image,
   ListRenderItem,
@@ -11,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import {useFollowers} from '../../api';
+import {LoadingSpinner} from '../../components/LoadingSpinner';
 import {Type} from '../../components/Type';
 import {StyleCreator} from '../../theme';
 import {useThemeStyle} from '../../theme/utils';
@@ -36,7 +36,7 @@ export const FollowerList = ({
   if (loading && !accounts.length) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator />
+        <LoadingSpinner />
       </View>
     );
   }

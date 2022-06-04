@@ -1,7 +1,8 @@
 import React from 'react';
-import {ActivityIndicator, Pressable, ViewStyle} from 'react-native';
+import {Pressable, ViewStyle} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
+import {LoadingSpinner} from './LoadingSpinner';
 import {Type} from './Type';
 
 interface ButtonProps {
@@ -20,7 +21,7 @@ export const SolidButton = (props: ButtonProps) => {
       disabled={props.disabled || props.loading}
       onPress={props.onPress}>
       {props.loading ? (
-        <ActivityIndicator />
+        <LoadingSpinner />
       ) : (
         <Type
           scale="S"
