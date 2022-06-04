@@ -5,10 +5,18 @@ import {
   APOrderedCollection,
   APOrderedCollectionPage,
   APPerson,
+  APPersonAttachment,
   TAccount,
+  TField,
   TMediaAttachment,
   TStatusMapped,
 } from '../types';
+
+const transformFields = (attachments: APPersonAttachment[]): TField[] => {
+  return (attachments ?? [])
+    .filter(attch => attch.type === 'PropertyValue')
+    .map(({name, value}) => ({name, value}));
+};
 
 export const transformPerson = (
   profileHref: string,
@@ -32,7 +40,7 @@ export const transformPerson = (
     discoverable: person.discoverable,
     display_name: person.name,
     emojis: [],
-    fields: [],
+    fields: transformFields(person.attachment),
     followers_count: 0,
     following_count: 0,
     group: false,
@@ -113,7 +121,7 @@ export const transformActivityPage = (
   account: TAccount,
   host: string,
 ) =>
-  activities.orderedItems
+  (activities.orderedItems ?? activities.items ?? [])
     // filter out boosts & replies to simplify
     .filter(item => item.object.type === 'Note' && !item.object.inReplyTo)
     .map(activity =>

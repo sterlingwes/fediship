@@ -104,8 +104,9 @@ export const useAPProfile = (
         idParts.handle,
       );
       const userIdent = `${idParts.handle}@${idParts.host}`;
+      let localAccount: TAccount | undefined;
       if (result.ok) {
-        const localAccount = await api.findAccount(userIdent);
+        localAccount = await api.findAccount(userIdent);
         if (localAccount?.id) {
           const relationship = await api.getRelationship(localAccount.id);
           setLocalId(localAccount.id);
@@ -127,7 +128,11 @@ export const useAPProfile = (
         return;
       }
 
-      const profileWithEmojis = {...result.account, emojis: emojis.current};
+      const profileWithEmojis = {
+        ...result.account,
+        ...localAccount,
+        emojis: emojis.current,
+      };
 
       setStatuses(
         result.timeline.map(toot => ({...toot, emojis: emojis.current})),

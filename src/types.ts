@@ -10,7 +10,7 @@ export interface TAccount {
   discoverable: boolean;
   display_name: string;
   emojis: Emoji[];
-  fields: any[];
+  fields: TField[];
   followers_count: number;
   following_count: number;
   group: boolean;
@@ -22,6 +22,12 @@ export interface TAccount {
   statuses_count: number;
   url: string;
   username: string;
+}
+
+export interface TField {
+  name: string; // plain text
+  value: string; // HTML
+  verified_at?: string | null;
 }
 
 export interface TApp {
@@ -199,7 +205,7 @@ export interface APPerson extends APObject {
     publicKeyPem: string;
   };
   // tag: any[]
-  // attachment: any[]
+  attachment: APPersonAttachment[];
   endpoints: {
     sharedInbox: Url;
   };
@@ -217,12 +223,19 @@ export interface APPerson extends APObject {
   };
 }
 
+export interface APPersonAttachment {
+  type: string;
+  name: string;
+  value: string;
+}
+
 export interface APOrderedCollectionPage<T> extends APObject {
   type: 'OrderedCollectionPage';
   next: Url;
   prev: Url;
   partOf: Url; // main collection url
-  orderedItems: Array<T>;
+  orderedItems?: Array<T>;
+  items?: Array<T>;
 }
 
 export interface APOrderedCollection<T> extends APObject {

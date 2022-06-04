@@ -17,6 +17,7 @@ import {Box} from '../components/Box';
 import {EmptyList} from '../components/EmptyList';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
+import {CheckCircleIcon} from '../components/icons/CheckCircleIcon';
 import {LockIcon} from '../components/icons/LockIcon';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
@@ -27,7 +28,13 @@ import {screenHeight} from '../dimensions';
 import {getActiveApp, getActiveUserProfile} from '../storage/auth';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
-import {RootStackParamList, TAccount, TStatusMapped} from '../types';
+import {
+  Emoji,
+  RootStackParamList,
+  TAccount,
+  TField,
+  TStatusMapped,
+} from '../types';
 import {useAPProfile} from './profile/profilehooks';
 
 interface ProfileHeaderProps {
@@ -115,6 +122,10 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
           {bot ? '🤖 ' : ''}@{username}@{instanceHostName(url)}
         </Type>
         <HTMLView value={note} emojis={emojis} />
+        <ProfileFields
+          fields={props.profile.fields}
+          emojis={props.profile.emojis}
+        />
       </View>
     </View>
   );
@@ -232,6 +243,54 @@ const ProfileError = ({
         />
       )}
     </>
+  );
+};
+
+const ProfileFields = ({
+  fields,
+  emojis,
+}: {
+  fields: TField[];
+  emojis: Emoji[];
+}) => {
+  const styles = useThemeStyle(styleCreator);
+  const {getColor} = useThemeGetters();
+
+  const hasVerified = useMemo(
+    () => fields.find(f => !!f.verified_at),
+    [fields],
+  );
+
+  if (!fields.length) {
+    return null;
+  }
+
+  return (
+    <Box mt={10} pt={15} style={styles.fieldsContainer}>
+      {fields.map(field => (
+        <Box fd="row" mv={5}>
+          <Box mr={10} f={1} cv>
+            <Type scale="S" medium>
+              <HTMLView value={field.name} emojis={emojis} />
+            </Type>
+          </Box>
+          {hasVerified && (
+            <Box style={{minWidth: 30}}>
+              {field.verified_at && (
+                <CheckCircleIcon
+                  color={getColor('contrastTextColor')}
+                  width={18}
+                  height={18}
+                />
+              )}
+            </Box>
+          )}
+          <Box mr={10} f={2}>
+            <HTMLView value={field.value} emojis={emojis} />
+          </Box>
+        </Box>
+      ))}
+    </Box>
   );
 };
 
@@ -441,7 +500,10 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   approvalRequired: {
     textAlign: 'right',
-
     marginLeft: 4,
+  },
+  fieldsContainer: {
+    borderTopColor: getColor('baseHighlight'),
+    borderTopWidth: 1,
   },
 });

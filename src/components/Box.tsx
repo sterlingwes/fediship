@@ -21,6 +21,7 @@ interface SpacingBoxProps {
 }
 
 interface BoxProps extends SpacingBoxProps {
+  f?: number; // flex weight
   fd?: 'row' | 'column';
   sb?: boolean; // space-between
   c?: boolean; // center (horizontal & vertical)
@@ -64,6 +65,7 @@ const styleFor = (props: BoxProps) => {
 
 const alignmentStyle = (props: BoxProps): ViewStyle => {
   const base = {
+    flex: props.f,
     flexDirection: props.fd,
   };
 
@@ -76,6 +78,7 @@ const alignmentStyle = (props: BoxProps): ViewStyle => {
 
   if (props.c) {
     return {
+      ...base,
       justifyContent: 'center',
       alignItems: 'center',
     };
@@ -90,6 +93,7 @@ const alignmentStyle = (props: BoxProps): ViewStyle => {
 
   if (props.ch) {
     return {
+      ...base,
       alignItems: 'center',
     };
   }
@@ -103,6 +107,7 @@ const alignmentStyle = (props: BoxProps): ViewStyle => {
 
   if (props.cv) {
     return {
+      ...base,
       justifyContent: 'center',
     };
   }
