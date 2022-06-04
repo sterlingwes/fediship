@@ -202,7 +202,7 @@ export interface APPerson extends APObject {
   endpoints: {
     sharedInbox: Url;
   };
-  icon: {
+  icon?: {
     // avatar
     type: 'Image';
     mediaType: string;

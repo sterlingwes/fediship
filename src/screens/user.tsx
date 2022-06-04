@@ -134,19 +134,7 @@ export const User = ({
           {
             label: 'Your Profile',
             onPress: () => {
-              const host = getActiveApp();
-              const user = getActiveUserProfile();
-              if (!user || !host) {
-                console.error(
-                  'No active user profile or host is saved to view profile for',
-                );
-                return;
-              }
-              const actorDetails = {
-                host,
-                accountHandle: user.username,
-              };
-              navigation.push('MyProfile', {...actorDetails, self: true});
+              navigation.push('MyProfile', {self: true});
             },
           },
           {

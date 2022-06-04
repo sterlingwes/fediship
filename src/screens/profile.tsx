@@ -23,6 +23,7 @@ import {SolidButton} from '../components/SolidButton';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
 import {screenHeight} from '../dimensions';
+import {getActiveApp, getActiveUserProfile} from '../storage/auth';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TAccount, TStatusMapped} from '../types';
@@ -74,7 +75,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
 
   return (
     <View style={styles.header}>
-      {profileImages.header ? (
+      {!!profileImages.header ? (
         <Image
           source={{uri: profileImages.header}}
           style={styles.headerBgImage}
@@ -83,7 +84,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
         <View style={styles.headerSpacer} />
       )}
       <View style={styles.headerBio}>
-        {profileImages.avatar && (
+        {!!profileImages.avatar && (
           <AvatarImage uri={profileImages.avatar} style={styles.headerAvatar} />
         )}
         {typeof props.following === 'boolean' && (
@@ -231,8 +232,30 @@ export const Profile = ({
   const scrollRef = useRef<FlatList<TStatusMapped> | null>();
   const scrollOffsetRef = useRef(0);
   const [headerOpaque, setHeaderOpaque] = useState(false);
-  const {account, host, accountHandle, self} = route.params;
+  const {account, self} = route.params;
   const styles = useThemeStyle(styleCreator);
+
+  const {host, accountHandle} = useMemo(() => {
+    if (!route.params.self) {
+      return route.params;
+    }
+    const appHost = getActiveApp();
+    const user = getActiveUserProfile();
+    if (!user || !appHost) {
+      console.error(
+        'No active user profile or host is saved to view profile for',
+      );
+      return {accountHandle: user?.username, host: appHost};
+    }
+    const actorDetails = {
+      host: appHost,
+      accountHandle: user.username,
+    } as {host?: string; accountHandle?: string};
+    return actorDetails;
+  }, [route.params]);
+
+  console.log({host, accountHandle});
+
   const {
     error,
     profile,

@@ -7,7 +7,6 @@ import {
   APPerson,
   TAccount,
   TMediaAttachment,
-  TStatus,
   TStatusMapped,
 } from '../types';
 
@@ -26,8 +25,8 @@ export const transformPerson = (
   return {
     id: `${handle}@${host}`,
     acct: handle ?? person.preferredUsername,
-    avatar: person.icon.url,
-    avatar_static: person.icon.url,
+    avatar: person.icon?.url ?? '',
+    avatar_static: person.icon?.url ?? '',
     bot: false,
     created_at: '',
     discoverable: person.discoverable,

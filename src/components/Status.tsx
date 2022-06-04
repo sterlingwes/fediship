@@ -243,13 +243,19 @@ export const Status = (
             visible={replying}
             style={styles.replyLineLeader}
           />
-          <Pressable onPress={onPressAvatar}>
-            <Image
-              source={{
-                uri: mainStatus.account.avatar,
-              }}
-              style={[styles.avatar, props.focused && styles.avatarFocused]}
-            />
+          <Pressable onPress={onPressAvatar} style={styles.avatar}>
+            {!!mainStatus.account.avatar && (
+              <Image
+                source={{
+                  uri: mainStatus.account.avatar,
+                }}
+                style={[
+                  styles.avatar,
+                  styles.avatarImg,
+                  props.focused && styles.avatarFocused,
+                ]}
+              />
+            )}
             {mainStatus.account.locked && <AvatarLock />}
           </Pressable>
           <View style={styles.statusLeftButtons}>
@@ -364,10 +370,12 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   avatar: {
     width: 60,
     height: 60,
-    resizeMode: 'cover',
     marginRight: 15,
     borderRadius: 5,
     backgroundColor: getColor('baseAccent'),
+  },
+  avatarImg: {
+    resizeMode: 'cover',
   },
   avatarLock: {
     position: 'absolute',
