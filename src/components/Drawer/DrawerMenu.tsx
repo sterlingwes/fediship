@@ -15,6 +15,7 @@ import {PinIcon} from '../icons/PinIcon';
 import {GlobeIcon} from '../icons/GlobeIcon';
 import {HashtagIcon} from '../icons/HashtagIcon';
 import {MapIcon} from '../icons/MapIcon';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const iconForType = (tl: SavedTimeline) => {
   if (tl.type === 'home') {
@@ -51,12 +52,12 @@ export const DrawerMenu = ({
     <ScrollView
       style={flex}
       contentContainerStyle={{minHeight: screenHeight - tabBarHeight * 2}}>
-      <View style={styles.boatContainer}>
+      <SafeAreaView edges={['top']} style={styles.boatContainer}>
         <LogoBoat size={100} />
         <Type scale="L" bold>
           fediship
         </Type>
-      </View>
+      </SafeAreaView>
       <View style={flex} />
       <DrawerButton
         onPress={onPressExplore}

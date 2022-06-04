@@ -54,8 +54,7 @@ export class MastodonApiClient extends HTTPClient {
   }
 
   async getTimeline(timeline: 'home' | 'public', nextPage?: string) {
-    const method = timeline === 'home' ? 'authedGet' : 'get';
-    const response = await this[method](nextPage ?? `timelines/${timeline}`);
+    const response = await this.authedGet(nextPage ?? `timelines/${timeline}`);
     if (!response.body) {
       throw new Error('Failed to fetch timeline');
     }
