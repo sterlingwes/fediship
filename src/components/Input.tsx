@@ -2,7 +2,7 @@ import React, {forwardRef} from 'react';
 import {TextInputProps, TextStyle} from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
 import {useThemeGetters} from '../theme/utils';
-import {FontScale, fontScales, Type} from './Type';
+import {FontScale, fontScales, getTextScaleStyle, Type} from './Type';
 
 interface Props extends TextInputProps {
   scale?: FontScale;
@@ -23,6 +23,7 @@ export const Input = forwardRef<TextInput, Props>(({value, ...props}, ref) => {
       ref={ref}
       autoCorrect={false}
       spellCheck={false}
+      style={[getTextScaleStyle(props.scale ?? 'M'), props.style]}
       placeholderTextColor={getColor('baseAccent')}>
       <Type scale={props.scale} style={style}>
         {value}

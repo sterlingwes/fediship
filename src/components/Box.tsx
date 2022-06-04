@@ -2,12 +2,14 @@ import React, {ReactNode, useMemo} from 'react';
 import {View, ViewStyle} from 'react-native';
 
 interface BoxProps {
+  m?: number;
   mh?: number;
   mv?: number;
   ml?: number;
   mr?: number;
   mt?: number;
   mb?: number;
+  p?: number;
   ph?: number;
   pv?: number;
   pl?: number;
@@ -17,12 +19,14 @@ interface BoxProps {
 }
 
 const propStyleMap: Record<keyof BoxProps, keyof ViewStyle> = Object.freeze({
+  m: 'margin',
   mh: 'marginHorizontal',
   mv: 'marginVertical',
   ml: 'marginLeft',
   mr: 'marginRight',
   mt: 'marginTop',
   mb: 'marginBottom',
+  p: 'padding',
   ph: 'paddingHorizontal',
   pv: 'paddingVertical',
   pl: 'paddingLeft',
@@ -47,7 +51,11 @@ const styleFor = (props: BoxProps) => {
   }, {} as ViewStyle);
 };
 
-export const Box = ({children, ...props}: BoxProps & {children: ReactNode}) => {
+export const Box = ({
+  children,
+  style,
+  ...props
+}: BoxProps & {children: ReactNode; style?: ViewStyle}) => {
   const styles = useMemo(() => styleFor(props), [props]);
-  return <View style={styles}>{children}</View>;
+  return <View style={[styles, style]}>{children}</View>;
 };

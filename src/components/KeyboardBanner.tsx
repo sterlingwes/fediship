@@ -20,7 +20,7 @@ const KeyboardBannerContext = createContext({
 
 export const useKeyboardBanner = () => useContext(KeyboardBannerContext);
 
-type SendListener = () => Promise<boolean>;
+type SendListener = () => Promise<boolean | (() => any)>;
 
 const sendListeners: SendListener[] = [];
 
@@ -46,7 +46,7 @@ const callListeners = async () => {
     const chainResult = await chain;
     const newResult = await listener();
     return chainResult || newResult;
-  }, Promise.resolve(false) as Promise<boolean>);
+  }, Promise.resolve(false) as ReturnType<SendListener>);
   return shouldHide;
 };
 
@@ -55,11 +55,13 @@ export const KeyboardBannerProvider = ({children}: {children: ReactNode}) => {
   const [keyboardShown, setKeyboardShown] = useState(false);
 
   useMount(() => {
-    const showSub = Keyboard.addListener('keyboardDidShow', () =>
-      setKeyboardShown(true),
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setKeyboardShown(true),
     );
-    const hideSub = Keyboard.addListener('keyboardDidHide', () =>
-      setKeyboardShown(false),
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardShown(false),
     );
 
     return () => {
@@ -98,7 +100,7 @@ const KeyboardBanner = ({
   onPressSend,
   onHide,
 }: {
-  onPressSend: () => Promise<boolean>;
+  onPressSend: () => ReturnType<SendListener>;
   onHide: () => void;
 }) => {
   const [loading, setLoading] = useState(false);
@@ -109,6 +111,10 @@ const KeyboardBanner = ({
     const shouldHide = await onPressSend();
     if (shouldHide) {
       onHide();
+    }
+
+    if (typeof shouldHide === 'function') {
+      shouldHide();
     }
   }, [setLoading, onPressSend, onHide]);
 

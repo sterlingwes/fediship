@@ -1,5 +1,5 @@
 import React from 'react';
-import {ColorValue, Text, TextProps} from 'react-native';
+import {ColorValue, StyleProp, Text, TextProps, TextStyle} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 
@@ -23,23 +23,29 @@ export interface TypeProps extends TextProps {
   weight?: FontWeight;
 }
 
+export const getTextScaleStyle = (scale: TypeProps['scale']) => {
+  const resolvedScale = fontScales[scale ?? 'M'];
+  return {fontSize: resolvedScale, lineHeight: resolvedScale * 1.3};
+};
+
+export const getTextStyle = (
+  props: TypeProps,
+  styles: ReturnType<StyleCreator>,
+): StyleProp<TextStyle> => {
+  return [
+    styles.text,
+    props.weight === 'bold' ? props.bold && styles.bold : undefined,
+    props.weight === 'semiBold' ? props.semiBold && styles.semiBold : undefined,
+    props.weight === 'medium' ? props.medium && styles.medium : undefined,
+    getTextScaleStyle(props.scale),
+    props.style,
+    props.color ? {color: props.color} : undefined,
+  ];
+};
+
 export const Type = (props: TypeProps) => {
   const styles = useThemeStyle(styleCreator);
-  const scale = fontScales[props.scale ?? 'M'];
-  return (
-    <Text
-      {...props}
-      style={[
-        styles.text,
-        props.weight === 'bold' || (props.bold && styles.bold),
-        props.weight === 'semiBold' || (props.semiBold && styles.semiBold),
-        props.weight === 'medium' || (props.medium && styles.medium),
-        {fontSize: scale, lineHeight: scale * 1.3},
-        props.style,
-        props.color && {color: props.color},
-      ]}
-    />
-  );
+  return <Text {...props} style={getTextStyle(props, styles)} />;
 };
 
 const styleCreator: StyleCreator = ({getColor}) => ({
