@@ -31,6 +31,8 @@ export const Authorize = ({
   const auth = useAuth();
 
   useMount(() => {
+    api.host = host;
+
     const fetchClientId = async () => {
       const app = await api.createApplication({name: 'Fediship'});
       if (!app) {
@@ -62,6 +64,7 @@ export const Authorize = ({
         );
         return;
       }
+
       const {client_id, client_secret} = app;
       const token = await api.createToken({
         client_id,
@@ -82,6 +85,7 @@ export const Authorize = ({
         return;
       }
 
+      api.actorId = user.id;
       setActiveUserProfile(user);
       auth.setAuth({user: user.acct, host, oauthApp: app, tokenResult: token});
     };

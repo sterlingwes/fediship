@@ -10,8 +10,7 @@ import {
 } from 'react-native';
 import {ChevronInverted} from '../components/icons/Chevron';
 import {Type} from '../components/Type';
-import {actorDetails} from '../constants';
-import {useAuth} from '../storage/auth';
+import {getActiveApp, getActiveUserProfile, useAuth} from '../storage/auth';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {NotificationGroups, RootStackParamList} from '../types';
@@ -134,8 +133,21 @@ export const User = ({
         data: [
           {
             label: 'Your Profile',
-            onPress: () =>
-              navigation.push('MyProfile', {...actorDetails, self: true}),
+            onPress: () => {
+              const host = getActiveApp();
+              const user = getActiveUserProfile();
+              if (!user || !host) {
+                console.error(
+                  'No active user profile or host is saved to view profile for',
+                );
+                return;
+              }
+              const actorDetails = {
+                host,
+                accountHandle: user.username,
+              };
+              navigation.push('MyProfile', {...actorDetails, self: true});
+            },
           },
           {
             label: loggingOut ? 'Logging out...' : 'Logout',

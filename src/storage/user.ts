@@ -9,7 +9,7 @@ export const useUserProfile = () => {
   const api = useMyMastodonInstance();
 
   useMount(() => {
-    if (lastSavedProfile || !auth.token) {
+    if (lastSavedProfile || !auth.token || typeof auth.host !== 'string') {
       return;
     }
 

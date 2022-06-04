@@ -11,7 +11,7 @@ import {
 import {useTimeline} from '../api';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {Status} from '../components/Status';
-import {mastoHost} from '../constants';
+import {useAuth} from '../storage/auth';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatusMapped} from '../types';
@@ -20,6 +20,7 @@ import {ErrorBoundary} from './ErrorBoundary';
 const createTimelineRenderer =
   (
     navigation: NativeStackNavigationProp<RootStackParamList>,
+    host: string | undefined,
   ): ListRenderItem<TStatusMapped> =>
   row => {
     const status = row.item;
@@ -28,7 +29,7 @@ const createTimelineRenderer =
     return (
       <Status
         key={status.id}
-        isLocal={status.sourceHost === mastoHost}
+        isLocal={status.sourceHost === host}
         {...status}
         onPress={() => {
           navigation.push('Thread', {statusUrl: nextStatusUrl, id: nextId});
@@ -55,6 +56,7 @@ export const StatusList = forwardRef(
     }: StatusListProps,
     ref,
   ) => {
+    const auth = useAuth();
     const navigation =
       useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const scrollOffsetRef = useRef(0);
@@ -66,8 +68,8 @@ export const StatusList = forwardRef(
     }));
 
     const renderItem = useMemo(
-      () => createTimelineRenderer(navigation),
-      [navigation],
+      () => createTimelineRenderer(navigation, auth.host),
+      [navigation, auth],
     );
 
     const LoadFooter = useMemo(

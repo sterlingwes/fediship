@@ -1,21 +1,10 @@
-import {useRef} from 'react';
-import {mastoActorId, mastoHost} from '../constants';
-import {useAuth} from '../storage/auth';
 import {ActivityPubClient} from './activitypub';
 import {FediWorkerApiClient} from './fediworker';
 import {MastodonApiClient} from './mastodon';
+import {useMastodonApi} from './mastodon-context';
 
 export const useMyMastodonInstance = () => {
-  const auth = useAuth();
-  const api = useRef(
-    new MastodonApiClient({
-      host: mastoHost,
-      token: auth.token,
-      actorId: mastoActorId,
-    }),
-  );
-
-  return api.current;
+  return useMastodonApi();
 };
 
 export const useRemoteMastodonInstance = () => {

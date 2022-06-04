@@ -15,25 +15,27 @@ import {
   TToken,
 } from '../types';
 
-import {HTTPClient} from './http-client';
+import {HTTPClient, ClientOptions} from './http-client';
 
-interface ClientOptions {
-  host: string;
-  token?: string;
+interface MastoClientOptions extends ClientOptions {
   apiVersion?: number;
   actorId?: string;
 }
 
 export class MastodonApiClient extends HTTPClient {
-  private mastoOptions: ClientOptions;
+  private mastoOptions: MastoClientOptions;
 
-  constructor(options: ClientOptions) {
+  constructor(options?: MastoClientOptions) {
     super({
-      host: options.host,
-      token: options.token,
-      pathBase: `/api/v${options.apiVersion ?? 1}`,
+      host: options?.host ?? '',
+      token: options?.token,
+      pathBase: `/api/v${options?.apiVersion ?? 1}`,
     });
-    this.mastoOptions = options;
+    this.mastoOptions = options ?? {host: ''};
+  }
+
+  set actorId(actorId: string | undefined) {
+    this.mastoOptions.actorId = actorId;
   }
 
   sendStatus(
@@ -350,7 +352,7 @@ export class MastodonApiClient extends HTTPClient {
     scope?: string;
   }) {
     const response = await this.post(
-      `https://${this.mastoOptions.host}/oauth/token`,
+      '/oauth/token',
       this.form({
         client_id,
         client_secret,
@@ -387,7 +389,7 @@ export class MastodonApiClient extends HTTPClient {
     token: string;
   }) {
     const response = await this.post(
-      `https://${this.mastoOptions.host}/oauth/revoke`,
+      '/oauth/revoke',
       this.form({
         client_id,
         client_secret,

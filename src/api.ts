@@ -3,7 +3,7 @@ import {TAccount, TStatusContext, TStatusMapped, TThread} from './types';
 import {useMount} from './utils/hooks';
 import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
 import {parseStatusUrl} from './api/api.utils';
-import {mastoHost} from './constants';
+import {useAuth} from './storage/auth';
 
 export const useFollowers = (source = 'mine') => {
   const api = useMyMastodonInstance();
@@ -48,6 +48,7 @@ export const useFollowers = (source = 'mine') => {
 };
 
 export const usePeers = () => {
+  const auth = useAuth();
   const api = useMyMastodonInstance();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -58,7 +59,11 @@ export const usePeers = () => {
     setLoading(true);
     try {
       const peerList = await api.getInstancePeers();
-      setPeers([mastoHost].concat(peerList).sort());
+      const baseHosts = [];
+      if (auth.host) {
+        baseHosts.push(auth.host);
+      }
+      setPeers(baseHosts.concat(peerList).sort());
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);

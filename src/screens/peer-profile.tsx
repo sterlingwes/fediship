@@ -10,13 +10,14 @@ import {thousandsNumber} from '../utils/numbers';
 import {HTMLView} from '../components/HTMLView';
 import {AvatarImage} from '../components/AvatarImage';
 import {useRemoteMastodonInstance} from '../api/hooks';
-import {mastoHost} from '../constants';
 import {LoadingSpinner} from '../components/LoadingSpinner';
+import {useAuth} from '../storage/auth';
 
 export const PeerProfile = ({
   navigation,
   route,
 }: NativeStackScreenProps<RootStackParamList, 'PeerProfile'>) => {
+  const auth = useAuth();
   const styles = useThemeStyle(styleCreator);
   const {host} = route.params;
   const getApi = useRemoteMastodonInstance();
@@ -76,7 +77,7 @@ export const PeerProfile = ({
       <AvatarImage uri={thumbnail} style={styles.avatar} />
       <Spacer />
       <Spacer />
-      {mastoHost === host && (
+      {auth.host === host && (
         <>
           <Type scale="S" semiBold>
             (you are here)

@@ -1,6 +1,6 @@
 import {HTTPClient} from './http-client';
 
-import {APPerson, TAccount, TStatus, TStatusMapped, Webfinger} from '../types';
+import {APPerson, TAccount, TStatusMapped, Webfinger} from '../types';
 
 import {
   isOrderedCollection,

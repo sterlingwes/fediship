@@ -1,7 +1,7 @@
 import {createFetchProxy} from './fetch-proxy';
 import {ApiResponse} from './response';
 
-interface ClientOptions {
+export interface ClientOptions {
   host: string;
   token?: string;
   pathBase?: string;
@@ -25,8 +25,12 @@ export class HTTPClient {
     this.options.token = token;
   }
 
+  set host(host: string) {
+    this.options.host = host;
+  }
+
   async authedPost(info: RequestInfo, extra?: RequestInit) {
-    this.assertToken();
+    this.assertToken(info);
     return this.post(info, {
       ...extra,
       headers: {
@@ -37,7 +41,7 @@ export class HTTPClient {
   }
 
   async authedGet(info: RequestInfo, extra?: RequestInit) {
-    this.assertToken();
+    this.assertToken(info);
     return this.get(info, {
       ...extra,
       headers: {
@@ -69,9 +73,9 @@ export class HTTPClient {
     return apiResponse;
   }
 
-  private assertToken() {
+  private assertToken(info?: RequestInfo) {
     if (!this.options.token) {
-      throw new Error('Token required for operation');
+      throw new Error('Token required for operation: ' + info);
     }
   }
 
@@ -84,7 +88,7 @@ export class HTTPClient {
 
     let usedPath = path;
     if (usedPath[0] === '/') {
-      usedPath = path.substring(1);
+      return `https://${host}${path}`;
     }
     return `https://${host}${pathBase ?? ''}/${path}`;
   }

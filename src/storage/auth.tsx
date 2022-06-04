@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import {MMKV} from 'react-native-mmkv';
 import {useMyMastodonInstance} from '../api/hooks';
+import {MastodonApiClient} from '../api/mastodon';
 import {TAccount, TApp, TToken} from '../types';
 
 import {readJson} from './utils';
@@ -43,21 +44,18 @@ export const setActiveUserProfile = (user: TAccount) =>
 export const getActiveUserProfile = () =>
   readJson<TAccount>('user_profile', activeStorage);
 
+interface SetAuthParams {
+  user?: string;
+  host?: string;
+  oauthApp?: TApp;
+  tokenResult?: TToken;
+}
 interface Auth {
   app?: TApp;
+  host?: string;
   token?: string;
   userIdent?: string;
-  setAuth: ({
-    user,
-    host,
-    oauthApp,
-    tokenResult,
-  }: {
-    user: string;
-    host: string;
-    oauthApp: TApp;
-    tokenResult: TToken;
-  }) => void;
+  setAuth: ({user, host, oauthApp, tokenResult}: SetAuthParams) => void;
   clearAuth: () => Promise<boolean | undefined>;
 }
 
@@ -66,7 +64,7 @@ const AuthContext = createContext<Auth>({
   clearAuth: () => Promise.resolve(undefined),
 });
 
-const rehydrateAuth = () => {
+const rehydrateAuth = (api: MastodonApiClient) => {
   const activeApp = getActiveApp();
   const activeUser = getActiveUser();
 
@@ -75,10 +73,22 @@ const rehydrateAuth = () => {
   }
 
   const userIdent = `${activeUser}@${activeApp}`;
+  const host = activeApp;
+  const userAuth = getUserAuth(activeUser);
+  const userProfile = getActiveUserProfile();
+  const token = userAuth?.access_token;
+  const actorId = userProfile?.id;
+
+  if (host && token) {
+    api.host = host;
+    api.token = token;
+    api.actorId = actorId;
+  }
 
   return {
     app: getClientApp(activeApp),
-    token: getUserAuth(activeUser)?.access_token,
+    token,
+    host,
     userIdent,
   };
 };
@@ -88,16 +98,19 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
   const [auth, setAuthState] = useState<{
     userIdent?: string;
     token?: string;
+    host?: string;
     app?: TApp;
-  }>(rehydrateAuth());
+  }>(rehydrateAuth(api));
 
   const setAuth = useCallback(
-    ({user, host, oauthApp, tokenResult}) => {
+    ({user, host, oauthApp, tokenResult}: SetAuthParams) => {
       const userIdent = `${user}@${host}`;
-      setAuthState({token: tokenResult.access_token, app: oauthApp});
-      setUserAuth(userIdent, tokenResult);
-      setActiveApp(host);
-      setActiveUser(userIdent);
+      setAuthState({token: tokenResult?.access_token, app: oauthApp});
+      if (user && tokenResult && host) {
+        setUserAuth(userIdent, tokenResult);
+        setActiveApp(host);
+        setActiveUser(userIdent);
+      }
     },
     [setAuthState],
   );
@@ -105,7 +118,14 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
   const clearAuth = useCallback(async () => {
     const activeUser = getActiveUser();
 
-    if (!activeUser || !auth.userIdent || !auth.token || !auth.app) {
+    if (
+      !activeUser ||
+      !auth.userIdent ||
+      !auth.token ||
+      !auth.app ||
+      !auth.host
+    ) {
+      console.warn('Could not clear auth, missing required dependencies');
       return;
     }
 

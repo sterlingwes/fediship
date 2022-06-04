@@ -62,7 +62,6 @@ buck-out/
 _bundle/
 
 # project
-src/constants.ts
 scripts/out
 
 /scripts/signing
