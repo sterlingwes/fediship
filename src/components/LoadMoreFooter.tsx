@@ -1,5 +1,5 @@
 import React from 'react';
-import {TouchableOpacity} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
@@ -10,10 +10,12 @@ export const LoadMoreFooter = ({
   loading,
   onPress,
   more,
+  noSafeArea,
 }: {
   loading?: boolean;
   onPress: () => void;
   more?: boolean;
+  noSafeArea?: boolean;
 }) => {
   const styles = useThemeStyle(styleCreator);
 
@@ -21,13 +23,15 @@ export const LoadMoreFooter = ({
     return null;
   }
 
+  const SafeArea = noSafeArea ? View : SafeAreaView;
+
   return (
     <TouchableOpacity
       disabled={loading}
       style={styles.container}
       onPress={onPress}
       activeOpacity={0.5}>
-      <SafeAreaView edges={['bottom']}>
+      <SafeArea edges={['bottom']}>
         {loading ? (
           <LoadingSpinner />
         ) : (
@@ -35,7 +39,7 @@ export const LoadMoreFooter = ({
             Load More
           </Type>
         )}
-      </SafeAreaView>
+      </SafeArea>
     </TouchableOpacity>
   );
 };

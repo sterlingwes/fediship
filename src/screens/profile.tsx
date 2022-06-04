@@ -275,6 +275,7 @@ export const Profile = ({
   const LoadFooter = useMemo(
     () => (
       <LoadMoreFooter
+        noSafeArea={self}
         onPress={() =>
           fetchTimeline().then(() =>
             InteractionManager.runAfterInteractions(() => {
@@ -290,7 +291,7 @@ export const Profile = ({
         loading={loadingMore}
       />
     ),
-    [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef],
+    [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef, self],
   );
 
   if (error && !account) {
