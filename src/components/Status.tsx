@@ -380,7 +380,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   avatarLock: {
     position: 'absolute',
     bottom: -8,
-    right: 8,
+    right: -4,
     backgroundColor: getColor('base'),
     borderRadius: lockIconWidth,
     padding: 4,

@@ -27,7 +27,7 @@ export const transformPerson = (
     acct: handle ?? person.preferredUsername,
     avatar: person.icon?.url ?? '',
     avatar_static: person.icon?.url ?? '',
-    bot: false,
+    bot: person.type === 'Service',
     created_at: '',
     discoverable: person.discoverable,
     display_name: person.name,
@@ -120,7 +120,7 @@ export const transformActivityPage = (
     );
 
 export const isPerson = (object: any): object is APPerson =>
-  typeof object === 'object' && object.type === 'Person';
+  typeof object === 'object' && ['Person', 'Service'].includes(object.type);
 
 export const isOutboxCollection = (
   object: any,

@@ -71,7 +71,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
     );
   }
 
-  const {display_name, note, emojis, username, url} = props.profile;
+  const {display_name, note, emojis, username, url, bot} = props.profile;
 
   return (
     <View style={styles.header}>
@@ -111,7 +111,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
           <HTMLView value={display_name} emojis={emojis} />
         </View>
         <Type scale="S" medium style={styles.headerUsername}>
-          @{username}@{instanceHostName(url)}
+          {bot ? '🤖 ' : ''}@{username}@{instanceHostName(url)}
         </Type>
         <HTMLView value={note} emojis={emojis} />
       </View>
@@ -253,8 +253,6 @@ export const Profile = ({
     } as {host?: string; accountHandle?: string};
     return actorDetails;
   }, [route.params]);
-
-  console.log({host, accountHandle});
 
   const {
     error,

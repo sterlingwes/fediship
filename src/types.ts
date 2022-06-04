@@ -180,7 +180,7 @@ export interface APObject {
 type Url = string;
 
 export interface APPerson extends APObject {
-  type: 'Person';
+  type: 'Person' | 'Service';
   following: Url;
   followers: Url;
   inbox: Url;
