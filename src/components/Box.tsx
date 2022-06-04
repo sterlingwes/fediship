@@ -2,6 +2,7 @@ import React, {ReactNode, useMemo} from 'react';
 import {View, ViewStyle} from 'react-native';
 
 interface SpacingBoxProps {
+  // margin: horizontal, vertical, top, right, etc.
   m?: number;
   mh?: number;
   mv?: number;
@@ -9,6 +10,7 @@ interface SpacingBoxProps {
   mr?: number;
   mt?: number;
   mb?: number;
+  // padding: horizontal, vertical, top, right, etc.
   p?: number;
   ph?: number;
   pv?: number;
@@ -20,9 +22,10 @@ interface SpacingBoxProps {
 
 interface BoxProps extends SpacingBoxProps {
   fd?: 'row' | 'column';
-  c?: boolean;
-  ch?: boolean;
-  cv?: boolean;
+  sb?: boolean; // space-between
+  c?: boolean; // center (horizontal & vertical)
+  ch?: boolean; // center horizontal
+  cv?: boolean; // center vertical
 }
 
 const propStyleMap: Record<keyof SpacingBoxProps, keyof ViewStyle> =
@@ -60,6 +63,17 @@ const styleFor = (props: BoxProps) => {
 };
 
 const alignmentStyle = (props: BoxProps): ViewStyle => {
+  const base = {
+    flexDirection: props.fd,
+  };
+
+  if (props.sb) {
+    return {
+      ...base,
+      [props.fd === 'row' ? 'justifyContent' : 'alignContent']: 'space-between',
+    };
+  }
+
   if (props.c) {
     return {
       justifyContent: 'center',
@@ -69,6 +83,7 @@ const alignmentStyle = (props: BoxProps): ViewStyle => {
 
   if (props.ch && props.fd === 'row') {
     return {
+      ...base,
       justifyContent: 'center',
     };
   }
@@ -81,6 +96,7 @@ const alignmentStyle = (props: BoxProps): ViewStyle => {
 
   if (props.cv && props.fd === 'row') {
     return {
+      ...base,
       alignItems: 'center',
     };
   }
@@ -91,7 +107,7 @@ const alignmentStyle = (props: BoxProps): ViewStyle => {
     };
   }
 
-  return {};
+  return base;
 };
 
 export const Box = ({

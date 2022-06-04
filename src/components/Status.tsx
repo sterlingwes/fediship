@@ -1,5 +1,13 @@
 import React, {useMemo, useState} from 'react';
-import {Image, StyleSheet, Pressable, View, ImageStyle} from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Pressable,
+  View,
+  ImageStyle,
+  Platform,
+  Share,
+} from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
 import {useRecentFavourites} from '../storage/recent-favourites';
 
@@ -7,9 +15,14 @@ import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {Emoji, TAccount, TStatus} from '../types';
 import {timeAgo} from '../utils/dates';
+import {Box} from './Box';
 import {HTMLView} from './HTMLView';
+import {BookmarkIcon} from './icons/BookmarkIcon';
+import {BoostIcon} from './icons/BoostIcon';
 import {ChevronInverted} from './icons/Chevron';
 import {LockIcon} from './icons/LockIcon';
+import {ShareBoxIcon} from './icons/ShareBoxIcon';
+import {ShareGraphIcon} from './icons/ShareGraphIcon';
 import {StarIcon} from './icons/StarIcon';
 import {LoadingSpinner} from './LoadingSpinner';
 import {MediaAttachments} from './MediaAttachments';
@@ -182,12 +195,27 @@ export const Status = (
   },
 ) => {
   const api = useMyMastodonInstance();
-  const {favourites, trackStatusFavourite} = useRecentFavourites();
+  const {
+    favourites,
+    reblogs,
+    bookmarks,
+    trackStatusFavourite,
+    trackReblog,
+    trackBookmark,
+  } = useRecentFavourites();
   const mainStatus = props.reblog ? props.reblog : props;
   const recentFav = favourites[mainStatus.url ?? mainStatus.uri];
+  const recentReblog = reblogs[mainStatus.url ?? mainStatus.uri];
+  const recentBookmark = bookmarks[mainStatus.url ?? mainStatus.uri];
   const [faved, setFaved] = useState(mainStatus.favourited);
+  const [reblogged, setReblogged] = useState(mainStatus.reblogged);
+  const [bookmarked, setBookmarked] = useState(mainStatus.bookmarked);
   const favourited = recentFav || faved;
+  const wasReblogged = recentReblog || reblogged;
+  const wasBookmarked = recentBookmark || bookmarked;
   const [loadingFav, setLoadingFav] = useState(false);
+  const [loadingReblog, setLoadingReblog] = useState(false);
+  const [loadingBookmark, setLoadingBookmark] = useState(false);
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
 
@@ -208,6 +236,30 @@ export const Status = (
       setFaved(!faved);
     }
     setLoadingFav(false);
+  };
+
+  const onReblog = async () => {
+    setLoadingReblog(true);
+    const success = reblogged
+      ? await api.unreblog(mainStatus.id)
+      : await api.reblog(mainStatus.id);
+    if (success) {
+      trackReblog(mainStatus.url ?? mainStatus.uri, !reblogged);
+      setReblogged(!reblogged);
+    }
+    setLoadingReblog(false);
+  };
+
+  const onBookmark = async () => {
+    setLoadingBookmark(true);
+    const success = bookmarked
+      ? await api.unbookmark(mainStatus.id)
+      : await api.bookmark(mainStatus.id);
+    if (success) {
+      trackBookmark(mainStatus.url ?? mainStatus.uri, !bookmarked);
+      setBookmarked(!bookmarked);
+    }
+    setLoadingBookmark(false);
   };
 
   const [content, truncated] = useMemo(() => {
@@ -316,9 +368,83 @@ export const Status = (
             </>
           )}
           {!mainStatus.sensitive && truncated && <ViewMoreButton />}
+          {props.focused && props.isLocal && (
+            <StatusActionBar
+              {...{
+                reblogged: wasReblogged,
+                onReblog,
+                loadingReblog,
+                shareUrl: mainStatus.url ?? mainStatus.uri,
+                bookmarked: wasBookmarked,
+                loadingBookmark,
+                onBookmark,
+              }}
+            />
+          )}
         </View>
       </View>
     </Pressable>
+  );
+};
+
+const StatusActionBar = ({
+  reblogged,
+  bookmarked,
+  loadingBookmark,
+  loadingReblog,
+  shareUrl,
+  onReblog,
+  onBookmark,
+}: {
+  reblogged: boolean | undefined;
+  bookmarked: boolean | undefined;
+  loadingBookmark: boolean;
+  loadingReblog: boolean;
+  shareUrl: string;
+  onReblog: () => void;
+  onBookmark: () => void;
+}) => {
+  const {getColor} = useThemeGetters();
+
+  const commonIconProps = useMemo(
+    () => ({
+      color: getColor('blueAccent'),
+      width: 20,
+      height: 20,
+    }),
+    [getColor],
+  );
+
+  const onShare = () => {
+    Share.share({url: shareUrl});
+  };
+
+  return (
+    <Box mb={10} ph={20} fd="row" sb>
+      {loadingReblog ? (
+        <LoadingSpinner />
+      ) : (
+        <BoostIcon
+          {...commonIconProps}
+          color={getColor(reblogged ? 'success' : 'blueAccent')}
+          onPress={onReblog}
+        />
+      )}
+      {Platform.OS === 'ios' ? (
+        <ShareBoxIcon {...commonIconProps} onPress={onShare} />
+      ) : (
+        <ShareGraphIcon {...commonIconProps} onPress={onShare} />
+      )}
+      {loadingBookmark ? (
+        <LoadingSpinner />
+      ) : (
+        <BookmarkIcon
+          {...commonIconProps}
+          color={getColor(bookmarked ? 'success' : 'blueAccent')}
+          onPress={onBookmark}
+        />
+      )}
+    </Box>
   );
 };
 

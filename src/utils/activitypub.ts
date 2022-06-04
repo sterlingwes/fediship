@@ -89,6 +89,7 @@ export const transformActivity = (
   {account, host, pinned}: {account: TAccount; host: string; pinned?: boolean},
 ): TStatusMapped => ({
   id,
+  bookmarked: false,
   created_at: published,
   content,
   account,

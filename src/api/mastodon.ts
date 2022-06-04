@@ -282,6 +282,26 @@ export class MastodonApiClient extends HTTPClient {
     return response.ok;
   }
 
+  async reblog(statusId: string) {
+    const response = await this.authedPost(`statuses/${statusId}/reblog`);
+    return response.ok;
+  }
+
+  async unreblog(statusId: string) {
+    const response = await this.authedPost(`statuses/${statusId}/unreblog`);
+    return response.ok;
+  }
+
+  async bookmark(statusId: string) {
+    const response = await this.authedPost(`statuses/${statusId}/bookmark`);
+    return response.ok;
+  }
+
+  async unbookmark(statusId: string) {
+    const response = await this.authedPost(`statuses/${statusId}/unbookmark`);
+    return response.ok;
+  }
+
   async getNotifications(params?: {minId?: string}) {
     const path = params?.minId
       ? `notifications?min_id${params.minId}`
