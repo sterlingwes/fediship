@@ -290,6 +290,8 @@ PODS:
   - react-native-mmkv (2.3.3):
     - MMKV (>= 1.2.13)
     - React-Core
+  - react-native-netinfo (9.0.0):
+    - React-Core
   - react-native-safe-area-context (4.2.5):
     - RCT-Folly
     - RCTRequired
@@ -452,6 +454,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-video (from `../node_modules/react-native-video`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -534,6 +537,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-mmkv:
     :path: "../node_modules/react-native-mmkv"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-video:
@@ -611,6 +616,7 @@ SPEC CHECKSUMS:
   React-logger: f79dd3cc0f9b44f5611c6c7862badd891a862cf8
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
   react-native-mmkv: 30297e5e2a65341b36a727c1c79b0aff0132b396
+  react-native-netinfo: 5b664b2945a8f02102b296f0f812bddd6827ed9c
   react-native-safe-area-context: ebf8c413eb8b5f7c392a036a315eb7b46b96845f
   react-native-video: a4c2635d0802f983594b7057e1bce8f442f0ad28
   react-native-webview: 28d3fb6c10fbbef4934e816f8c0fc1f635428d9d

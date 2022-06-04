@@ -1,5 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {View} from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import {createFetchProxy} from '../api/fetch-proxy';
 import {centered, flex} from '../utils/styles';
 import {Box} from './Box';
@@ -16,7 +17,12 @@ export const NoNetworkCheck = ({
 
   useMemo(() => {
     createFetchProxy({
-      onNoNetwork: () => setNoNetwork(true),
+      onNoNetwork: async () => {
+        const state = await NetInfo.fetch();
+        if (state.isInternetReachable === false || !state.isConnected) {
+          setNoNetwork(true);
+        }
+      },
     });
   }, []);
 
