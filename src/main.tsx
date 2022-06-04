@@ -45,6 +45,8 @@ LogBox.ignoreLogs([
   'Warning: Each child in a list should have a unique "key" prop.',
   // TODO: need to patch rn video
   'ViewPropTypes will be removed from React Native',
+  // Was a recent change with fetch proxy work, but...
+  'Require cycle: node_modules/react-native/Libraries/Network/fetch.js',
 ]);
 
 const iconForTab =
@@ -125,7 +127,11 @@ const TabbedHome = () => {
       <Tab.Screen
         name="Compose"
         component={Composer}
-        options={{tabBarIcon: iconForTab('compose'), tabBarShowLabel: false}}
+        options={{
+          tabBarIcon: iconForTab('compose'),
+          tabBarShowLabel: false,
+          tabBarHideOnKeyboard: true,
+        }}
       />
       <Tab.Screen
         name="User"
@@ -202,7 +208,7 @@ export const App = () => {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <NoNetworkCheck disabled>
+        <NoNetworkCheck>
           <AuthProvider>
             <NotificationProvider>
               <SavedTimelineProvider>
