@@ -34,9 +34,9 @@ export const getTextStyle = (
 ): StyleProp<TextStyle> => {
   return [
     styles.text,
-    props.weight === 'bold' ? props.bold && styles.bold : undefined,
-    props.weight === 'semiBold' ? props.semiBold && styles.semiBold : undefined,
-    props.weight === 'medium' ? props.medium && styles.medium : undefined,
+    props.weight === 'bold' || props.bold ? styles.bold : undefined,
+    props.weight === 'semiBold' || props.semiBold ? styles.semiBold : undefined,
+    props.weight === 'medium' || props.medium ? styles.medium : undefined,
     getTextScaleStyle(props.scale),
     props.style,
     props.color ? {color: props.color} : undefined,
