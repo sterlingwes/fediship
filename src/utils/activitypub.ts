@@ -130,7 +130,7 @@ export const transformActivityPage = (
 
 export const isPerson = (object: any): object is APPerson =>
   typeof object === 'object' &&
-  ['Person', 'Service'].includes(object.type) &&
+  ['Person', 'Group', 'Service'].includes(object.type) &&
   object.outbox;
 
 export const isOutboxCollection = (
