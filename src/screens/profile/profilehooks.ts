@@ -105,12 +105,21 @@ export const useAPProfile = (
       );
       const userIdent = `${idParts.handle}@${idParts.host}`;
       let localAccount: TAccount | undefined;
+      let localTimelineByIdUrl: Record<string, TStatusMapped>;
       if (result.ok) {
         localAccount = await api.findAccount(userIdent);
         if (localAccount?.id) {
           const relationship = await api.getRelationship(localAccount.id);
           setLocalId(localAccount.id);
           setFollowing(relationship?.following);
+          const localTimeline = await api.getProfileTimeline(localAccount.id);
+          localTimelineByIdUrl = localTimeline.reduce(
+            (acc, status) => ({
+              ...acc,
+              [status.uri]: status,
+            }),
+            {} as Record<string, TStatusMapped>,
+          );
         }
 
         pinnedIds.current = result.pinnedIds;
@@ -134,8 +143,19 @@ export const useAPProfile = (
         emojis: emojis.current,
       };
 
+      const remoteIds = result.timeline.map(toot => toot.id);
+      const localIds = result.timeline.map(toot => toot.id);
+      console.log({
+        remoteIds,
+        localIds,
+        keys: Object.keys(localTimelineByIdUrl),
+      });
+
       setStatuses(
-        result.timeline.map(toot => ({...toot, emojis: emojis.current})),
+        result.timeline.map(toot => ({
+          ...(localTimelineByIdUrl[toot.id] ?? toot),
+          emojis: emojis.current,
+        })),
       );
       setProfile(profileWithEmojis);
     } catch (e: unknown) {

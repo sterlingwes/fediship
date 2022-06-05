@@ -198,6 +198,21 @@ export class MastodonApiClient extends HTTPClient {
     };
   }
 
+  async getProfileTimeline(accountId: string) {
+    const accountTimeline = await this.authedGet(
+      `accounts/${accountId}/statuses?exclude_replies=true`,
+    );
+
+    if (!accountTimeline.ok) {
+      return [] as TStatusMapped[];
+    }
+
+    return accountTimeline.body.map((status: TStatus) => ({
+      ...status,
+      sourceHost: this.host,
+    })) as TStatusMapped[];
+  }
+
   async getProfile(accountId: string) {
     let toots: TStatusMapped[] = [];
 
