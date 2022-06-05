@@ -54,6 +54,10 @@ const renderNode =
       );
     }
 
+    if (node.name === 'span' && node.attribs?.class === 'invisible') {
+      return null;
+    }
+
     if (node.name === 'a') {
       let prefix = node.children?.[0]?.data;
       let children = defaultRenderer(node.children as HTMLViewNode[], parent);

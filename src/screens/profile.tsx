@@ -269,10 +269,8 @@ const ProfileFields = ({
     <Box mt={10} pt={15} style={styles.fieldsContainer}>
       {fields.map(field => (
         <Box fd="row" mv={5}>
-          <Box mr={10} f={1} cv>
-            <Type scale="S" medium>
-              <HTMLView value={field.name} emojis={emojis} />
-            </Type>
+          <Box mr={10} f={1} style={{overflow: 'hidden'}} cv>
+            <HTMLView value={field.name} emojis={emojis} />
           </Box>
           {hasVerified && (
             <Box style={{minWidth: 30}}>
