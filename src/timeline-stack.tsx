@@ -5,7 +5,7 @@ import {RootStackParamList} from './types';
 import {Timeline} from './screens/timeline';
 import {TagTimeline} from './screens/tag-timeline';
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
-import {useScrollToTop} from '@react-navigation/native';
+import {DrawerActions, useScrollToTop} from '@react-navigation/native';
 import {Explore} from './screens/explore';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {DrawerHeaderLeft} from './components/Drawer/DrawerHeaderLeft';
@@ -44,7 +44,9 @@ const componentForTimelineType = (
   throw new Error(`Unsupported timeline saved: ${tl.name}`);
 };
 
-type ScreenRefHandle = {scrollToTop: () => void} | undefined;
+type ScreenRefHandle =
+  | {scrollToTop: () => void; getIsAtTop: () => boolean}
+  | undefined;
 type RefMap = Record<string, ScreenRefHandle>;
 
 const initialParamsForTimelineType = (tl: SavedTimeline) => {
@@ -79,6 +81,11 @@ export const TimelineStack = ({
         const index = tlRoute.state?.index;
         if (typeof index !== 'number') {
           // assume we're on local
+          const isTop = screenRefs.current?.Local?.getIsAtTop();
+          if (isTop) {
+            navigation.dispatch(DrawerActions.toggleDrawer());
+            return;
+          }
           screenRefs.current?.Local?.scrollToTop();
           return;
         }
@@ -88,6 +95,11 @@ export const TimelineStack = ({
         }
         const screenRef = screenRefs.current[childTab];
         if (screenRef) {
+          const isTop = screenRef.getIsAtTop();
+          if (isTop) {
+            navigation.dispatch(DrawerActions.toggleDrawer());
+            return;
+          }
           screenRef.scrollToTop();
         }
       },

@@ -68,6 +68,7 @@ export const StatusList = forwardRef(
 
     useImperativeHandle(ref, () => ({
       scrollToTop: () => scrollRef.current?.scrollToOffset({offset: 0}),
+      getIsAtTop: () => scrollOffsetRef.current === 0,
     }));
 
     const renderItem = useMemo(

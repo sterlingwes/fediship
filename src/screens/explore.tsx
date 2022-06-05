@@ -131,6 +131,7 @@ export const Explore = forwardRef(
     ref,
   ) => {
     const scrollRef = useRef<SectionList<MenuItem, MenuSection> | null>();
+    const scrollOffsetRef = useRef(0);
     const styles = useThemeStyle(styleCreator);
     const {getColor} = useThemeGetters();
     const {loading, peers, fetchPeers, filterPeers} = usePeers();
@@ -145,6 +146,7 @@ export const Explore = forwardRef(
           itemIndex: 0,
           viewPosition: 0,
         }),
+      getIsAtTop: () => scrollOffsetRef.current === 0,
     }));
 
     const sectionData = useMemo(
@@ -316,6 +318,9 @@ export const Explore = forwardRef(
           // @ts-expect-error type issue with renderSectionItem param values we don't use
           renderSectionHeader={renderSection}
           contentInsetAdjustmentBehavior="automatic"
+          onScroll={event => {
+            scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
+          }}
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={fetchPeers} />
           }
