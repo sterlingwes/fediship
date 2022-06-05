@@ -139,7 +139,8 @@ export const useTimeline = (timeline: 'home' | 'public') => {
     fetchTimeline(true);
   });
 
-  const reloading = typeof nextPage === 'undefined' && loading;
+  const reloading =
+    typeof nextPage === 'undefined' && loading && statuses.length;
   const loadingMore = !!nextPage && loading;
   const hasMore = nextPage !== false;
 
