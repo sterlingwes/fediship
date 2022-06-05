@@ -63,7 +63,7 @@ export const usePeers = () => {
       if (auth.host) {
         baseHosts.push(auth.host);
       }
-      setPeers(baseHosts.concat(peerList).sort());
+      fullPeersList.current = baseHosts.concat(peerList).sort();
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);
@@ -74,6 +74,11 @@ export const usePeers = () => {
 
   const filterPeers = useCallback(
     (q: string) => {
+      if (!q) {
+        setPeers([]);
+        return;
+      }
+
       if (!fullPeersList.current.length) {
         fullPeersList.current = peers.slice(0);
       }
@@ -174,6 +179,7 @@ export const useTagTimeline = (host: string, tag: string) => {
       } else {
         setStatuses(statuses.concat(result.list));
       }
+      console.log({nextPage, next: result?.pageInfo?.next});
       setNextPage(result?.pageInfo?.next ?? false);
     } catch (e: unknown) {
       console.error(e);

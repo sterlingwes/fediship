@@ -21,6 +21,7 @@ import {usePeers} from '../api';
 import {useInstanceTrends, useSearch} from '../api/explore.hooks';
 import {Box} from '../components/Box';
 import {SearchIcon} from '../components/icons/SearchIcon';
+import {XCircleIcon} from '../components/icons/XCircleIcon';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import {ProfileRowItem} from '../components/ProfileRowItem';
 import {SimpleListRow} from '../components/SimpleListRow';
@@ -209,21 +210,34 @@ export const Explore = forwardRef(
               )}
             </Box>
             <View style={styles.peerListHeader}>
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search accounts, statuses, tags & instances"
-                placeholderTextColor={getColor('primary')}
-                clearButtonMode="always"
-                autoCapitalize="none"
-                autoCorrect={false}
-                spellCheck={false}
-                onChangeText={text => {
-                  setSearchQuery(text);
-                  filterPeers(text);
-                }}
-                onSubmitEditing={onSearch}
-              />
-              <Box p={10} pl={20}>
+              <Box style={styles.searchContainer}>
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder="Search accounts, statuses, tags & instances"
+                  placeholderTextColor={getColor('primary')}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  spellCheck={false}
+                  onChangeText={text => {
+                    setSearchQuery(text);
+                    filterPeers(text);
+                  }}
+                  onSubmitEditing={onSearch}
+                  value={searchQuery}
+                />
+                <Box style={styles.searchClearBtn}>
+                  {!!searchQuery && (
+                    <XCircleIcon
+                      onPress={() => {
+                        setSearchQuery('');
+                        filterPeers('');
+                      }}
+                      color={getColor('blueAccent')}
+                    />
+                  )}
+                </Box>
+              </Box>
+              <Box ml={15} mt={5} style={styles.searchSubmit}>
                 {searching ? (
                   <LoadingSpinner />
                 ) : (
@@ -329,6 +343,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     backgroundColor: getColor('baseHighlight'),
   },
   peerListHeader: {
+    flex: 1,
     flexDirection: 'row',
     padding: 15,
     borderTopColor: getColor('base'),
@@ -347,6 +362,18 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   peerName: {
     maxWidth: (screenWidth * 2) / 3,
+  },
+  searchContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  searchClearBtn: {
+    position: 'absolute',
+    top: 7,
+    right: 10,
+  },
+  searchSubmit: {
+    flexShrink: 1,
   },
   searchInput: {
     flex: 1,

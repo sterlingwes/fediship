@@ -15,6 +15,7 @@ import {useAuth} from '../storage/auth';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatusMapped} from '../types';
+import {EmptyList} from './EmptyList';
 import {ErrorBoundary} from './ErrorBoundary';
 
 const createTimelineRenderer =
@@ -48,7 +49,9 @@ interface StatusListProps extends ReturnType<typeof useTimeline> {}
 export const StatusList = forwardRef(
   (
     {
+      hasMore,
       statuses,
+      loading,
       loadingMore,
       reloading,
       fetchTimeline,
@@ -110,7 +113,8 @@ export const StatusList = forwardRef(
             onScroll={event => {
               scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
             }}
-            ListFooterComponent={statuses.length ? LoadFooter : null}
+            ListEmptyComponent={() => <EmptyList loading={loading} />}
+            ListFooterComponent={statuses.length && hasMore ? LoadFooter : null}
           />
         </View>
       </ErrorBoundary>
