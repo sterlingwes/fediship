@@ -80,7 +80,7 @@ const iconForTab =
 const UStack = createNativeStackNavigator();
 
 const UserStack = () => (
-  <UStack.Navigator>
+  <UStack.Navigator screenOptions={{orientation: 'portrait_up'}}>
     <UStack.Screen
       name="UserMain"
       component={User}
@@ -149,7 +149,7 @@ const TabbedHome = () => {
 
 const LIStack = createNativeStackNavigator<RootStackParamList>();
 const LoggedInStack = () => (
-  <LIStack.Navigator>
+  <LIStack.Navigator screenOptions={{orientation: 'portrait_up'}}>
     <LIStack.Screen
       name="Tabs"
       component={TabbedHome}
@@ -170,6 +170,7 @@ const LoggedInStack = () => (
       options={{
         presentation: 'containedTransparentModal',
         headerShown: false,
+        orientation: 'all',
       }}
     />
   </LIStack.Navigator>
