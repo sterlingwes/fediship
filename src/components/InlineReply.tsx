@@ -76,7 +76,7 @@ export const InlineReply = ({
         {activeUser && (
           <Image
             source={{uri: activeUser?.avatar_static}}
-            style={styles.userAvatar}
+            style={[styles.userAvatar, replying && styles.userAvatarReplying]}
           />
         )}
         {!onlyReply && <ReplyLine visible height={25} stretch />}
@@ -140,5 +140,9 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     resizeMode: 'cover',
     borderRadius: 5,
     backgroundColor: getColor('baseAccent'),
+    opacity: 0.5,
+  },
+  userAvatarReplying: {
+    opacity: 1,
   },
 });
