@@ -67,28 +67,34 @@ export class ActivityPubClient extends HTTPClient {
           profileLink.href,
           result.body as APPerson,
         );
-        const outboxUrl = `${result.body.outbox}?page=true`;
-        const tlResult = await this.getProfileTimeline(outboxUrl, account);
-        let timeline: TStatusMapped[] = tlResult?.result ?? [];
 
         const pinnedIds: string[] = [];
-        if (result.body.featured) {
-          const featuredCollection = await this.get(result.body.featured);
-          if (isOrderedCollection(featuredCollection.body)) {
-            timeline = featuredCollection.body.orderedItems
-              .map(item => {
-                pinnedIds.push(item.id);
-                return transformActivity(item, {
-                  account,
-                  host: this.host,
-                  pinned: true,
-                });
-              })
-              .concat(
-                (tlResult?.result ?? []).filter(
-                  toot => !pinnedIds.includes(toot.id),
-                ),
-              );
+        let timeline: TStatusMapped[] = [];
+        let tlResult;
+
+        if (result.body.outbox) {
+          const outboxUrl = `${result.body.outbox}?page=true`;
+          tlResult = await this.getProfileTimeline(outboxUrl, account);
+          timeline = tlResult?.result ?? [];
+
+          if (result.body.featured) {
+            const featuredCollection = await this.get(result.body.featured);
+            if (isOrderedCollection(featuredCollection.body)) {
+              timeline = featuredCollection.body.orderedItems
+                .map(item => {
+                  pinnedIds.push(item.id);
+                  return transformActivity(item, {
+                    account,
+                    host: this.host,
+                    pinned: true,
+                  });
+                })
+                .concat(
+                  (tlResult?.result ?? []).filter(
+                    toot => !pinnedIds.includes(toot.id),
+                  ),
+                );
+            }
           }
         }
 
