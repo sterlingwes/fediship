@@ -47,63 +47,70 @@ export class ActivityPubClient extends HTTPClient {
       link => link.rel === 'self' && link.type.includes('json'),
     );
     if (profileLink) {
-      const result = await this.get(profileLink.href);
+      try {
+        const result = await this.get(profileLink.href);
 
-      if (!result.ok) {
-        const error = await result.getError();
-        return {
-          ok: false,
-          error: error ?? 'Failed to fetch remote profile',
-        };
-      } else if (result.status !== 200) {
-        return {
-          ok: false,
-          error: "User's instance does not support the ActivityPub protocol.",
-        };
-      }
-
-      if (isPerson(result.body)) {
-        const account = transformPerson(
-          profileLink.href,
-          result.body as APPerson,
-        );
-
-        const pinnedIds: string[] = [];
-        let timeline: TStatusMapped[] = [];
-        let tlResult;
-
-        if (result.body.outbox) {
-          const outboxUrl = `${result.body.outbox}?page=true`;
-          tlResult = await this.getProfileTimeline(outboxUrl, account);
-          timeline = tlResult?.result ?? [];
-
-          if (result.body.featured) {
-            const featuredCollection = await this.get(result.body.featured);
-            if (isOrderedCollection(featuredCollection.body)) {
-              timeline = featuredCollection.body.orderedItems
-                .map(item => {
-                  pinnedIds.push(item.id);
-                  return transformActivity(item, {
-                    account,
-                    host: this.host,
-                    pinned: true,
-                  });
-                })
-                .concat(
-                  (tlResult?.result ?? []).filter(
-                    toot => !pinnedIds.includes(toot.id),
-                  ),
-                );
-            }
-          }
+        if (!result.ok) {
+          const error = await result.getError();
+          return {
+            ok: false,
+            error: error ?? 'Failed to fetch remote profile',
+          };
+        } else if (result.status !== 200) {
+          return {
+            ok: false,
+            error: "User's instance does not support the ActivityPub protocol.",
+          };
         }
 
+        if (isPerson(result.body)) {
+          const account = transformPerson(
+            profileLink.href,
+            result.body as APPerson,
+          );
+
+          const pinnedIds: string[] = [];
+          let timeline: TStatusMapped[] = [];
+          let tlResult;
+
+          if (result.body.outbox) {
+            const outboxUrl = `${result.body.outbox}?page=true`;
+            tlResult = await this.getProfileTimeline(outboxUrl, account);
+            timeline = tlResult?.result ?? [];
+
+            if (result.body.featured) {
+              const featuredCollection = await this.get(result.body.featured);
+              if (isOrderedCollection(featuredCollection.body)) {
+                timeline = featuredCollection.body.orderedItems
+                  .map(item => {
+                    pinnedIds.push(item.id);
+                    return transformActivity(item, {
+                      account,
+                      host: this.host,
+                      pinned: true,
+                    });
+                  })
+                  .concat(
+                    (tlResult?.result ?? []).filter(
+                      toot => !pinnedIds.includes(toot.id),
+                    ),
+                  );
+              }
+            }
+          }
+
+          return {
+            ok: true,
+            account,
+            timeline,
+            pinnedIds,
+            pageInfo: tlResult?.pageInfo,
+          };
+        }
+      } catch (e) {
         return {
-          ok: true,
-          account,
-          timeline,
-          pinnedIds,
-          pageInfo: tlResult?.pageInfo,
+          ok: false,
+          error: (e as Error).message,
         };
       }
     }

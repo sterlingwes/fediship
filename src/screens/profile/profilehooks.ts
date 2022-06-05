@@ -105,30 +105,31 @@ export const useAPProfile = (
       );
       const userIdent = `${idParts.handle}@${idParts.host}`;
       let localAccount: TAccount | undefined;
+      let localTimeline: TStatusMapped[] | undefined;
       let localTimelineByIdUrl: Record<string, TStatusMapped>;
-      if (result.ok) {
-        localAccount = await api.findAccount(userIdent);
-        if (localAccount?.id) {
-          const relationship = await api.getRelationship(localAccount.id);
-          setLocalId(localAccount.id);
-          setFollowing(relationship?.following);
-          const localTimeline = await api.getProfileTimeline(localAccount.id);
-          localTimelineByIdUrl = localTimeline.reduce(
-            (acc, status) => ({
-              ...acc,
-              [status.uri]: status,
-            }),
-            {} as Record<string, TStatusMapped>,
-          );
-        }
+      localAccount = await api.findAccount(userIdent);
+      if (localAccount?.id) {
+        const relationship = await api.getRelationship(localAccount.id);
+        setLocalId(localAccount.id);
+        setFollowing(relationship?.following);
+        localTimeline = await api.getProfileTimeline(localAccount.id);
+        localTimelineByIdUrl = localTimeline.reduce(
+          (acc, status) => ({
+            ...acc,
+            [status.uri]: status,
+          }),
+          {} as Record<string, TStatusMapped>,
+        );
+      }
 
+      if (result.ok) {
         pinnedIds.current = result.pinnedIds;
         setNextPage(result.pageInfo?.next ?? false);
       }
 
       await fetchEmojis(idParts.host);
 
-      if (!result.ok) {
+      if (!result.ok && !localAccount) {
         const e = new Error(result.error);
         // @ts-ignore
         e.meta = {userIdent};
@@ -137,19 +138,28 @@ export const useAPProfile = (
         return;
       }
 
-      const profileWithEmojis = {
-        ...result.account,
-        ...localAccount,
-        emojis: emojis.current,
-      };
+      const mergedProfile = result.ok
+        ? {...result.account, ...localAccount}
+        : localAccount;
 
-      setStatuses(
-        result.timeline.map(toot => ({
-          ...(localTimelineByIdUrl[toot.id] ?? toot),
+      const timeline = result.ok
+        ? result.timeline.map(toot => ({
+            ...(localTimelineByIdUrl[toot.id] ?? toot),
+            emojis: emojis.current,
+          }))
+        : localTimeline?.map(toot => ({...toot, emojis: emojis.current}));
+
+      if (timeline) {
+        setStatuses(timeline);
+      }
+
+      if (mergedProfile) {
+        const profileWithEmojis = {
+          ...mergedProfile,
           emojis: emojis.current,
-        })),
-      );
-      setProfile(profileWithEmojis);
+        };
+        setProfile(profileWithEmojis);
+      }
     } catch (e: unknown) {
       console.error(e);
       setError(e as Error);
