@@ -140,7 +140,7 @@ export const useTimeline = (timeline: 'home' | 'public') => {
   });
 
   const reloading =
-    typeof nextPage === 'undefined' && loading && statuses.length;
+    typeof nextPage === 'undefined' && loading && !!statuses.length;
   const loadingMore = !!nextPage && loading;
   const hasMore = nextPage !== false;
 
