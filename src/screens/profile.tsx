@@ -273,7 +273,7 @@ const ProfileFields = ({
             <HTMLView value={field.name} emojis={emojis} />
           </Box>
           {hasVerified && (
-            <Box style={{minWidth: 30}}>
+            <Box style={{minWidth: 30}} cv>
               {field.verified_at && (
                 <CheckCircleIcon
                   color={getColor('contrastTextColor')}
@@ -283,7 +283,7 @@ const ProfileFields = ({
               )}
             </Box>
           )}
-          <Box mr={10} f={2}>
+          <Box mr={10} f={2} cv>
             <HTMLView value={field.value} emojis={emojis} />
           </Box>
         </Box>
