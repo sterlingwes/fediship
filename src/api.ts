@@ -179,7 +179,6 @@ export const useTagTimeline = (host: string, tag: string) => {
       } else {
         setStatuses(statuses.concat(result.list));
       }
-      console.log({nextPage, next: result?.pageInfo?.next});
       setNextPage(result?.pageInfo?.next ?? false);
     } catch (e: unknown) {
       console.error(e);

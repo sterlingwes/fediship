@@ -40,8 +40,6 @@ export const Authorize = ({
         return;
       }
 
-      console.log({app});
-
       setClientApp(host, app);
       setClientId(app.client_id);
     };
@@ -136,8 +134,6 @@ export const Authorize = ({
             uri: `https://${host}/oauth/authorize?${params.join('&')}`,
           }}
           onShouldStartLoadWithRequest={request => {
-            console.log({request});
-
             if (request.url.includes(authCodeParam)) {
               const [, code] = request.url.split(authCodeParam);
               setAuthCode(code);
