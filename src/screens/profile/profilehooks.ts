@@ -143,14 +143,6 @@ export const useAPProfile = (
         emojis: emojis.current,
       };
 
-      const remoteIds = result.timeline.map(toot => toot.id);
-      const localIds = result.timeline.map(toot => toot.id);
-      console.log({
-        remoteIds,
-        localIds,
-        keys: Object.keys(localTimelineByIdUrl),
-      });
-
       setStatuses(
         result.timeline.map(toot => ({
           ...(localTimelineByIdUrl[toot.id] ?? toot),
