@@ -420,7 +420,7 @@ const StatusActionBar = ({
   };
 
   return (
-    <Box mb={10} ph={20} fd="row" sb>
+    <Box mb={10} ph={20} pt={10} fd="row" sb>
       {loadingReblog ? (
         <LoadingSpinner />
       ) : (
