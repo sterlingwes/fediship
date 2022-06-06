@@ -128,6 +128,7 @@ export const useNotifications = () => {
 
   const fetching = useRef(false);
   const {tabRead, setTabRead} = useContext(NotificationContext);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [lastFetch, setLastFetch] = useState(getLastFetch());
   const [newNotifCount, setNewNotifCount] = useState(0);
   const [notifs, setNotifs] = useState<NotificationGroups>(getNotifGroup());
@@ -185,7 +186,8 @@ export const useNotifications = () => {
         fetching.current = false;
       };
 
-      fetchNotifs();
+      setLoadingNotifications(true);
+      fetchNotifs().then(() => setLoadingNotifications(false));
     }, [setNotifs, api, lastFetch, setTabRead]),
   );
 
@@ -210,6 +212,7 @@ export const useNotifications = () => {
     tabRead,
     readTab,
     readType,
+    loadingNotifications,
     watermarks: {
       current: initialWatermarks.current,
       saved: getNotifWatermarks(),
