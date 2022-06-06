@@ -174,6 +174,7 @@ const LoggedInStack = () => (
       component={PeerPicker}
       options={{
         presentation: 'fullScreenModal',
+        headerTitle: 'Choose Instance',
         headerRight: props => (
           <HeaderRightButton back={props.canGoBack} IconComponent={XIcon} />
         ),
