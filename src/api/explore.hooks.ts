@@ -44,5 +44,9 @@ export const useSearch = () => {
     [api, setResults],
   );
 
-  return {search, searchResults, searching};
+  const clearResults = useCallback(() => {
+    setResults(undefined);
+  }, [setResults]);
+
+  return {search, clearResults, searchResults, searching};
 };

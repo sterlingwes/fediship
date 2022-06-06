@@ -48,7 +48,7 @@ export const Searchbar = ({
         </Box>
       </Box>
       {onSearch && (
-        <Box ml={15} mt={5} style={styles.searchSubmit}>
+        <Box ml={12} style={styles.searchSubmit}>
           {searching ? (
             <LoadingSpinner />
           ) : (
@@ -73,11 +73,14 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   searchClearBtn: {
     position: 'absolute',
-    top: 7,
+    top: 0,
     right: 10,
+    height: '100%',
+    justifyContent: 'center',
   },
   searchSubmit: {
     flexShrink: 1,
+    justifyContent: 'center',
   },
   searchInput: {
     flex: 1,

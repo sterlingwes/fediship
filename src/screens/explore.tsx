@@ -13,17 +13,15 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
-  TextInput,
   View,
   SectionListRenderItem,
 } from 'react-native';
 import {usePeers} from '../api';
 import {useInstanceTrends, useSearch} from '../api/explore.hooks';
 import {Box} from '../components/Box';
-import {SearchIcon} from '../components/icons/SearchIcon';
-import {XCircleIcon} from '../components/icons/XCircleIcon';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import {ProfileRowItem} from '../components/ProfileRowItem';
+import {Searchbar} from '../components/SearchBar';
 import {SimpleListRow} from '../components/SimpleListRow';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
@@ -137,7 +135,7 @@ export const Explore = forwardRef(
     const {loading, peers, fetchPeers, filterPeers} = usePeers();
     const {loadingTags, tags} = useInstanceTrends('mastodon.online');
     const [searchQuery, setSearchQuery] = useState('');
-    const {search, searchResults, searching} = useSearch();
+    const {search, clearResults, searchResults, searching} = useSearch();
 
     useImperativeHandle(ref, () => ({
       scrollToTop: () =>
@@ -211,42 +209,21 @@ export const Explore = forwardRef(
                 </View>
               )}
             </Box>
-            <View style={styles.peerListHeader}>
-              <Box style={styles.searchContainer}>
-                <TextInput
-                  style={styles.searchInput}
-                  placeholder="Search accounts, statuses, tags & instances"
-                  placeholderTextColor={getColor('primary')}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  spellCheck={false}
-                  onChangeText={text => {
-                    setSearchQuery(text);
-                    filterPeers(text);
-                  }}
-                  onSubmitEditing={onSearch}
-                  value={searchQuery}
-                />
-                <Box style={styles.searchClearBtn}>
-                  {!!searchQuery && (
-                    <XCircleIcon
-                      onPress={() => {
-                        setSearchQuery('');
-                        filterPeers('');
-                      }}
-                      color={getColor('blueAccent')}
-                    />
-                  )}
-                </Box>
-              </Box>
-              <Box ml={15} mt={5} style={styles.searchSubmit}>
-                {searching ? (
-                  <LoadingSpinner />
-                ) : (
-                  <SearchIcon onPress={onSearch} color={getColor('primary')} />
-                )}
-              </Box>
-            </View>
+            <Searchbar
+              placeholder="Search accounts, statuses, tags & instances"
+              onSearch={onSearch}
+              onChangeText={text => {
+                setSearchQuery(text);
+                filterPeers(text);
+              }}
+              onClear={() => {
+                setSearchQuery('');
+                filterPeers('');
+                clearResults();
+              }}
+              value={searchQuery}
+              searching={searching}
+            />
           </View>
         );
       }
