@@ -47,7 +47,7 @@ export const useFollowers = (source = 'mine') => {
   return {accounts, fetchFollowers, reloadFollowers, error, loading};
 };
 
-export const usePeers = () => {
+export const usePeers = (startEmpty = true, initialFilter = '') => {
   const auth = useAuth();
   const api = useMyMastodonInstance();
   const [loading, setLoading] = useState(false);
@@ -64,6 +64,13 @@ export const usePeers = () => {
         baseHosts.push(auth.host);
       }
       fullPeersList.current = baseHosts.concat(peerList).sort();
+      if (!startEmpty) {
+        setPeers(fullPeersList.current);
+      }
+
+      if (initialFilter) {
+        filterPeers(initialFilter);
+      }
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message);
@@ -74,7 +81,7 @@ export const usePeers = () => {
 
   const filterPeers = useCallback(
     (q: string) => {
-      if (!q) {
+      if (startEmpty && !q) {
         setPeers([]);
         return;
       }
@@ -89,7 +96,7 @@ export const usePeers = () => {
         ),
       );
     },
-    [peers, setPeers],
+    [peers, startEmpty, setPeers],
   );
 
   useMount(() => {

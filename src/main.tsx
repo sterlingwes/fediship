@@ -37,6 +37,10 @@ import {useUserProfile} from './storage/user';
 import {Composer} from './screens/composer';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {NoNetworkCheck} from './components/NoNetworkCheck';
+import {TagTimelinePrefs} from './screens/settings/tag-timeline-prefs';
+import {PeerPicker} from './screens/settings/peer-picker';
+import {HeaderRightButton} from './components/HeaderRightButton';
+import {XIcon} from './components/icons/XIcon';
 
 const Tab = createBottomTabNavigator();
 
@@ -164,6 +168,17 @@ const LoggedInStack = () => (
     <LIStack.Screen name="Thread" component={Thread} />
     <LIStack.Screen name="PeerProfile" component={PeerProfile} />
     <LIStack.Screen name="TagTimeline" component={TagTimeline} />
+    <LIStack.Screen name="TagTimelinePrefs" component={TagTimelinePrefs} />
+    <LIStack.Screen
+      name="PeerPicker"
+      component={PeerPicker}
+      options={{
+        presentation: 'fullScreenModal',
+        headerRight: props => (
+          <HeaderRightButton back={props.canGoBack} IconComponent={XIcon} />
+        ),
+      }}
+    />
     <LIStack.Screen
       name="ImageViewer"
       component={ImageViewer}

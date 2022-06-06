@@ -4,8 +4,8 @@ import React, {useState} from 'react';
 import {SavedTimeline, useSavedTimelines} from '../storage/saved-timelines';
 import {RootStackParamList} from '../types';
 import {HeaderRightButton} from './HeaderRightButton';
-import {MinusCircleIcon} from './icons/MinusCircleIcon';
 import {PlusCircleIcon} from './icons/PlusCircleIcon';
+import {SettingsIcon} from './icons/SettingsIcon';
 
 export const SaveTimelineButton = ({
   params,
@@ -16,16 +16,22 @@ export const SaveTimelineButton = ({
 }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const {timelines, addSavedTimeline, removeSavedTimeline} =
-    useSavedTimelines();
+  const {timelines, addSavedTimeline} = useSavedTimelines();
   const [added, setAdded] = useState(
     !!timelines.find(tl => tl.name === params.name),
   );
   const onPress = () => {
     if (added) {
-      removeSavedTimeline(params.name, () => {
-        const next = nextRoute ?? ('Local' as keyof RootStackParamList);
-        navigation.navigate(next);
+      const {host, tag} = params.tag ?? {};
+      if (!host || !tag) {
+        return;
+      }
+      const next = nextRoute ?? ('Local' as keyof RootStackParamList);
+      navigation.push('TagTimelinePrefs', {
+        name: params.name,
+        host,
+        tag,
+        nextRoute: next,
       });
       return;
     }
@@ -33,6 +39,6 @@ export const SaveTimelineButton = ({
     setAdded(!added);
     addSavedTimeline(params);
   };
-  const Icon = added ? MinusCircleIcon : PlusCircleIcon;
+  const Icon = added ? SettingsIcon : PlusCircleIcon;
   return <HeaderRightButton onPress={onPress} IconComponent={Icon} />;
 };

@@ -65,21 +65,23 @@ export const DrawerMenu = ({
         <MapIcon {...iconSize('14')} color={getColor('baseTextColor')} />
         {'  Explore'}
       </DrawerButton>
-      {timelines.map(tl => {
-        const Icon = iconForType(tl);
-        return (
-          <DrawerButton
-            key={tl.name}
-            active={currentRoute === tl.name}
-            onPress={() => onPress(tl.name as keyof RootStackParamList)}>
-            {Icon && (
-              <Icon {...iconSize('14')} color={getColor('baseTextColor')} />
-            )}
-            {'  '}
-            {tl.name}
-          </DrawerButton>
-        );
-      })}
+      {timelines
+        .filter(t => !t.deleted)
+        .map(tl => {
+          const Icon = iconForType(tl);
+          return (
+            <DrawerButton
+              key={tl.name}
+              active={currentRoute === tl.name}
+              onPress={() => onPress(tl.name as keyof RootStackParamList)}>
+              {Icon && (
+                <Icon {...iconSize('14')} color={getColor('baseTextColor')} />
+              )}
+              {'  '}
+              {tl.name}
+            </DrawerButton>
+          );
+        })}
       <View style={styles.spacer} />
     </ScrollView>
   );

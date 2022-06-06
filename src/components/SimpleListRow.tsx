@@ -9,9 +9,11 @@ import {Type} from './Type';
 export const SimpleListRow = ({
   onPress,
   label,
+  hideChevron,
 }: {
   onPress: () => any;
   label: string;
+  hideChevron?: boolean;
 }) => {
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
@@ -23,7 +25,7 @@ export const SimpleListRow = ({
       <Type scale="S" style={styles.label} numberOfLines={1}>
         {label}
       </Type>
-      <ChevronInverted color={getColor('primary')} />
+      {!hideChevron && <ChevronInverted color={getColor('primary')} />}
     </TouchableOpacity>
   );
 };

@@ -137,7 +137,7 @@ export interface Emoji {
 
 interface TimelineParams {
   timeline: 'home' | 'public';
-  ref: Ref<unknown>;
+  ref?: Ref<unknown>;
 }
 
 export type RootStackParamList = {
@@ -153,6 +153,13 @@ export type RootStackParamList = {
   Authorize: {host: string; scope: string};
   UserMain: undefined;
   TagTimeline: {host: string; tag: string};
+  TagTimelinePrefs: {
+    name: string;
+    host: string;
+    tag: string;
+    nextRoute: string;
+  };
+  PeerPicker: undefined;
   FavouritesTimeline: {type: 'favourites' | 'bookmarks'};
   Profile: {
     account?: TAccount;

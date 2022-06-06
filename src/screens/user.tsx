@@ -11,6 +11,7 @@ import {
 import {ChevronInverted} from '../components/icons/Chevron';
 import {Type} from '../components/Type';
 import {useAuth} from '../storage/auth';
+import {useSavedTimelines} from '../storage/saved-timelines';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {NotificationGroups, RootStackParamList} from '../types';
@@ -66,10 +67,12 @@ export const User = ({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Explore'>) => {
   const auth = useAuth();
+  const [clearedTimelines, setClearedTimelines] = useState(false);
   const {notifs, readTab, readType} = useNotifications();
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
   const [loggingOut, setLoggingOut] = useState(false);
+  const {clearAllSavedTimelines} = useSavedTimelines();
 
   useMount(() => readTab());
 
@@ -157,6 +160,19 @@ export const User = ({
             label: 'Appearance',
             onPress: () => navigation.push('AppearanceSettings'),
           },
+          {
+            label: clearedTimelines
+              ? 'Clear Saved Timelines ✅'
+              : 'Clear Saved Timelines',
+            hideChevron: true,
+            onPress: () => {
+              if (clearedTimelines) {
+                return;
+              }
+              clearAllSavedTimelines();
+              setClearedTimelines(true);
+            },
+          },
         ],
       },
       {
@@ -175,7 +191,16 @@ export const User = ({
         ],
       },
     ],
-    [navigation, notifs, readType, setLoggingOut, auth, loggingOut],
+    [
+      navigation,
+      notifs,
+      readType,
+      setLoggingOut,
+      auth,
+      loggingOut,
+      clearedTimelines,
+      clearAllSavedTimelines,
+    ],
   );
 
   const renderItem: ListRenderItem<typeof menuItems[0]['data'][0]> = ({
