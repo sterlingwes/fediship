@@ -14,6 +14,7 @@ import {
 import {useErrorReporter} from '../api/worker.hooks';
 import {AvatarImage} from '../components/AvatarImage';
 import {Box} from '../components/Box';
+import {EmojiName} from '../components/EmojiName';
 import {EmptyList} from '../components/EmptyList';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {HTMLView} from '../components/HTMLView';
@@ -116,7 +117,9 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
           </View>
         )}
         <View style={styles.headerDisplayName}>
-          <HTMLView value={display_name} emojis={emojis} />
+          <Type scale="S" numberOfLines={1}>
+            <EmojiName name={display_name} emojis={emojis} />
+          </Type>
         </View>
         <Type scale="S" medium style={styles.headerUsername}>
           {bot ? '🤖 ' : ''}@{username}@{instanceHostName(url)}

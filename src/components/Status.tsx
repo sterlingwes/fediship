@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Pressable,
   View,
-  ImageStyle,
   Platform,
   Share,
 } from 'react-native';
@@ -16,6 +15,7 @@ import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {Emoji, TAccount, TStatus} from '../types';
 import {timeAgo} from '../utils/dates';
 import {Box} from './Box';
+import {EmojiName} from './EmojiName';
 import {HTMLView} from './HTMLView';
 import {BookmarkIcon} from './icons/BookmarkIcon';
 import {BoostIcon} from './icons/BoostIcon';
@@ -64,54 +64,6 @@ interface StatusHeaderProps {
   booster: string | undefined;
   pinned: boolean | undefined;
 }
-
-const emojiImgStyle = {width: 15, height: 15} as ImageStyle;
-
-const EmojiName = ({
-  name,
-  emojis,
-}: {
-  name: string;
-  emojis: Emoji[] | undefined;
-}) => {
-  const splitParts = useMemo(() => {
-    const emojiLookup = (emojis ?? []).reduce((acc, emoji) => {
-      return {
-        ...acc,
-        [emoji.shortcode]: emoji,
-      };
-    }, {} as Record<string, Emoji>);
-    return name.split(':').map(part => {
-      const emojiMatch = emojiLookup[part];
-      if (emojiMatch) {
-        return emojiMatch;
-      }
-      return part;
-    });
-  }, [name, emojis]);
-
-  return (
-    <>
-      {splitParts.map((part, i) => {
-        if (typeof part === 'string') {
-          return (
-            <Type key={i} scale="S">
-              {part}
-            </Type>
-          );
-        } else {
-          return (
-            <Image
-              key={i}
-              source={{uri: part.static_url}}
-              style={emojiImgStyle}
-            />
-          );
-        }
-      })}
-    </>
-  );
-};
 
 const StatusHeader = (props: StatusHeaderProps) => {
   const styles = useThemeStyle(styleCreator);
