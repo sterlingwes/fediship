@@ -206,7 +206,8 @@ export const useTagTimeline = (host: string, tag: string) => {
   });
 
   const loadingMore = !!nextPage && loading;
-  const reloading = typeof nextPage === 'undefined' && loading;
+  const reloading =
+    typeof nextPage === 'undefined' && loading && statuses.length;
   const hasMore = nextPage !== false;
 
   return {
