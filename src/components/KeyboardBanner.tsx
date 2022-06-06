@@ -70,16 +70,24 @@ export const KeyboardBannerProvider = ({children}: {children: ReactNode}) => {
     };
   });
 
-  const show = useCallback(() => setVisible(true), [setVisible]);
+  const show = useCallback(() => {
+    if (visible) {
+      return;
+    }
+    setVisible(true);
+  }, [setVisible, visible]);
 
   const hide = useCallback(
     (hideKeyboard = true) => {
+      if (!visible) {
+        return;
+      }
       setVisible(false);
       if (hideKeyboard) {
         Keyboard.dismiss();
       }
     },
-    [setVisible],
+    [setVisible, visible],
   );
 
   return (

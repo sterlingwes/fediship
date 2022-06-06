@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 import {nanoid} from '../utils/nanoid';
 
@@ -12,11 +12,11 @@ import {
 } from '../components/KeyboardBanner';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
-import {useMount} from '../utils/hooks';
 import {flex} from '../utils/styles';
 import {screenHeight} from '../dimensions';
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {RootStackParamList} from '../types';
+import {useFocusEffect} from '@react-navigation/native';
 
 export const Composer = ({
   navigation,
@@ -27,10 +27,11 @@ export const Composer = ({
   const styles = useThemeStyle(styleCreator);
   const idempotency = useRef(nanoid());
 
-  useMount(() => {
-    keyboardBanner.show();
-    return () => keyboardBanner.hide();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      keyboardBanner.show();
+    }, [keyboardBanner]),
+  );
 
   useEffect(() => {
     const onSend = async () => {

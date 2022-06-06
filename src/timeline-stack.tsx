@@ -1,15 +1,20 @@
-import React, {MutableRefObject, useMemo, useRef} from 'react';
+import React, {MutableRefObject, useCallback, useMemo, useRef} from 'react';
 import {SavedTimeline, useSavedTimelines} from './storage/saved-timelines';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from './types';
 import {Timeline} from './screens/timeline';
 import {TagTimeline} from './screens/tag-timeline';
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
-import {DrawerActions, useScrollToTop} from '@react-navigation/native';
+import {
+  DrawerActions,
+  useFocusEffect,
+  useScrollToTop,
+} from '@react-navigation/native';
 import {Explore} from './screens/explore';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {DrawerHeaderLeft} from './components/Drawer/DrawerHeaderLeft';
 import {DrawerMenu} from './components/Drawer/DrawerMenu';
+import {useKeyboardBanner} from './components/KeyboardBanner';
 
 const componentForTimelineType = (
   tl: SavedTimeline,
@@ -67,7 +72,14 @@ export const TimelineStack = ({
   navigation,
 }: BottomTabScreenProps<RootStackParamList>) => {
   const {timelines} = useSavedTimelines();
+  const keyboardBanner = useKeyboardBanner();
   const screenRefs = useRef<RefMap>({});
+
+  useFocusEffect(
+    useCallback(() => {
+      keyboardBanner.hide();
+    }, [keyboardBanner]),
+  );
 
   useScrollToTop(
     useRef({

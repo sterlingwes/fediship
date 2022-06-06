@@ -118,7 +118,10 @@ const TabbedHome = () => {
   const {newNotifCount, tabRead} = useNotifications();
   return (
     <Tab.Navigator
-      screenOptions={{tabBarStyle: {height: tabBarHeight + bottom}}}>
+      screenOptions={{
+        tabBarStyle: {height: tabBarHeight + bottom},
+        tabBarHideOnKeyboard: true,
+      }}>
       <Tab.Screen
         name="Timelines"
         component={TimelineStack}
@@ -134,7 +137,6 @@ const TabbedHome = () => {
         options={{
           tabBarIcon: iconForTab('compose'),
           tabBarShowLabel: false,
-          tabBarHideOnKeyboard: true,
         }}
       />
       <Tab.Screen

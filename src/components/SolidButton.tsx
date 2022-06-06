@@ -47,7 +47,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     shadowOpacity: 0.3,
     shadowRadius: 3,
     shadowOffset: {width: 0, height: 2},
-    elevation: 4,
+    elevation: 6,
   },
   buttonLabel: {
     color: getColor('baseTextColor'),
