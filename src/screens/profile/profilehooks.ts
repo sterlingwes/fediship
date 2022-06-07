@@ -138,9 +138,7 @@ export const useAPProfile = (
         return;
       }
 
-      const mergedProfile = result.ok
-        ? {...result.account, ...localAccount}
-        : localAccount;
+      const remoteOrLocalProfile = result.ok ? result.account : localAccount;
 
       const timeline = result.ok
         ? result.timeline.map(toot => ({
@@ -153,9 +151,9 @@ export const useAPProfile = (
         setStatuses(timeline);
       }
 
-      if (mergedProfile) {
+      if (remoteOrLocalProfile) {
         const profileWithEmojis = {
-          ...mergedProfile,
+          ...remoteOrLocalProfile,
           emojis: emojis.current,
         };
         setProfile(profileWithEmojis);
