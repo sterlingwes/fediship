@@ -13,7 +13,7 @@ export const markFetch = () => {
 
 export const markTabRead = () => storage.set('tab_read', Date.now());
 
-export const setNotifGroup = (notifGroup: NotificationGroups) =>
+export const storeNotifGroup = (notifGroup: NotificationGroups) =>
   storage.set('notif_group', JSON.stringify(notifGroup));
 
 export const getNotifGroup = (): NotificationGroups =>
@@ -21,7 +21,7 @@ export const getNotifGroup = (): NotificationGroups =>
 
 export type NotifWatermarks = Record<keyof NotificationGroups, string>;
 
-export const setNotifWatermarks = (watermarks: NotifWatermarks) => {
+export const storeNotifWatermarks = (watermarks: NotifWatermarks) => {
   storage.set('notif_watermarks', JSON.stringify(watermarks));
 };
 

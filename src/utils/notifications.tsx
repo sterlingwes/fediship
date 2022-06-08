@@ -17,8 +17,8 @@ import {
   markFetch,
   markTabRead,
   NotifWatermarks,
-  setNotifGroup,
-  setNotifWatermarks,
+  storeNotifGroup,
+  storeNotifWatermarks,
 } from '../storage/notifications';
 
 const generateWatermarks = (notifs: NotificationGroups) => {
@@ -154,33 +154,38 @@ export const useNotifications = () => {
         markFetch();
         setLastFetch(Date.now());
 
-        const notifications = await api.getNotifications();
-        const supported = filterNotifTypes(notifications);
-        if (supported && supported.length) {
-          const grouped = groupTypes(supported);
-          const groupedFiltered = filterByWatermarks(
-            grouped,
-            initialWatermarks.current,
-          );
-          setNotifs(groupedFiltered);
-          const count = countNotifs(groupedFiltered);
-          setNewNotifCount(count);
-          setNotifGroup(groupedFiltered);
+        try {
+          const notifications = await api.getNotifications();
+          const supported = filterNotifTypes(notifications);
+          if (supported && supported.length) {
+            const grouped = groupTypes(supported);
+            const groupedFiltered = filterByWatermarks(
+              grouped,
+              initialWatermarks.current,
+            );
 
-          const newWatermarks = generateWatermarks(grouped);
+            storeNotifGroup(groupedFiltered);
 
-          if (initialWatermarks.current == null) {
-            // initial load, skip checking watermarks until next fetch
-            initialWatermarks.current = newWatermarks;
-            setNotifWatermarks(newWatermarks);
-            return;
+            const newWatermarks = generateWatermarks(grouped);
+
+            if (initialWatermarks.current == null) {
+              // initial load, skip checking watermarks until next fetch
+              initialWatermarks.current = newWatermarks;
+              storeNotifWatermarks(newWatermarks);
+              return;
+            }
+
+            if (compareWatermarks(initialWatermarks.current, newWatermarks)) {
+              initialWatermarks.current = newWatermarks;
+              storeNotifWatermarks(newWatermarks);
+              const count = countNotifs(groupedFiltered);
+              setNewNotifCount(count);
+              setTabRead(false);
+              setNotifs(groupedFiltered);
+            }
           }
-
-          if (compareWatermarks(initialWatermarks.current, newWatermarks)) {
-            initialWatermarks.current = newWatermarks;
-            setNotifWatermarks(newWatermarks);
-            setTabRead(false);
-          }
+        } catch (e) {
+          console.error(e);
         }
 
         fetching.current = false;
@@ -200,9 +205,9 @@ export const useNotifications = () => {
     delete notifs[type];
     const newGroup = {...notifs};
     setNotifs(newGroup);
-    setNotifGroup(newGroup);
+    storeNotifGroup(newGroup);
     const watermarks = generateWatermarks(notifs);
-    setNotifWatermarks(watermarks);
+    storeNotifWatermarks(watermarks);
     initialWatermarks.current = watermarks;
   };
 
