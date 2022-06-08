@@ -1,0 +1,71 @@
+diff --git a/node_modules/@react-navigation/drawer/src/views/modern/Drawer.tsx b/node_modules/@react-navigation/drawer/src/views/modern/Drawer.tsx
+index 90155b4..167e26a 100644
+--- a/node_modules/@react-navigation/drawer/src/views/modern/Drawer.tsx
++++ b/node_modules/@react-navigation/drawer/src/views/modern/Drawer.tsx
+@@ -30,6 +30,12 @@ import Overlay from './Overlay';
+ const SWIPE_DISTANCE_MINIMUM = 5;
+ const DEFAULT_DRAWER_WIDTH = '80%';
+ 
++interface ToggleOptions {
++  open: boolean;
++  isUserInitiated: boolean;
++  velocity?: number;
++};
++
+ const minmax = (value: number, start: number, end: number) => {
+   'worklet';
+ 
+@@ -148,7 +154,7 @@ export default function Drawer({
+   const gestureState = useSharedValue<GestureState>(GestureState.UNDETERMINED);
+ 
+   const toggleDrawer = React.useCallback(
+-    (open: boolean, velocity?: number) => {
++    ({open, isUserInitiated, velocity}: ToggleOptions) => {
+       'worklet';
+ 
+       const translateX = getDrawerTranslationX(open);
+@@ -167,6 +173,10 @@ export default function Drawer({
+           restSpeedThreshold: 0.01,
+         },
+         () => {
++          if (!isUserInitiated) {
++            return;
++          }
++
+           if (translationX.value === getDrawerTranslationX(true)) {
+             runOnJS(onOpen)();
+           } else if (translationX.value === getDrawerTranslationX(false)) {
+@@ -178,7 +188,10 @@ export default function Drawer({
+     [getDrawerTranslationX, onClose, onOpen, touchStartX, touchX, translationX]
+   );
+ 
+-  React.useEffect(() => toggleDrawer(open), [open, toggleDrawer]);
++  React.useEffect(
++    () => toggleDrawer({ open, isUserInitiated: false }),
++    [open, toggleDrawer]
++  );
+ 
+   const onGestureEvent = useAnimatedGestureHandler<
+     PanGestureHandlerGestureEvent,
+@@ -210,7 +223,11 @@ export default function Drawer({
+               (event.velocityX === 0 ? event.translationX : event.velocityX) < 0
+           : open;
+ 
+-      toggleDrawer(nextOpen, event.velocityX);
++      toggleDrawer({
++        open: nextOpen,
++        isUserInitiated: true,
++        velocity: event.velocityX,
++      });
+     },
+     onFinish: () => {
+       runOnJS(onGestureFinish)();
+@@ -353,7 +370,7 @@ export default function Drawer({
+             {drawerType !== 'permanent' ? (
+               <Overlay
+                 progress={progress}
+-                onPress={() => toggleDrawer(false)}
++                onPress={() => toggleDrawer({open: false, isUserInitiated: true})}
+                 style={overlayStyle}
+               />
+             ) : null}
