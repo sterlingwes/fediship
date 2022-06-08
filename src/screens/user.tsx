@@ -42,12 +42,12 @@ const NewRowBadge = () => {
 
 const withNewBadge = (
   notifs: NotificationGroups,
-  type: keyof NotificationGroups,
+  types: Array<keyof NotificationGroups>,
   label: string,
 ) => (
   <>
     {label}
-    {notifs[type]?.length ? <NewRowBadge /> : null}
+    {types.some(type => notifs[type]?.length) ? <NewRowBadge /> : null}
   </>
 );
 
@@ -82,16 +82,16 @@ export const User = ({
         title: 'Relationships',
         data: [
           {
-            label: withNewBadge(notifs, 'status', 'Following'),
-            newCount: notifs.status?.length,
+            label: withNewBadge(notifs, ['status'], 'Following'),
+            newCount: notifs.status?.length ?? 0,
             onPress: () => {
               readType('status');
               navigation.push('FollowerList', {source: 'theirs'});
             },
           },
           {
-            label: withNewBadge(notifs, 'follow', 'Followers'),
-            newCount: notifs.follow?.length,
+            label: withNewBadge(notifs, ['follow'], 'Followers'),
+            newCount: notifs.follow?.length ?? 0,
             onPress: () => {
               readType('follow');
               navigation.push('FollowerList', {source: 'mine'});
@@ -103,7 +103,7 @@ export const User = ({
         title: 'Toots',
         data: [
           {
-            label: withNewBadge(notifs, 'favourite', 'Favorites'),
+            label: 'Favorites',
             onPress: () => {
               readType('favourite');
               navigation.push('FavouritesTimeline', {type: 'favourites'});
@@ -115,11 +115,15 @@ export const User = ({
               navigation.push('FavouritesTimeline', {type: 'bookmarks'}),
           },
           {
-            label: 'Your Activity',
+            label: withNewBadge(
+              notifs,
+              ['mention', 'favourite', 'reblog'],
+              'Your Activity',
+            ),
             newCount:
-              notifs.mention?.length +
-              notifs.favourite?.length +
-              notifs.reblog?.length,
+              (notifs.mention?.length ?? 0) +
+              (notifs.favourite?.length ?? 0) +
+              (notifs.reblog?.length ?? 0),
             hideChevron: true,
             onPress: () => {},
           },
@@ -175,21 +179,25 @@ export const User = ({
           },
         ],
       },
-      {
-        title: 'Testing',
-        data: [
-          {
-            label: 'Clear Storage',
-            hideChevron: true,
-            onPress: () => clearStorage(),
-          },
-          {
-            label: 'Reload Bundle',
-            hideChevron: true,
-            onPress: () => DevSettings.reload(),
-          },
-        ],
-      },
+      ...(__DEV__
+        ? [
+            {
+              title: 'Testing',
+              data: [
+                {
+                  label: 'Clear Storage',
+                  hideChevron: true,
+                  onPress: () => clearStorage(),
+                },
+                {
+                  label: 'Reload Bundle',
+                  hideChevron: true,
+                  onPress: () => DevSettings.reload(),
+                },
+              ],
+            },
+          ]
+        : []),
     ],
     [
       navigation,
