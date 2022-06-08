@@ -150,6 +150,7 @@ export const TimelineStack = ({
       screenOptions={{
         swipeEdgeWidth: 60,
         swipeEnabled: true,
+        drawerType: 'slide',
         headerLeft: DrawerHeaderLeft,
       }}>
       {timelines.map(tl => (
