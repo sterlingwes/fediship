@@ -21,6 +21,7 @@ export interface TypeProps extends TextProps {
   semiBold?: boolean;
   medium?: boolean;
   weight?: FontWeight;
+  center?: boolean;
 }
 
 export const getTextScaleStyle = (scale: TypeProps['scale']) => {
@@ -38,6 +39,7 @@ export const getTextStyle = (
     props.weight === 'semiBold' || props.semiBold ? styles.semiBold : undefined,
     props.weight === 'medium' || props.medium ? styles.medium : undefined,
     getTextScaleStyle(props.scale),
+    props.center && {textAlign: 'center'},
     props.style,
     props.color ? {color: props.color} : undefined,
   ];

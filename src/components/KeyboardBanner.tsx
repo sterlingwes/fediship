@@ -5,11 +5,12 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import {Keyboard, KeyboardAvoidingView, Platform, View} from 'react-native';
+import {Keyboard, KeyboardAvoidingView, Platform} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {useMount} from '../utils/hooks';
 import {flex} from '../utils/styles';
+import {Box} from './Box';
 import {SolidButton} from './SolidButton';
 
 const KeyboardBannerContext = createContext({
@@ -126,12 +127,19 @@ const KeyboardBanner = ({
     }
   }, [setLoading, onPressSend, onHide]);
 
+  const onPressClose = useCallback(() => {
+    onHide();
+  }, [onHide]);
+
   return (
-    <View style={styles.container}>
-      <SolidButton loading={loading} onPress={onPress}>
+    <Box fd="row" style={styles.container}>
+      <SolidButton onPress={onPressClose} style={flex}>
+        Close
+      </SolidButton>
+      <SolidButton loading={loading} onPress={onPress} style={flex}>
         Send
       </SolidButton>
-    </View>
+    </Box>
   );
 };
 

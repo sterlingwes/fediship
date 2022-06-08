@@ -1,45 +1,48 @@
-import {ReactNativeZoomableView} from '@openspacelabs/react-native-zoomable-view';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
-import {StyleSheet, View, ViewStyle} from 'react-native';
-import Video from 'react-native-video';
+import {Image, Keyboard, Platform, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {OutlineButton} from '../components/OutlineButton';
-import {RedundantImage} from '../components/RedundantImage';
-import {screenHeight, screenWidth} from '../dimensions';
+import {screenHeight} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import {Box} from '../components/Box';
-import {Type} from '../components/Type';
-
-const ZoomPanView = ({
-  children,
-  style,
-}: {
-  children: React.ReactNode;
-  style: ViewStyle;
-}) => (
-  <ReactNativeZoomableView
-    style={style}
-    maxZoom={3}
-    minZoom={0.5}
-    initialZoom={1}
-    bindToBorders>
-    {children}
-  </ReactNativeZoomableView>
-);
+import {flex} from '../utils/styles';
+import {Input} from '../components/Input';
+import {useMount} from '../utils/hooks';
 
 const imagePadding = 20;
 
-export const ImageViewer = (
-  props: NativeStackScreenProps<RootStackParamList, 'ImageViewer'>,
+const pendingCaptions: Record<string, string> = {};
+
+export const getPendingCaptions = () => pendingCaptions;
+
+export const ImageCaptioner = (
+  props: NativeStackScreenProps<RootStackParamList, 'ImageCaptioner'>,
 ) => {
   const [loading, setLoading] = useState(false);
   const styles = useThemeStyle(styleCreator);
-  const {index, attachments} = props.route.params;
-  const [currentIndex, setIndex] = useState(index);
+  const {attachments} = props.route.params;
+  const [currentIndex, setIndex] = useState(0);
+  const [keyboardShown, setKeyboardShown] = useState(false);
+
+  useMount(() => {
+    const showSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setKeyboardShown(true),
+    );
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardShown(false),
+    );
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  });
 
   const onPrevious = () => {
     setIndex(currentIndex - 1);
@@ -49,45 +52,34 @@ export const ImageViewer = (
     setIndex(currentIndex + 1);
   };
 
-  const target = attachments[currentIndex];
-  const Wrapper = target.type === 'image' ? ZoomPanView : View;
+  const {uri, width, height} = attachments[currentIndex];
 
   return (
     <View style={styles.container}>
       <View style={styles.shadowBox} />
-      <Wrapper style={styles.zoomView}>
-        {['video', 'gifv'].includes(target.type) ? (
-          <Video
-            controls
-            repeat={target.type === 'gifv'}
-            source={{uri: target.url}}
-            poster={target.preview_url}
-            posterResizeMode="cover"
-            style={{
-              width: screenWidth - imagePadding * 2,
-              aspectRatio:
-                target.meta.original.width / target.meta.original.height,
-            }}
-          />
-        ) : (
-          <RedundantImage
+      {!keyboardShown && (
+        <Box p={imagePadding} style={flex}>
+          <Image
             onLoadStart={() => setLoading(true)}
             onLoadEnd={() => setLoading(false)}
-            source={{uri: target.url}}
-            fallbackUri={target.remote_url}
+            source={{uri, width, height}}
             style={styles.img}
           />
-        )}
-        {loading && <LoadingSpinner size="large" style={styles.loading} />}
-      </Wrapper>
-      <SafeAreaView edges={['bottom']} style={styles.button}>
-        {!loading && !!target.description && (
-          <Box p={12}>
-            <Type center scale="S">
-              {target.description}
-            </Type>
-          </Box>
-        )}
+          {loading && <LoadingSpinner size="large" style={styles.loading} />}
+        </Box>
+      )}
+      <SafeAreaView edges={['top', 'bottom']} style={styles.button}>
+        <Box p={12} mb={40}>
+          <Input
+            multiline
+            defaultValue={pendingCaptions[uri] ?? ''}
+            numberOfLines={2}
+            placeholder="Add an image caption"
+            onChangeText={text => {
+              pendingCaptions[uri] = text;
+            }}
+          />
+        </Box>
         <Box fd="row" ch>
           {attachments.length > 1 && (
             <OutlineButton
@@ -100,7 +92,7 @@ export const ImageViewer = (
           <OutlineButton
             onPress={props.navigation.goBack}
             style={styles.bottomButton}>
-            Close
+            Done
           </OutlineButton>
           {attachments.length > 1 && (
             <OutlineButton
@@ -129,10 +121,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     position: 'absolute',
     top: screenHeight / 2 - 20,
     alignSelf: 'center',
-  },
-  zoomView: {
-    flex: 1,
-    padding: imagePadding,
   },
   img: {
     width: '100%',

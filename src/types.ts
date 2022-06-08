@@ -176,6 +176,13 @@ export type RootStackParamList = {
   Thread: {statusUrl: string; id: string};
   PeerProfile: {host: string};
   ImageViewer: {index: number; attachments: TMediaAttachment[]};
+  ImageCaptioner: {
+    attachments: Array<{
+      uri: string;
+      width: number | undefined;
+      height: number | undefined;
+    }>;
+  };
   FollowerList: {source: 'mine' | 'theirs'};
   AppearanceSettings: undefined;
 };

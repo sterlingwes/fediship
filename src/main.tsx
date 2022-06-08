@@ -41,6 +41,7 @@ import {TagTimelinePrefs} from './screens/settings/tag-timeline-prefs';
 import {PeerPicker} from './screens/settings/peer-picker';
 import {HeaderRightButton} from './components/HeaderRightButton';
 import {XIcon} from './components/icons/XIcon';
+import {ImageCaptioner} from './screens/image-captioner';
 
 const Tab = createBottomTabNavigator();
 
@@ -185,6 +186,15 @@ const LoggedInStack = () => (
     <LIStack.Screen
       name="ImageViewer"
       component={ImageViewer}
+      options={{
+        presentation: 'containedTransparentModal',
+        headerShown: false,
+        orientation: 'all',
+      }}
+    />
+    <LIStack.Screen
+      name="ImageCaptioner"
+      component={ImageCaptioner}
       options={{
         presentation: 'containedTransparentModal',
         headerShown: false,

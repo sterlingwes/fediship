@@ -43,6 +43,7 @@ export class MastodonApiClient extends HTTPClient {
     input: {
       status: string;
       in_reply_to_id?: string;
+      media_ids?: string[];
     },
     idempotencyKey?: string,
   ) {
@@ -52,6 +53,27 @@ export class MastodonApiClient extends HTTPClient {
         : undefined),
       ...this.form(input),
     });
+  }
+
+  uploadAttachments(
+    attachments: Array<{
+      name: string;
+      type: string;
+      uri: string;
+      caption: string;
+    }>,
+  ) {
+    return attachments.reduce(async (chain, {name, type, uri, caption}) => {
+      const ids = await chain;
+      const response = await this.authedPost(
+        'media',
+        this.form({file: {name, type, uri}, description: caption}),
+      );
+      if (!response.ok) {
+        return ids;
+      }
+      return ids.concat(response.body.id as string);
+    }, Promise.resolve([]) as Promise<string[]>);
   }
 
   async getTimeline(timeline: 'home' | 'public', nextPage?: string) {
