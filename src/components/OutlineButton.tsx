@@ -35,6 +35,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     borderColor: getColor('baseAccent'),
     borderWidth: 1,
     padding: 5,
+    paddingVertical: 10,
     borderRadius: 2,
     width: '50%',
     marginVertical: 8,
