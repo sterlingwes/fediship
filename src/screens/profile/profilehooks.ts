@@ -8,6 +8,40 @@ import {Emoji, TAccount, TStatusMapped} from '../../types';
 import {useMount} from '../../utils/hooks';
 import {getHostAndHandle} from '../../utils/mastodon';
 
+const mergeRemoteIntoLocalProfile = (
+  remote: TAccount | undefined,
+  local: TAccount | undefined,
+  emojis: Emoji[] | undefined,
+): TAccount => {
+  if (!remote && local) {
+    return local;
+  }
+
+  if (remote && local) {
+    return {
+      ...local,
+      // select some values we'd prefer from the remote instance
+      // since they'll be fresher
+      note: remote.note,
+      avatar: remote.avatar,
+      avatar_static: remote.avatar_static,
+      header: remote.header,
+      header_static: remote.header_static,
+      emojis: [
+        ...(local.emojis ?? []),
+        ...(remote.emojis ?? []),
+        ...(emojis ?? []),
+      ],
+    };
+  }
+
+  if (!remote) {
+    throw new Error('No account profile available (network error).');
+  }
+
+  return remote;
+};
+
 export const useAPProfile = (
   host: string | undefined,
   accountHandle: string | undefined,
@@ -45,6 +79,9 @@ export const useAPProfile = (
   };
 
   const fetchEmojis = async (remoteHost: string) => {
+    if (emojis.current) {
+      return emojis.current;
+    }
     const remoteMasto = getRemoteMasto(remoteHost);
     emojis.current = await remoteMasto.getEmojis();
     return emojis.current;
@@ -127,7 +164,7 @@ export const useAPProfile = (
         setNextPage(result.pageInfo?.next ?? false);
       }
 
-      await fetchEmojis(idParts.host);
+      const instanceEmojis = await fetchEmojis(idParts.host);
 
       if (!result.ok && !localAccount) {
         const e = new Error(result.error);
@@ -138,25 +175,28 @@ export const useAPProfile = (
         return;
       }
 
-      const remoteOrLocalProfile = result.ok ? result.account : localAccount;
+      const remoteOrLocalProfile = mergeRemoteIntoLocalProfile(
+        result.ok ? result.account : undefined,
+        localAccount,
+        instanceEmojis,
+      );
 
       const timeline = result.ok
         ? result.timeline.map(toot => ({
             ...(localTimelineByIdUrl[toot.id] ?? toot),
-            emojis: emojis.current,
+            emojis: instanceEmojis,
           }))
-        : localTimeline?.map(toot => ({...toot, emojis: emojis.current}));
+        : localTimeline?.map(toot => ({
+            ...toot,
+            emojis: instanceEmojis,
+          }));
 
       if (timeline) {
         setStatuses(timeline);
       }
 
       if (remoteOrLocalProfile) {
-        const profileWithEmojis = {
-          ...remoteOrLocalProfile,
-          emojis: emojis.current,
-        };
-        setProfile(profileWithEmojis);
+        setProfile(remoteOrLocalProfile);
       }
     } catch (e: unknown) {
       console.error(e);

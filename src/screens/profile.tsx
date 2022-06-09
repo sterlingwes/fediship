@@ -104,18 +104,20 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
             {props.following ? 'Unfollow' : 'Follow'}
           </SolidButton>
         )}
-        {props.following === false && props.profile.locked && (
-          <View style={styles.approvalRequiredContainer}>
-            <LockIcon
-              width="12"
-              height="12"
-              color={getColor('baseTextColor')}
-            />
-            <Type scale="XS" style={styles.approvalRequired}>
-              requires approval
-            </Type>
-          </View>
-        )}
+        <View style={styles.approvalRequiredContainer}>
+          {props.following === false && props.profile.locked && (
+            <>
+              <LockIcon
+                width="12"
+                height="12"
+                color={getColor('baseTextColor')}
+              />
+              <Type scale="XS" style={styles.approvalRequired}>
+                requires approval
+              </Type>
+            </>
+          )}
+        </View>
         <View style={styles.headerDisplayName}>
           <Type scale="S" numberOfLines={1}>
             <EmojiName name={display_name} emojis={emojis} />
@@ -498,6 +500,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     justifyContent: 'flex-end',
     alignItems: 'center',
     marginTop: -8,
+    minHeight: 20,
   },
   approvalRequired: {
     textAlign: 'right',
