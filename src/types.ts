@@ -54,11 +54,14 @@ export interface TStatus {
   content: string; // html
   account: TAccount;
   favourited?: boolean;
+  favourites_count?: number;
   reblog: TStatusMapped | null;
   reblogged?: boolean;
+  reblogs_count?: number;
   url: string | null;
   uri: string;
   in_reply_to_id: string | null;
+  replies_count?: number;
   poll: TPoll | null;
   sensitive: boolean;
   pinned?: boolean;

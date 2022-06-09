@@ -8,6 +8,7 @@ import {
   Share,
 } from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
+import {screenWidth} from '../dimensions';
 import {useRecentFavourites} from '../storage/recent-favourites';
 
 import {StyleCreator} from '../theme';
@@ -21,6 +22,7 @@ import {BookmarkIcon} from './icons/BookmarkIcon';
 import {BoostIcon} from './icons/BoostIcon';
 import {ChevronInverted} from './icons/Chevron';
 import {LockIcon} from './icons/LockIcon';
+import {MessageIcon} from './icons/MessageIcon';
 import {ShareBoxIcon} from './icons/ShareBoxIcon';
 import {ShareGraphIcon} from './icons/ShareGraphIcon';
 import {StarIcon} from './icons/StarIcon';
@@ -139,6 +141,7 @@ export const Status = (
   props: TStatus & {
     isLocal: boolean;
     focused?: boolean;
+    showDetail?: boolean;
     hasReplies?: boolean;
     lastStatus?: boolean;
     collapsed?: boolean;
@@ -235,112 +238,124 @@ export const Status = (
 
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
-      <View
+      <Box
+        c
         style={[
-          styles.statusContainer,
           props.lastStatus !== false && styles.statusThreadTerminated,
           props.focused && styles.statusFocused,
         ]}>
-        <View style={styles.statusLeftColumn}>
-          <ReplyLine
-            height={15}
-            visible={replying}
-            style={styles.replyLineLeader}
-          />
-          <Pressable onPress={onPressAvatar} style={styles.avatar}>
-            {!!mainStatus.account.avatar && (
-              <Image
-                source={{
-                  uri: mainStatus.account.avatar,
-                }}
-                style={[
-                  styles.avatar,
-                  styles.avatarImg,
-                  props.focused && styles.avatarFocused,
-                ]}
-              />
-            )}
-            {mainStatus.account.locked && <AvatarLock />}
-          </Pressable>
-          <View style={styles.statusLeftButtons}>
+        <View style={[styles.statusContainer]}>
+          <View style={styles.statusLeftColumn}>
             <ReplyLine
-              stretch
-              visible={
-                props.hasReplies || (replying && props.lastStatus === false)
-              }
+              height={15}
+              visible={replying}
+              style={styles.replyLineLeader}
             />
-            {props.isLocal && (
-              <Pressable
-                disabled={loadingFav}
-                onPress={onFavourite}
-                style={[
-                  styles.starButton,
-                  favourited && styles.starButtonFaved,
-                ]}>
-                {loadingFav ? (
-                  <LoadingSpinner />
-                ) : (
-                  <StarIcon
-                    width="18"
-                    height="18"
-                    stroke={favourited ? 'transparent' : getColor('baseAccent')}
-                    fill={favourited ? getColor('goldAccent') : undefined}
-                  />
+            <Pressable onPress={onPressAvatar} style={styles.avatar}>
+              {!!mainStatus.account.avatar && (
+                <Image
+                  source={{
+                    uri: mainStatus.account.avatar,
+                  }}
+                  style={[
+                    styles.avatar,
+                    styles.avatarImg,
+                    props.focused && styles.avatarFocused,
+                  ]}
+                />
+              )}
+              {mainStatus.account.locked && <AvatarLock />}
+            </Pressable>
+            <View style={styles.statusLeftButtons}>
+              <ReplyLine
+                stretch
+                visible={
+                  props.hasReplies || (replying && props.lastStatus === false)
+                }
+              />
+              {props.isLocal && !props.showDetail && (
+                <Pressable
+                  disabled={loadingFav}
+                  onPress={onFavourite}
+                  style={[
+                    styles.starButton,
+                    favourited && styles.starButtonFaved,
+                  ]}>
+                  {loadingFav ? (
+                    <LoadingSpinner />
+                  ) : (
+                    <StarIcon
+                      width="18"
+                      height="18"
+                      stroke={
+                        favourited ? 'transparent' : getColor('baseAccent')
+                      }
+                      fill={favourited ? getColor('goldAccent') : undefined}
+                    />
+                  )}
+                </Pressable>
+              )}
+            </View>
+          </View>
+          <View style={styles.statusMessage}>
+            <StatusHeader
+              username={mainStatus.account.username || mainStatus.account.acct}
+              displayName={mainStatus.account.display_name}
+              userEmojis={mainStatus.account.emojis}
+              sendDate={new Date(mainStatus.created_at)}
+              tootTypeMessage={getType(mainStatus)}
+              booster={props.reblog ? props.account.display_name : undefined}
+              pinned={props.pinned}
+            />
+            {mainStatus.sensitive ? (
+              <CollapsedStatus
+                {...mainStatus}
+                collapsed={props.collapsed ?? true}
+              />
+            ) : (
+              <>
+                <HTMLView emojis={emojis} value={content} />
+                {!truncated && (
+                  <>
+                    {mainStatus.poll && <Poll {...mainStatus.poll} />}
+                    {mainStatus.media_attachments && (
+                      <MediaAttachments media={mainStatus.media_attachments} />
+                    )}
+                  </>
                 )}
-              </Pressable>
+              </>
             )}
+            {!mainStatus.sensitive && truncated && <ViewMoreButton />}
           </View>
         </View>
-        <View style={styles.statusMessage}>
-          <StatusHeader
-            username={mainStatus.account.username || mainStatus.account.acct}
-            displayName={mainStatus.account.display_name}
-            userEmojis={mainStatus.account.emojis}
-            sendDate={new Date(mainStatus.created_at)}
-            tootTypeMessage={getType(mainStatus)}
-            booster={props.reblog ? props.account.display_name : undefined}
-            pinned={props.pinned}
+        {(props.focused || props.showDetail) && props.isLocal && (
+          <StatusActionBar
+            {...{
+              detailed: props.showDetail,
+              reblogged: wasReblogged,
+              reblogCount: props.reblogs_count,
+              favouriteCount: props.favourites_count,
+              replyCount: props.replies_count,
+              onReblog,
+              loadingReblog,
+              shareUrl: mainStatus.url ?? mainStatus.uri,
+              bookmarked: wasBookmarked,
+              loadingBookmark,
+              onBookmark,
+            }}
           />
-          {mainStatus.sensitive ? (
-            <CollapsedStatus
-              {...mainStatus}
-              collapsed={props.collapsed ?? true}
-            />
-          ) : (
-            <>
-              <HTMLView emojis={emojis} value={content} />
-              {!truncated && (
-                <>
-                  {mainStatus.poll && <Poll {...mainStatus.poll} />}
-                  {mainStatus.media_attachments && (
-                    <MediaAttachments media={mainStatus.media_attachments} />
-                  )}
-                </>
-              )}
-            </>
-          )}
-          {!mainStatus.sensitive && truncated && <ViewMoreButton />}
-          {props.focused && props.isLocal && (
-            <StatusActionBar
-              {...{
-                reblogged: wasReblogged,
-                onReblog,
-                loadingReblog,
-                shareUrl: mainStatus.url ?? mainStatus.uri,
-                bookmarked: wasBookmarked,
-                loadingBookmark,
-                onBookmark,
-              }}
-            />
-          )}
-        </View>
-      </View>
+        )}
+      </Box>
     </Pressable>
   );
 };
 
 const StatusActionBar = ({
+  detailed,
   reblogged,
+  reblogCount,
+  favouriteCount,
+  replyCount,
   bookmarked,
   loadingBookmark,
   loadingReblog,
@@ -348,7 +363,11 @@ const StatusActionBar = ({
   onReblog,
   onBookmark,
 }: {
+  detailed: boolean | undefined;
   reblogged: boolean | undefined;
+  reblogCount: number | undefined;
+  replyCount: number | undefined;
+  favouriteCount: number | undefined;
   bookmarked: boolean | undefined;
   loadingBookmark: boolean;
   loadingReblog: boolean;
@@ -356,6 +375,7 @@ const StatusActionBar = ({
   onReblog: () => void;
   onBookmark: () => void;
 }) => {
+  const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
 
   const commonIconProps = useMemo(
@@ -371,31 +391,72 @@ const StatusActionBar = ({
     Share.share({url: shareUrl});
   };
 
+  const boostIconColor = detailed
+    ? 'primary'
+    : reblogged
+    ? 'success'
+    : 'blueAccent';
+
+  const bookmarkIconColor = detailed
+    ? 'primary'
+    : bookmarked
+    ? 'success'
+    : 'blueAccent';
+
   return (
-    <Box mb={10} ph={20} pt={10} fd="row" sb>
-      {loadingReblog ? (
-        <LoadingSpinner />
-      ) : (
-        <BoostIcon
-          {...commonIconProps}
-          color={getColor(reblogged ? 'success' : 'blueAccent')}
-          onPress={onReblog}
-        />
-      )}
-      {Platform.OS === 'ios' ? (
-        <ShareBoxIcon {...commonIconProps} onPress={onShare} />
-      ) : (
-        <ShareGraphIcon {...commonIconProps} onPress={onShare} />
-      )}
-      {loadingBookmark ? (
-        <LoadingSpinner />
-      ) : (
-        <BookmarkIcon
-          {...commonIconProps}
-          color={getColor(bookmarked ? 'success' : 'blueAccent')}
-          onPress={onBookmark}
-        />
-      )}
+    <Box mb={10} pt={10} fd="row" f={1}>
+      <Box fd="row" style={styles.statsBox}>
+        {loadingReblog ? (
+          <LoadingSpinner />
+        ) : (
+          <BoostIcon
+            {...commonIconProps}
+            color={getColor(boostIconColor)}
+            onPress={onReblog}
+          />
+        )}
+        {detailed && typeof reblogCount === 'number' && (
+          <Box ml={6}>
+            <Type scale="XS">{reblogCount}</Type>
+          </Box>
+        )}
+      </Box>
+      <Box fd="row" style={styles.statsBox}>
+        {detailed ? (
+          <>
+            <StarIcon {...commonIconProps} stroke={getColor('primary')} />
+            {detailed && typeof favouriteCount === 'number' && (
+              <Box ml={6}>
+                <Type scale="XS">{favouriteCount}</Type>
+              </Box>
+            )}
+          </>
+        ) : Platform.OS === 'ios' ? (
+          <ShareBoxIcon {...commonIconProps} onPress={onShare} />
+        ) : (
+          <ShareGraphIcon {...commonIconProps} onPress={onShare} />
+        )}
+      </Box>
+      <Box fd="row" style={styles.statsBox}>
+        {detailed ? (
+          <>
+            <MessageIcon {...commonIconProps} color={getColor('primary')} />
+            {detailed && typeof replyCount === 'number' && (
+              <Box ml={6}>
+                <Type scale="XS">{replyCount}</Type>
+              </Box>
+            )}
+          </>
+        ) : loadingBookmark ? (
+          <LoadingSpinner />
+        ) : (
+          <BookmarkIcon
+            {...commonIconProps}
+            color={getColor(bookmarkIconColor)}
+            onPress={onBookmark}
+          />
+        )}
+      </Box>
     </Box>
   );
 };
@@ -523,5 +584,10 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     marginRight: 2,
     marginBottom: 1,
     color: getColor('primary'),
+  },
+  statsBox: {
+    justifyContent: 'center',
+    minWidth: screenWidth / 3,
+    paddingBottom: 4,
   },
 });

@@ -1,6 +1,12 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {forwardRef, useImperativeHandle, useMemo, useRef} from 'react';
+import React, {
+  ComponentProps,
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   FlatList,
   InteractionManager,
@@ -22,6 +28,7 @@ const createTimelineRenderer =
   (
     navigation: NativeStackNavigationProp<RootStackParamList>,
     host: string | undefined,
+    statusOverrides?: Partial<ComponentProps<typeof Status>>,
   ): ListRenderItem<TStatusMapped> =>
   row => {
     const status = row.item;
@@ -32,6 +39,7 @@ const createTimelineRenderer =
         key={status.id}
         isLocal={status.sourceHost === host}
         {...status}
+        {...statusOverrides}
         onPress={() => {
           navigation.push('Thread', {statusUrl: nextStatusUrl, id: nextId});
         }}
@@ -44,7 +52,9 @@ const createTimelineRenderer =
     );
   };
 
-interface StatusListProps extends ReturnType<typeof useTimeline> {}
+interface StatusListProps extends ReturnType<typeof useTimeline> {
+  showDetail?: boolean;
+}
 
 export const StatusList = forwardRef(
   (
@@ -54,6 +64,7 @@ export const StatusList = forwardRef(
       loading,
       loadingMore,
       reloading,
+      showDetail,
       fetchTimeline,
       reloadTimeline,
     }: StatusListProps,
@@ -72,7 +83,7 @@ export const StatusList = forwardRef(
     }));
 
     const renderItem = useMemo(
-      () => createTimelineRenderer(navigation, auth.host),
+      () => createTimelineRenderer(navigation, auth.host, {showDetail}),
       [navigation, auth],
     );
 

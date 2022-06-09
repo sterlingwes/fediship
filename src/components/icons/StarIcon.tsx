@@ -3,8 +3,8 @@ import {ColorValue} from 'react-native';
 import {Svg, Polygon} from 'react-native-svg';
 
 interface StarIconProps {
-  width?: string;
-  height?: string;
+  width?: string | number;
+  height?: string | number;
   stroke?: ColorValue;
   fill?: ColorValue;
 }

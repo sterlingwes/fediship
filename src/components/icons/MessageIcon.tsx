@@ -3,8 +3,8 @@ import {ColorValue} from 'react-native';
 import {Svg, Path} from 'react-native-svg';
 
 interface MessageIconProps {
-  width?: string;
-  height?: string;
+  width?: string | number;
+  height?: string | number;
   color?: ColorValue;
 }
 

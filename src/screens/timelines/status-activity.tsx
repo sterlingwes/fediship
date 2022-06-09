@@ -2,7 +2,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {forwardRef, useMemo} from 'react';
 import {StatusList} from '../../components/StatusList';
 import {useAuth} from '../../storage/auth';
-import {RootStackParamList, TStatus} from '../../types';
+import {RootStackParamList, TStatus, TStatusMapped} from '../../types';
 import {useMount} from '../../utils/hooks';
 import {useNotificationsForTypes} from '../../utils/notifications';
 
@@ -27,13 +27,22 @@ export const StatusActivity = forwardRef(
       'reblog',
     ]);
     const statuses = useMemo(() => {
-      return notifs.map(notif => {
+      const uniqueStatuses = new Set<string>();
+      const statusList: TStatusMapped[] = [];
+      notifs.forEach(notif => {
         const status = notif.status as TStatus;
-        return {
+        if (uniqueStatuses.has(status.id)) {
+          return;
+        }
+
+        uniqueStatuses.add(status.id);
+        statusList.push({
           ...status,
           sourceHost: auth.host ?? '',
-        };
+        });
       });
+
+      return statusList;
     }, [notifs, auth]);
 
     useMount(() => {
@@ -44,6 +53,7 @@ export const StatusActivity = forwardRef(
 
     return (
       <StatusList
+        showDetail
         {...{...defaultStatusListProps, statuses, loading}}
         ref={ref}
       />
