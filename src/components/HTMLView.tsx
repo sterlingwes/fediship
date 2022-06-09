@@ -96,7 +96,7 @@ const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) => {
       `:${emoji.shortcode}:`,
       `<emoji src="${emoji.url}"></emoji>`,
     );
-  }, props.content);
+  }, props.content ?? '');
 };
 
 export const HTMLView = ({
