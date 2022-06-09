@@ -264,6 +264,7 @@ export const useFavourites = (type: 'favourites' | 'bookmarks') => {
   const reloading =
     typeof nextPage === 'undefined' && loading && !!statuses.length;
   const loadingMore = !!nextPage && loading;
+  const hasMore = nextPage !== false;
 
   return {
     statuses,
@@ -273,6 +274,7 @@ export const useFavourites = (type: 'favourites' | 'bookmarks') => {
     error,
     loading,
     loadingMore,
+    hasMore,
   };
 };
 
