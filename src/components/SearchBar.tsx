@@ -64,8 +64,8 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   container: {
     flexDirection: 'row',
     padding: 15,
-    borderTopColor: getColor('base'),
-    borderTopWidth: 2,
+    borderBottomColor: getColor('base'),
+    borderBottomWidth: 2,
   },
   searchContainer: {
     flex: 1,

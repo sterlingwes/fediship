@@ -189,26 +189,6 @@ export const Explore = forwardRef(
       if (item.type === 'search') {
         return (
           <View style={styles.header}>
-            <Box p={10}>
-              {loadingTags ? (
-                <LoadingSpinner />
-              ) : (
-                <View style={styles.trends}>
-                  <Box mb={10}>
-                    <Type semiBold scale="S" color={getColor('primary')}>
-                      Trends Today
-                    </Type>
-                  </Box>
-                  <Text>
-                    {tags.map(tag => (
-                      <Type scale="S" onPress={() => onTagPress(tag)}>
-                        #{tag}{' '}
-                      </Type>
-                    ))}
-                  </Text>
-                </View>
-              )}
-            </Box>
             <Searchbar
               placeholder="Search accounts, statuses, tags & instances"
               onSearch={onSearch}
@@ -224,6 +204,29 @@ export const Explore = forwardRef(
               value={searchQuery}
               searching={searching}
             />
+            <Box p={10}>
+              {loadingTags ? (
+                <LoadingSpinner />
+              ) : (
+                <View style={styles.trends}>
+                  <Box mb={10}>
+                    <Type semiBold scale="S" color={getColor('primary')}>
+                      Trends Today
+                    </Type>
+                  </Box>
+                  <Text>
+                    {tags.map(tag => (
+                      <Type
+                        scale="S"
+                        style={styles.tag}
+                        onPress={() => onTagPress(tag)}>
+                        #{tag}{' '}
+                      </Type>
+                    ))}
+                  </Text>
+                </View>
+              )}
+            </Box>
           </View>
         );
       }
@@ -364,5 +367,8 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     paddingHorizontal: 16,
     borderRadius: 12,
     color: getColor('baseTextColor'),
+  },
+  tag: {
+    lineHeight: 30,
   },
 });
