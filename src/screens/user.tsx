@@ -1,6 +1,7 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {ReactNode, useMemo, useState} from 'react';
 import {
+  Alert,
   DevSettings,
   ListRenderItem,
   SectionList,
@@ -173,8 +174,21 @@ export const User = ({
               if (clearedTimelines) {
                 return;
               }
-              clearAllSavedTimelines();
-              setClearedTimelines(true);
+
+              Alert.alert(
+                'Confirm Deletion',
+                'This will delete all timeline views you have saved that are visible in the side navigation on the home tab. Are you sure?',
+                [
+                  {text: 'No', style: 'cancel'},
+                  {
+                    text: 'Yes',
+                    onPress: () => {
+                      clearAllSavedTimelines();
+                      setClearedTimelines(true);
+                    },
+                  },
+                ],
+              );
             },
           },
         ],
