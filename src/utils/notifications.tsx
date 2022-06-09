@@ -8,7 +8,12 @@ import React, {
 } from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import {useMyMastodonInstance} from '../api/hooks';
-import {NotificationGroups, NormalizedNotif, TNotification} from '../types';
+import {
+  NotificationGroups,
+  NormalizedNotif,
+  TNotification,
+  NotificationType,
+} from '../types';
 import {AppState} from 'react-native';
 import {
   getLastFetch,
@@ -20,6 +25,7 @@ import {
   storeNotifGroup,
   storeNotifWatermarks,
 } from '../storage/notifications';
+import {useMount} from './hooks';
 
 const generateWatermarks = (notifs: NotificationGroups) => {
   return (Object.keys(notifs) as Array<keyof NotificationGroups>).reduce(
@@ -121,6 +127,37 @@ export const NotificationProvider = ({children}: {children: JSX.Element}) => {
       {children}
     </NotificationContext.Provider>
   );
+};
+
+const notifTypes: NotificationType[] = [
+  'follow',
+  'favourite',
+  'reblog',
+  'mention',
+  'poll',
+  'follow_request',
+];
+
+export const useNotificationsForTypes = (types: Array<NotificationType>) => {
+  const api = useMyMastodonInstance();
+  const [loading, setLoading] = useState(false);
+  const [notifs, setNotifs] = useState<TNotification[]>([]);
+
+  useMount(() => {
+    const fetchNotifs = async () => {
+      setLoading(true);
+      const excludeTypes = notifTypes.filter(
+        type => types.includes(type) === false,
+      );
+      const result = await api.getNotifications({excludeTypes});
+      setNotifs(result);
+      setLoading(false);
+    };
+
+    fetchNotifs();
+  });
+
+  return {notifs, loading};
 };
 
 export const useNotifications = () => {

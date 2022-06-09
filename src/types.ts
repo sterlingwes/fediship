@@ -161,6 +161,8 @@ export type RootStackParamList = {
   };
   PeerPicker: undefined;
   FavouritesTimeline: {type: 'favourites' | 'bookmarks'};
+  StatusActivity: undefined;
+  Polls: undefined;
   Profile: {
     account?: TAccount;
     host?: string;
@@ -353,22 +355,23 @@ export interface TPoll {
   // "emojis": []
 }
 
+export type NotificationType =
+  | 'follow'
+  | 'follow_request'
+  | 'mention'
+  | 'reblog'
+  | 'favourite'
+  | 'poll'
+  | 'status';
+
 export interface TNotification {
   id: string;
-  type:
-    | 'follow'
-    | 'follow_request'
-    | 'mention'
-    | 'reblog'
-    | 'favourite'
-    | 'poll'
-    | 'status';
+  type: NotificationType;
   created_at: string;
   account: TAccount;
   status?: TStatus | null;
 }
 
-type NotificationType = TNotification['type'];
 export type NormalizedNotif = TNotification & {key: number | string};
 export type NotificationGroups = Record<NotificationType, NormalizedNotif[]>;
 

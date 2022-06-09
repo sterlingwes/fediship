@@ -125,14 +125,12 @@ export const User = ({
               (notifs.mention?.length ?? 0) +
               (notifs.favourite?.length ?? 0) +
               (notifs.reblog?.length ?? 0),
-            hideChevron: true,
-            onPress: () => {},
+            onPress: () => navigation.push('StatusActivity'),
           },
           {
             label: 'Polls',
             newCount: notifs.poll?.length,
-            hideChevron: true,
-            onPress: () => {},
+            onPress: () => navigation.push('Polls'),
           },
         ],
       },

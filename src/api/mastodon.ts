@@ -1,6 +1,7 @@
 import {oauthScopes} from '../constants';
 import {
   Emoji,
+  NotificationType,
   TAccount,
   TAccountRelationship,
   TApp,
@@ -339,10 +340,21 @@ export class MastodonApiClient extends HTTPClient {
     return response.ok;
   }
 
-  async getNotifications(params?: {minId?: string}) {
-    const path = params?.minId
+  async getNotifications(params?: {
+    minId?: string;
+    excludeTypes?: NotificationType[];
+  }) {
+    let path = params?.minId
       ? `notifications?min_id${params.minId}`
-      : 'notifications';
+      : 'notifications?';
+
+    if (params?.excludeTypes) {
+      path = params.excludeTypes.reduce(
+        (acc, type) => `${acc}&exclude_types[]=${type}`,
+        path,
+      );
+    }
+
     const response = await this.authedGet(path);
     if (!response.ok) {
       return [];

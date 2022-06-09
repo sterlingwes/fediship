@@ -42,6 +42,8 @@ import {PeerPicker} from './screens/settings/peer-picker';
 import {HeaderRightButton} from './components/HeaderRightButton';
 import {XIcon} from './components/icons/XIcon';
 import {ImageCaptioner} from './screens/image-captioner';
+import {StatusActivity} from './screens/timelines/status-activity';
+import {Polls} from './screens/timelines/polls';
 
 const Tab = createBottomTabNavigator();
 
@@ -101,6 +103,12 @@ const UserStack = () => (
       component={FavouritesTimeline}
       options={{headerTitle: ''}}
     />
+    <UStack.Screen
+      name="StatusActivity"
+      component={StatusActivity}
+      options={{headerTitle: ''}}
+    />
+    <UStack.Screen name="Polls" component={Polls} options={{headerTitle: ''}} />
     <UStack.Screen
       name="MyProfile"
       component={Profile}
