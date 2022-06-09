@@ -78,6 +78,13 @@ export class ActivityPubClient extends HTTPClient {
             tlResult = await this.getProfileTimeline(outboxUrl, account);
             timeline = tlResult?.result ?? [];
 
+            if (!tlResult) {
+              return {
+                ok: false,
+                error: 'No outbox',
+              };
+            }
+
             if (result.body.featured) {
               const featuredCollection = await this.get(result.body.featured);
               if (isOrderedCollection(featuredCollection.body)) {
