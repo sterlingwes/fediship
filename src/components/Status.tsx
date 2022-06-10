@@ -326,12 +326,29 @@ export const Status = (
               </>
             )}
             {!mainStatus.sensitive && truncated && <ViewMoreButton />}
+            {props.focused && props.isLocal && (
+              <StatusActionBar
+                {...{
+                  detailed: false,
+                  reblogged: wasReblogged,
+                  reblogCount: props.reblogs_count,
+                  favouriteCount: props.favourites_count,
+                  replyCount: props.replies_count,
+                  onReblog,
+                  loadingReblog,
+                  shareUrl: mainStatus.url ?? mainStatus.uri,
+                  bookmarked: wasBookmarked,
+                  loadingBookmark,
+                  onBookmark,
+                }}
+              />
+            )}
           </View>
         </View>
-        {(props.focused || props.showDetail) && props.isLocal && (
+        {props.showDetail && props.isLocal && (
           <StatusActionBar
+            detailed
             {...{
-              detailed: props.showDetail,
               reblogged: wasReblogged,
               reblogCount: props.reblogs_count,
               favouriteCount: props.favourites_count,
@@ -404,8 +421,8 @@ const StatusActionBar = ({
     : 'blueAccent';
 
   return (
-    <Box mb={10} pt={10} fd="row" f={1}>
-      <Box fd="row" style={styles.statsBox}>
+    <Box mb={10} pt={detailed ? 10 : 15} fd="row" f={1}>
+      <Box fd="row" style={[styles.statsBox, detailed && styles.statsBoxEqual]}>
         {loadingReblog ? (
           <LoadingSpinner />
         ) : (
@@ -421,7 +438,7 @@ const StatusActionBar = ({
           </Box>
         )}
       </Box>
-      <Box fd="row" style={styles.statsBox}>
+      <Box fd="row" style={[styles.statsBox, detailed && styles.statsBoxEqual]}>
         {detailed ? (
           <>
             <StarIcon {...commonIconProps} stroke={getColor('primary')} />
@@ -437,7 +454,7 @@ const StatusActionBar = ({
           <ShareGraphIcon {...commonIconProps} onPress={onShare} />
         )}
       </Box>
-      <Box fd="row" style={styles.statsBox}>
+      <Box fd="row" style={[styles.statsBox, detailed && styles.statsBoxEqual]}>
         {detailed ? (
           <>
             <MessageIcon {...commonIconProps} color={getColor('primary')} />
@@ -587,7 +604,10 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   statsBox: {
     justifyContent: 'center',
-    minWidth: screenWidth / 3,
+    minWidth: 80,
     paddingBottom: 4,
+  },
+  statsBoxEqual: {
+    minWidth: screenWidth / 3,
   },
 });
