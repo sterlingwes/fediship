@@ -56,7 +56,15 @@ export class ApiResponse {
 
   async getError() {
     const body = await this.parseAndAssertStandardJsonError();
-    return body.error;
+    return body.error as string;
+  }
+
+  async getErrorSafely() {
+    try {
+      return await this.getError();
+    } catch (e) {
+      return (e as Error).message;
+    }
   }
 
   private async parseAndAssertStandardJsonError() {

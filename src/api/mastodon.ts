@@ -125,7 +125,7 @@ export class MastodonApiClient extends HTTPClient {
 
     const contextResponse = await this.get(`statuses/${statusId}/context`);
     if (!contextResponse.ok) {
-      const errorMessage = await contextResponse.getError();
+      const errorMessage = await contextResponse.getErrorSafely();
       return {
         type: 'error',
         error: `getThread error: ${errorMessage}`,
