@@ -11,28 +11,21 @@ describe('groupReplies', () => {
       );
 
       const replyToots: string[] = [];
-      grouped.topReplyIds.forEach(topId => {
-        const {status, next} = grouped.replyList[topId];
+      Object.keys(grouped.replyList).forEach(replyId => {
+        const {status, hasReplies} = grouped.replyList[replyId];
         const toot = status.content;
         replyToots.push(toot);
 
-        if (Array.isArray(next)) {
-          next.forEach(subTootId => {
-            const subToot = grouped.replyList[subTootId];
-            replyToots.push(subToot.status.content);
-          });
-        } else if (next) {
-          const subToot = grouped.replyList[next];
-          replyToots.push(subToot.status.content);
+        if (!hasReplies) {
+          replyToots.push('---');
         }
-
-        replyToots.push('---');
       });
 
       expect(replyToots).toMatchInlineSnapshot(`
         Array [
           "Author self-reply",
           "@author reply 1",
+          "---",
           "@author reply 2",
           "---",
           "@author reply to main post",
@@ -55,6 +48,7 @@ describe('resolveTerminatingTootIds', () => {
     );
 
     expect(ids).toEqual([
+      '108246418403442299',
       '108273968481741974',
       '108273952271365334',
       '108274750128667900',

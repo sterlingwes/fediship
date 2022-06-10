@@ -28,29 +28,40 @@ export const Thread = ({
     id,
   );
 
-  const terminatingIds = useMemo(() => {
-    if (!thread?.descendants || !thread.status) {
-      return [];
-    }
-    return resolveTerminatingTootIds(thread.descendants, thread.status.id);
-  }, [thread]);
+  const {statuses, terminatingIds} = useMemo(() => {
+    let resolvedStatuses: TStatusMapped[] = [];
 
-  const statuses = useMemo(() => {
     if (localFallback) {
-      return [
+      resolvedStatuses = [
         ...(thread?.localResponse?.ancestors ?? []),
         ...(thread?.localResponse?.status
           ? [thread.localResponse?.status]
           : []),
         ...(thread?.localResponse?.descendants ?? []),
       ];
+
+      return {
+        statuses: resolvedStatuses,
+        terminatingIds: resolveTerminatingTootIds(
+          thread?.localResponse?.descendants,
+          thread?.localResponse?.status?.id ?? '',
+        ),
+      };
     }
 
-    return [
+    resolvedStatuses = [
       ...(thread?.ancestors ?? []),
       ...(thread?.status ? [thread.status] : []),
       ...(thread?.descendants ?? []),
     ];
+
+    return {
+      statuses: resolvedStatuses,
+      terminatingIds: resolveTerminatingTootIds(
+        thread?.descendants,
+        thread?.status?.id ?? '',
+      ),
+    };
   }, [thread, localFallback]);
 
   const focusedThread = useMemo(() => {
@@ -104,11 +115,7 @@ export const Thread = ({
     return (
       <>
         {statusComponent}
-        <InlineReply
-          inReplyToId={item.id}
-          onlyReply={index === statuses.length - 1}
-          onSent={fetchThread}
-        />
+        <InlineReply inReplyToId={item.id} onSent={fetchThread} />
       </>
     );
   };

@@ -1,7 +1,7 @@
 import {TStatus, TStatusContext} from '../../types';
 
 interface Reply {
-  next?: string | string[];
+  hasReplies?: boolean;
   status: TStatus;
 }
 
@@ -21,20 +21,14 @@ export const groupReplies = (
 ) => {
   const grouped: GroupedReplies = {topReplyIds: [], replyList: {}};
   (descendants ?? []).forEach(child => {
+    grouped.replyList[child.id] = {status: child, hasReplies: false};
+
     if (child.in_reply_to_id === parentStatusId) {
       grouped.topReplyIds.push(child.id);
-      grouped.replyList[child.id] = {status: child};
     } else {
-      grouped.replyList[child.id] = {status: child};
       const parent = grouped.replyList[child.in_reply_to_id ?? ''];
       if (parent) {
-        if (typeof parent.next === 'string') {
-          parent.next = [parent.next, child.id];
-        } else if (Array.isArray(parent.next)) {
-          parent.next.push(child.id);
-        } else {
-          parent.next = child.id;
-        }
+        parent.hasReplies = true;
       }
     }
   });
@@ -51,14 +45,10 @@ export const resolveTerminatingTootIds = (
 ): string[] => {
   const grouped = groupReplies(descendants, parentStatusId);
   const terminating: string[] = [];
-  grouped.topReplyIds.forEach(topId => {
-    const {next} = grouped.replyList[topId];
-    if (Array.isArray(next)) {
-      terminating.push(next[next.length - 1]);
-    } else if (next) {
-      terminating.push(next);
-    } else {
-      terminating.push(topId);
+  Object.keys(grouped.replyList).forEach(replyId => {
+    const {hasReplies} = grouped.replyList[replyId];
+    if (!hasReplies) {
+      terminating.push(replyId);
     }
   });
 

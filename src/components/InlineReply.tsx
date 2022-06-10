@@ -1,5 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Image, TextInput, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
@@ -14,10 +20,10 @@ import {
 import {ReplyLine} from './ReplyLine';
 import {Type} from './Type';
 import {useUserProfile} from '../storage/user';
+import {Box} from './Box';
 
 export const InlineReply = ({
   inReplyToId,
-  onlyReply,
   onSent,
 }: {
   inReplyToId: string;
@@ -75,7 +81,7 @@ export const InlineReply = ({
 
   return (
     <View style={styles.container}>
-      <View>
+      <Box pb={25}>
         <ReplyLine visible height={15} />
         {activeUser && (
           <Image
@@ -83,8 +89,7 @@ export const InlineReply = ({
             style={[styles.userAvatar, replying && styles.userAvatarReplying]}
           />
         )}
-        {!onlyReply && <ReplyLine visible height={25} stretch />}
-      </View>
+      </Box>
       <View style={styles.rightCol}>
         {replying ? (
           <>
@@ -119,6 +124,8 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   container: {
     flexDirection: 'row',
     paddingLeft: 15,
+    borderBottomColor: getColor('baseAccent'),
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   rightCol: {
     flex: 1,
