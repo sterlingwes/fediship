@@ -18,9 +18,11 @@ import {useUserProfile} from '../storage/user';
 export const InlineReply = ({
   inReplyToId,
   onlyReply,
+  onSent,
 }: {
   inReplyToId: string;
   onlyReply?: boolean;
+  onSent?: () => void;
 }) => {
   const keyboardBanner = useKeyboardBanner();
   const [textValue, setTextValue] = useState('');
@@ -48,13 +50,15 @@ export const InlineReply = ({
         {status: textValue, in_reply_to_id: inReplyToId},
         idempotency.current, // TODO: merge headers properly in HTTPClient
       );
-      // TODO: refresh thread and ensure just-sent response is at the top
+      setTextValue('');
+      setReplying(false);
+      onSent?.();
       return true;
     };
 
     registerSendListener(onSend);
     return () => removeSendListener(onSend);
-  }, [textValue, api, inReplyToId, keyboardBanner]);
+  }, [textValue, api, inReplyToId, keyboardBanner, onSent]);
 
   const onPressReply = () => {
     setReplying(true);

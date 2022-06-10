@@ -278,7 +278,7 @@ export const useFavourites = (type: 'favourites' | 'bookmarks') => {
   };
 };
 
-const mostDetailedContext = (
+const mergeContexts = (
   localContext: TStatusContext | undefined,
   remoteContext: TStatusContext | undefined,
 ) => {
@@ -301,7 +301,23 @@ const mostDetailedContext = (
     (remoteContext.ancestors?.length ?? 0) +
     (remoteContext.descendants?.length ?? 0);
 
-  return localContextCount > remoteContextCount ? localContext : remoteContext;
+  if (localContextCount > remoteContextCount) {
+    return localContext;
+  } else {
+    const remoteIds = (remoteContext.descendants ?? []).map(s => s.uri);
+
+    const filteredLocalDescendants = (localContext.descendants ?? []).filter(
+      s => remoteIds.includes(s.uri) === false,
+    );
+
+    return {
+      ...remoteContext,
+      descendants: [
+        ...(remoteContext.descendants ?? []),
+        ...filteredLocalDescendants,
+      ],
+    };
+  }
 };
 
 export const useThread = (statusUrl: string, localId: string) => {
@@ -360,7 +376,7 @@ export const useThread = (statusUrl: string, localId: string) => {
         localStatus = localStatus?.reblog;
       }
 
-      const highestFidelityResult = mostDetailedContext(
+      const highestFidelityResult = mergeContexts(
         localResult?.response,
         remoteResult.response,
       );

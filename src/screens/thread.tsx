@@ -107,6 +107,7 @@ export const Thread = ({
         <InlineReply
           inReplyToId={item.id}
           onlyReply={index === statuses.length - 1}
+          onSent={fetchThread}
         />
       </>
     );
