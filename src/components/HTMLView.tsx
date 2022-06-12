@@ -49,7 +49,7 @@ const renderNode =
         <Image
           source={{uri: node.attribs.src, width: 18, height: 18}}
           style={imageStyle}
-          onError={e => console.error(e)}
+          onError={e => console.error('Failed to load image:', e.nativeEvent)}
         />
       );
     }

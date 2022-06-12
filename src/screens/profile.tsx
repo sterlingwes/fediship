@@ -2,7 +2,7 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
   RefreshControl,
   FlatList,
@@ -66,6 +66,16 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
   const {getColor} = useThemeGetters();
   const styles = useThemeStyle(styleCreator);
 
+  const tryFallbackHeader = useCallback(() => {
+    if (
+      profileImages.header &&
+      props.profile?.header &&
+      profileImages.header !== props.profile.header
+    ) {
+      setImages({...profileImages, header: props.profile.header});
+    }
+  }, [profileImages, props.profile]);
+
   useEffect(() => {
     if (!profileImages.avatar && props.profile?.avatar) {
       setImages({header: props.profile.header, avatar: props.profile.avatar});
@@ -88,6 +98,7 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
         <Image
           source={{uri: profileImages.header}}
           style={styles.headerBgImage}
+          onError={tryFallbackHeader}
         />
       ) : (
         <View style={styles.headerSpacer} />
