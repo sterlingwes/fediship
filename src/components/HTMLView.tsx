@@ -161,12 +161,15 @@ export const HTMLView = ({
 
 const br = '<br/>';
 const fixLinebreaking = (text: string) => {
-  const value = text.replace(/\n+/g, br).replace(/(<br\/?>)+/g, br);
-  const parts = value.split(br);
+  const value = text
+    .replace(/\n+/g, br)
+    .replace(/<p>/g, '')
+    .replace(/<\/?p>/g, br)
+    .replace(/(<br[\s/]+?>)+/g, br);
+  const parts = value.split(br).filter(s => !!s.trim());
   if (parts.length > 1) {
     return `<p>${parts.join('</p><p>')}</p>`;
   }
-
   return value;
 };
 
