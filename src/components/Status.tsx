@@ -270,7 +270,7 @@ export const Status = (
               <ReplyLine
                 stretch
                 visible={
-                  props.hasReplies && replying && props.lastStatus === false
+                  props.lastStatus === false && (props.hasReplies || replying)
                 }
               />
               {props.isLocal && !props.showDetail && (
