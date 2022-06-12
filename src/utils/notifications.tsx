@@ -238,8 +238,16 @@ export const useNotifications = () => {
     setTabRead(true);
   };
 
-  const readType = (type: keyof NotificationGroups) => {
-    delete notifs[type];
+  const readType = (
+    type: keyof NotificationGroups | Array<keyof NotificationGroups>,
+  ) => {
+    if (Array.isArray(type)) {
+      type.forEach(t => {
+        delete notifs[t];
+      });
+    } else {
+      delete notifs[type];
+    }
     const newGroup = {...notifs};
     setNotifs(newGroup);
     storeNotifGroup(newGroup);

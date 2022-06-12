@@ -125,12 +125,18 @@ export const User = ({
               (notifs.mention?.length ?? 0) +
               (notifs.favourite?.length ?? 0) +
               (notifs.reblog?.length ?? 0),
-            onPress: () => navigation.push('StatusActivity'),
+            onPress: () => {
+              readType(['mention', 'favourite', 'reblog']);
+              navigation.push('StatusActivity');
+            },
           },
           {
             label: 'Polls',
             newCount: notifs.poll?.length,
-            onPress: () => navigation.push('Polls'),
+            onPress: () => {
+              readType('poll');
+              navigation.push('Polls');
+            },
           },
         ],
       },
