@@ -40,6 +40,7 @@ import {useAPProfile} from './profile/profilehooks';
 
 interface ProfileHeaderProps {
   profile: TAccount | undefined;
+  apProfile: TAccount | undefined;
   following?: boolean | undefined;
   followToggleLoading?: boolean;
   onToggleFollow: () => any;
@@ -63,24 +64,32 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
     header: props.profile?.header,
     avatar: props.profile?.avatar,
   });
+  const fallbackHeaderPending = useRef<boolean>();
   const {getColor} = useThemeGetters();
   const styles = useThemeStyle(styleCreator);
 
   const tryFallbackHeader = useCallback(() => {
     if (
       profileImages.header &&
-      props.profile?.header &&
-      profileImages.header !== props.profile.header
+      props.apProfile?.header &&
+      profileImages.header !== props.apProfile.header
     ) {
-      setImages({...profileImages, header: props.profile.header});
+      setImages({...profileImages, header: props.apProfile.header});
+    } else if (fallbackHeaderPending.current == null) {
+      fallbackHeaderPending.current = true;
     }
-  }, [profileImages, props.profile]);
+  }, [profileImages, props.apProfile]);
 
   useEffect(() => {
     if (!profileImages.avatar && props.profile?.avatar) {
       setImages({header: props.profile.header, avatar: props.profile.avatar});
     }
-  }, [props.profile, profileImages]);
+
+    if (fallbackHeaderPending.current && props.apProfile?.header) {
+      fallbackHeaderPending.current = false;
+      setImages({...profileImages, header: props.apProfile?.header});
+    }
+  }, [props.profile, props.apProfile, profileImages, fallbackHeaderPending]);
 
   if (!props.profile) {
     return (
@@ -362,6 +371,7 @@ export const Profile = ({
     () => (
       <ProfileHeader
         profile={profile ?? account}
+        apProfile={profile}
         following={self ? undefined : following}
         followToggleLoading={followLoading}
         onToggleFollow={onToggleFollow}
