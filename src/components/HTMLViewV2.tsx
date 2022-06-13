@@ -116,7 +116,8 @@ export function htmlToReactElements<T, A>(props: HTMLProps<T, A>) {
   }
 
   if (typeof htmlTree === 'string') {
-    return props.html;
+    const {Component: Type, props: typeProps} = props.elements.text;
+    return <Type {...typeProps}>{props.html}</Type>;
   }
 
   return elementsForNodes(htmlTree.childNodes, '', props);
@@ -231,6 +232,19 @@ function elementForNode<T, A>(
           {elementsForNodes((node as Element).childNodes ?? [], path, props)}
         </Type>
       </Box>
+    );
+  }
+
+  if (
+    node.nodeName &&
+    /^h[0-9]/.test(node.nodeName) &&
+    helperApi.hasTextChild(node)
+  ) {
+    const hProps = {...typeProps, bold: true} as typeof typeProps;
+    return (
+      <Type key={path} {...hProps}>
+        {node.childNodes[0].value}
+      </Type>
     );
   }
 

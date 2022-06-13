@@ -1,19 +1,19 @@
 import React, {useState} from 'react';
 import {RootStackParamList, TPeerInfo} from '../types';
 import {useMount} from '../utils/hooks';
-import {Pressable, ScrollView, View} from 'react-native';
+import {Pressable, ScrollView} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useThemeStyle} from '../theme/utils';
 import {StyleCreator} from '../theme';
 import {Type} from '../components/Type';
 import {thousandsNumber} from '../utils/numbers';
-import {HTMLView} from '../components/HTMLView';
 import {AvatarImage} from '../components/AvatarImage';
 import {useRemoteMastodonInstance} from '../api/hooks';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import {useAuth} from '../storage/auth';
 import {useInstanceTrends} from '../api/explore.hooks';
 import {Box} from '../components/Box';
+import {RichText} from '../components/RichText';
 
 export const PeerProfile = ({
   navigation,
@@ -96,7 +96,14 @@ export const PeerProfile = ({
         <Type scale="S">Peers: {thousandsNumber(stats.domain_count)}</Type>
       </Box>
       <Box mt={20} mb={10}>
-        <HTMLView value={description} />
+        <RichText
+          emojis={[]}
+          html={description}
+          onMentionPress={profileParams =>
+            navigation.push('Profile', profileParams)
+          }
+          onTagPress={tagParams => navigation.push('TagTimeline', tagParams)}
+        />
       </Box>
       <Box mt={10} mb={30}>
         <Type scale="S">Languages: {languages.join(', ')}</Type>

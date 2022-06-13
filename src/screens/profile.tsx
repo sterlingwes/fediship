@@ -1,3 +1,4 @@
+import {useNavigation} from '@react-navigation/native';
 import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
@@ -17,11 +18,11 @@ import {Box} from '../components/Box';
 import {EmojiName} from '../components/EmojiName';
 import {EmptyList} from '../components/EmptyList';
 import {FloatingHeader} from '../components/FloatingHeader';
-import {HTMLView} from '../components/HTMLView';
 import {CheckCircleIcon} from '../components/icons/CheckCircleIcon';
 import {LockIcon} from '../components/icons/LockIcon';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
+import {RichText} from '../components/RichText';
 import {SolidButton} from '../components/SolidButton';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
@@ -66,6 +67,8 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
   });
   const fallbackHeaderPending = useRef<boolean>();
   const {getColor} = useThemeGetters();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const styles = useThemeStyle(styleCreator);
 
   const tryFallbackHeader = useCallback(() => {
@@ -146,7 +149,14 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
         <Type scale="S" medium style={styles.headerUsername}>
           {bot ? '🤖 ' : ''}@{username}@{instanceHostName(url)}
         </Type>
-        <HTMLView value={note} emojis={emojis} />
+        <RichText
+          emojis={emojis ?? []}
+          html={note}
+          onMentionPress={profileParams =>
+            navigation.push('Profile', profileParams)
+          }
+          onTagPress={tagParams => navigation.push('TagTimeline', tagParams)}
+        />
         <ProfileFields
           fields={props.profile.fields}
           emojis={props.profile.emojis}
@@ -201,8 +211,9 @@ const errorMessage = (
         <Type style={{marginBottom: 10}} scale="L">
           Sorry :(
         </Type>
-        <HTMLView
-          value={`<p>This user appears to be on an instance that uses "secure mode". To view their profile, please visit <a href="${url}">${url}</a></p>`}
+        <RichText
+          emojis={[]}
+          html={`<p>This user appears to be on an instance that uses "secure mode". To view their profile, please visit <a href="${url}">${url}</a></p>`}
         />
       </View>
     );
@@ -295,7 +306,7 @@ const ProfileFields = ({
       {fields.map(field => (
         <Box fd="row" mv={5}>
           <Box mr={10} f={1} style={{overflow: 'hidden'}} cv>
-            <HTMLView value={field.name} emojis={emojis} />
+            <RichText emojis={emojis ?? []} html={field.name} />
           </Box>
           {hasVerified && (
             <Box style={{minWidth: 30}} cv>
@@ -309,7 +320,7 @@ const ProfileFields = ({
             </Box>
           )}
           <Box mr={10} f={2} cv>
-            <HTMLView value={field.value} emojis={emojis} />
+            <RichText emojis={emojis ?? []} html={field.value} />
           </Box>
         </Box>
       ))}

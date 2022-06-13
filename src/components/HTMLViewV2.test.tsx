@@ -1,5 +1,12 @@
+import React from 'react';
+import {Text} from 'react-native';
 import TestRenderer from 'react-test-renderer';
-import {HTMLNodeRenderer, htmlToReactElements, parseHtml} from './HTMLViewV2';
+import {
+  HTMLNodeRenderer,
+  htmlToReactElements,
+  HTMLViewV2,
+  parseHtml,
+} from './HTMLViewV2';
 import {Type, TypeProps} from './Type';
 
 jest.mock('react-native-mmkv');
@@ -33,6 +40,22 @@ const spanHideRenderNode: HTMLNodeRenderer = (n, api) => {
 };
 
 describe('HTMLViewV2', () => {
+  describe('without valid html', () => {
+    it('should still render with Text element', () => {
+      const tree = TestRenderer.create(
+        <HTMLViewV2
+          html="Not HTML"
+          elements={{text: {Component: Text, props: {}}}}
+        />,
+      );
+      expect(tree).toMatchInlineSnapshot(`
+        <Text>
+          Not HTML
+        </Text>
+      `);
+    });
+  });
+
   describe('htmlToReactElements', () => {
     it('should take a HTML node tree and return a react hierarchy', () => {
       const html = '<p>Hello world<br />I am Wes</p>';

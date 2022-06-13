@@ -19,7 +19,6 @@ import {Emoji, RootStackParamList, TAccount, TStatus} from '../types';
 import {timeAgo} from '../utils/dates';
 import {Box} from './Box';
 import {EmojiName} from './EmojiName';
-import {HTMLView} from './HTMLView';
 import {BookmarkIcon} from './icons/BookmarkIcon';
 import {BoostIcon} from './icons/BoostIcon';
 import {ChevronInverted} from './icons/Chevron';
@@ -38,6 +37,8 @@ import {Type} from './Type';
 
 const CollapsedStatus = (props: TStatus & {collapsed: boolean}) => {
   const styles = useThemeStyle(styleCreator);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const spoilerText = (props.spoiler_text ?? '').trim();
   return (
     <View>
@@ -48,7 +49,16 @@ const CollapsedStatus = (props: TStatus & {collapsed: boolean}) => {
       )}
       {!props.collapsed && (
         <>
-          <HTMLView emojis={props.emojis ?? []} value={props.content} />
+          <RichText
+            emojis={props.emojis ?? []}
+            html={props.content}
+            onMentionPress={({host, accountHandle}) =>
+              navigation.push('Profile', {host, accountHandle})
+            }
+            onTagPress={({host, tag}) =>
+              navigation.push('TagTimeline', {host, tag})
+            }
+          />
           {props.poll && <Poll {...props.poll} />}
           {props.media_attachments && (
             <MediaAttachments media={props.media_attachments} />
@@ -329,7 +339,6 @@ export const Status = (
                     navigation.push('TagTimeline', {host, tag})
                   }
                 />
-                {/* <HTMLView emojis={emojis} value={content} /> */}
                 {!truncated && (
                   <>
                     {mainStatus.poll && <Poll {...mainStatus.poll} />}

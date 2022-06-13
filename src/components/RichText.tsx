@@ -1,4 +1,5 @@
 import React, {useCallback, useMemo} from 'react';
+import {Linking} from 'react-native';
 import {useThemeGetters} from '../theme/utils';
 import {Emoji} from '../types';
 import {helperApi, HTMLNodeRenderer, HTMLViewV2} from './HTMLViewV2';
@@ -58,7 +59,7 @@ export const RichText = ({
   );
 
   const onLinkPress = useCallback(
-    ({htmlNode}) => {
+    async ({htmlNode}) => {
       const href = helperApi.getAttribute(htmlNode, 'href');
       if (!href || !href.value) {
         console.warn('onLinkPress element has no href');
@@ -90,6 +91,10 @@ export const RichText = ({
           onMentionPress({host, accountHandle});
           return;
         }
+      }
+
+      if (await Linking.canOpenURL(href.value)) {
+        Linking.openURL(href.value);
       }
     },
     [onMentionPress, onTagPress],
