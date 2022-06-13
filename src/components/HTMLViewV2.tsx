@@ -3,7 +3,7 @@ import {mf2} from '@sterlingwes/microformats-parser';
 import type {Document, ChildNode, Element, TextNode} from 'parse5';
 import {Emoji} from '../types';
 import {Box} from './Box';
-import {PressableProps} from 'react-native';
+import {Image, PressableProps} from 'react-native';
 
 interface ElementOverride<P> {
   Component: ComponentType<P>;
@@ -155,6 +155,8 @@ function wrapPressable<T>(n: ChildNode, pressProps: PressProps & T) {
   );
 }
 
+const emojiDims = Object.freeze({width: 18, height: 18});
+
 function elementForNode<T, A>(
   node: ChildNode,
   path: string,
@@ -181,6 +183,14 @@ function elementForNode<T, A>(
     );
   }
 
+  if (node.nodeName === 'emoji') {
+    const uri = helperApi.getAttribute(node, 'src');
+    if (!uri) {
+      return null;
+    }
+    return <Image source={{uri: uri.value, ...emojiDims}} style={emojiDims} />;
+  }
+
   const componentType = node.nodeName as UserComponentType;
   const userComponent = props.elements[componentType];
 
@@ -199,7 +209,7 @@ function elementForNode<T, A>(
 
   if (node.nodeName === 'p') {
     return (
-      <Box key={path} pb={10}>
+      <Box key={path} pb={10} f={1}>
         <Type {...typeProps}>
           {elementsForNodes((node as Element).childNodes ?? [], path, props)}
         </Type>

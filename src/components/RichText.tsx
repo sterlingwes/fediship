@@ -11,6 +11,15 @@ interface RichTextProps {
   onTagPress?: (_: {host: string; tag: string}) => void;
 }
 
+const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) => {
+  return (props.emojis ?? []).reduce((content, emoji) => {
+    return content.replace(
+      `:${emoji.shortcode}:`,
+      `<emoji src="${emoji.url}"></emoji>`,
+    );
+  }, props.content ?? '');
+};
+
 const renderNode: HTMLNodeRenderer = (n, api) => {
   if (n.nodeName !== 'span') {
     return false;
@@ -35,8 +44,18 @@ const renderNode: HTMLNodeRenderer = (n, api) => {
   return false;
 };
 
-export const RichText = ({html, onMentionPress, onTagPress}: RichTextProps) => {
+export const RichText = ({
+  html,
+  emojis,
+  onMentionPress,
+  onTagPress,
+}: RichTextProps) => {
   const {getColor} = useThemeGetters();
+
+  const content = useMemo(
+    () => contentWithEmojis({content: html, emojis}),
+    [html, emojis],
+  );
 
   const onLinkPress = useCallback(
     ({htmlNode}) => {
@@ -94,5 +113,5 @@ export const RichText = ({html, onMentionPress, onTagPress}: RichTextProps) => {
     [onLinkPress, getColor],
   );
 
-  return <HTMLViewV2 {...{renderNode, html, elements}} />;
+  return <HTMLViewV2 {...{renderNode, html: content, elements}} />;
 };
