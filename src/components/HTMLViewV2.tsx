@@ -34,6 +34,20 @@ interface SingleTextChildNode extends Element {
   childNodes: [TextNode];
 }
 
+const br = '<br/>';
+const fixLinebreaking = (text: string) => {
+  const value = text
+    .replace(/(<br([\s/]+)?>)+/g, br)
+    .replace(/\n+/g, br)
+    .replace(/<p>/g, '')
+    .replace(/<\/?p>/g, br);
+  const parts = value.split(br).filter(s => !!s.trim());
+  if (parts.length > 1) {
+    return `<p>${parts.join('</p><p>')}</p>`;
+  }
+  return value;
+};
+
 export const helperApi = Object.freeze({
   hasTextChild: (n: ChildNode): n is SingleTextChildNode => {
     const e = n as Element;
@@ -74,7 +88,8 @@ export const helperApi = Object.freeze({
 
 export const parseHtml = (html: string, baseUrl = 'https://some.host') => {
   try {
-    const result = mf2(html, {baseUrl});
+    const cleanHtml = fixLinebreaking(html);
+    const result = mf2(cleanHtml, {baseUrl});
     return result.doc && result.doc.childNodes
       ? (result.doc as Document)
       : html;
@@ -91,9 +106,7 @@ export const parseHtml = (html: string, baseUrl = 'https://some.host') => {
 };
 
 export function HTMLViewV2<T, A>(props: HTMLProps<T, A>) {
-  const {Component: Type, props: typeProps} = props.elements.text;
-
-  return <Type {...typeProps}>{htmlToReactElements(props)}</Type>;
+  return <>{htmlToReactElements(props)}</>;
 }
 
 export function htmlToReactElements<T, A>(props: HTMLProps<T, A>) {
@@ -106,27 +119,22 @@ export function htmlToReactElements<T, A>(props: HTMLProps<T, A>) {
     return props.html;
   }
 
-  const {Component: Type, props: typeProps} = props.elements.text;
-  return (
-    <Type {...typeProps}>
-      {elementsForNodes(htmlTree.childNodes, '', props)}
-    </Type>
-  );
+  return elementsForNodes(htmlTree.childNodes, '', props);
 }
 
 function elementsForNodes<T, A>(
   nodes: ChildNode[],
   path: string,
   props: HTMLProps<T, A>,
+  {inherit} = {inherit: true},
 ): ReactNode[] {
   const results = nodes.map((node, i) =>
-    elementForNode(node, `${path}.${i}`, props),
+    elementForNode(node, `${path}.${i}`, props, {inherit}),
   );
   const flattened = results.reduce(
     (acc, item) => (item != null ? (acc as ReactNode[]).concat(item) : acc),
     [] as ReactNode[],
   );
-
   return flattened as ReactNode[];
 }
 
@@ -157,10 +165,13 @@ function wrapPressable<T>(n: ChildNode, pressProps: PressProps & T) {
 
 const emojiDims = Object.freeze({width: 18, height: 18});
 
+const withoutColor = ({color: _, ...props}: any) => ({...props, color: null});
+
 function elementForNode<T, A>(
   node: ChildNode,
   path: string,
   props: HTMLProps<T, A>,
+  {inherit} = {inherit: true},
 ) {
   if (node.nodeName === '#comment') {
     return null;
@@ -176,8 +187,9 @@ function elementForNode<T, A>(
   }
 
   if (node.nodeName === '#text') {
+    const textProps = inherit ? typeProps : withoutColor(typeProps);
     return (
-      <Type key={path} {...wrapPressable(node, typeProps)}>
+      <Type key={path} {...wrapPressable(node, textProps)}>
         {(node as TextNode).value}
       </Type>
     );
@@ -188,7 +200,13 @@ function elementForNode<T, A>(
     if (!uri) {
       return null;
     }
-    return <Image source={{uri: uri.value, ...emojiDims}} style={emojiDims} />;
+    return (
+      <Image
+        key={path}
+        source={{uri: uri.value, ...emojiDims}}
+        style={emojiDims}
+      />
+    );
   }
 
   const componentType = node.nodeName as UserComponentType;
@@ -196,20 +214,19 @@ function elementForNode<T, A>(
 
   if (userComponent) {
     const {Component: UserComponent, props: userProps} = userComponent;
+    const filteredUserProps = inherit ? userProps : withoutColor(userProps);
     return (
-      <UserComponent {...wrapPressable(node, userProps)} key={path}>
-        {elementsForNodes((node as Element).childNodes ?? [], path, props)}
+      <UserComponent {...wrapPressable(node, filteredUserProps)} key={path}>
+        {elementsForNodes((node as Element).childNodes ?? [], path, props, {
+          inherit: false,
+        })}
       </UserComponent>
     );
   }
 
-  if (node.nodeName === 'br') {
-    return <Box key={path} pv={10} />;
-  }
-
   if (node.nodeName === 'p') {
     return (
-      <Box key={path} pb={10} f={1}>
+      <Box key={path} pb={10}>
         <Type {...typeProps}>
           {elementsForNodes((node as Element).childNodes ?? [], path, props)}
         </Type>
@@ -219,7 +236,7 @@ function elementForNode<T, A>(
 
   const children = (node as Element).childNodes;
   if (children && children.length) {
-    return elementsForNodes(children, path, props);
+    return elementsForNodes(children, path, props, {inherit});
   }
 
   return null;

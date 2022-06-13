@@ -43,22 +43,10 @@ describe('HTMLViewV2', () => {
       if (node == null || typeof node === 'string') {
         throw new Error('expected JSX element return for test case');
       }
+      // @ts-expect-error weird type refinement issue
       const tree = TestRenderer.create(node);
       expect(tree).toMatchInlineSnapshot(`
-        <Text
-          scale="S"
-          style={
-            Array [
-              Object {
-                "color": "#E6EEF6",
-              },
-              Object {
-                "fontSize": 16,
-                "lineHeight": 20.8,
-              },
-            ]
-          }
-        >
+        Array [
           <View
             style={
               Array [
@@ -99,16 +87,32 @@ describe('HTMLViewV2', () => {
               >
                 Hello world
               </Text>
-              <View
-                style={
-                  Array [
-                    Object {
-                      "paddingVertical": 10,
-                    },
-                    Object {},
-                  ]
-                }
-              />
+            </Text>
+          </View>,
+          <View
+            style={
+              Array [
+                Object {
+                  "paddingBottom": 10,
+                },
+                Object {},
+              ]
+            }
+          >
+            <Text
+              scale="S"
+              style={
+                Array [
+                  Object {
+                    "color": "#E6EEF6",
+                  },
+                  Object {
+                    "fontSize": 16,
+                    "lineHeight": 20.8,
+                  },
+                ]
+              }
+            >
               <Text
                 scale="S"
                 style={
@@ -126,8 +130,8 @@ describe('HTMLViewV2', () => {
                 I am Wes
               </Text>
             </Text>
-          </View>
-        </Text>
+          </View>,
+        ]
       `);
     });
 
@@ -150,22 +154,10 @@ describe('HTMLViewV2', () => {
         if (node == null || typeof node === 'string') {
           throw new Error('expected JSX element return for test case');
         }
+        // @ts-expect-error weird type refinement issue
         const tree = TestRenderer.create(node);
         expect(tree).toMatchInlineSnapshot(`
-          <Text
-            scale="S"
-            style={
-              Array [
-                Object {
-                  "color": "#E6EEF6",
-                },
-                Object {
-                  "fontSize": 16,
-                  "lineHeight": 20.8,
-                },
-              ]
-            }
-          >
+          Array [
             <View
               style={
                 Array [
@@ -207,7 +199,7 @@ describe('HTMLViewV2', () => {
                   From the Netherlands 🇳🇱
                 </Text>
               </Text>
-            </View>
+            </View>,
             <View
               style={
                 Array [
@@ -249,7 +241,7 @@ describe('HTMLViewV2', () => {
                   Social media needs to be fun, safe and secure again. Our team and I are working hard to keep that possible here for you♥️
                 </Text>
               </Text>
-            </View>
+            </View>,
             <View
               style={
                 Array [
@@ -291,7 +283,7 @@ describe('HTMLViewV2', () => {
                   Don’t forget: questions or any other chitchat are always welcome, we are on a social platform after all!
                 </Text>
               </Text>
-            </View>
+            </View>,
             <View
               style={
                 Array [
@@ -333,7 +325,7 @@ describe('HTMLViewV2', () => {
                   I love you all, purrr...
                 </Text>
               </Text>
-            </View>
+            </View>,
             <View
               style={
                 Array [
@@ -374,16 +366,32 @@ describe('HTMLViewV2', () => {
                 >
                   ☮️  In loving memory of Patrick♥️
                 </Text>
-                <View
-                  style={
-                    Array [
-                      Object {
-                        "paddingVertical": 10,
-                      },
-                      Object {},
-                    ]
-                  }
-                />
+              </Text>
+            </View>,
+            <View
+              style={
+                Array [
+                  Object {
+                    "paddingBottom": 10,
+                  },
+                  Object {},
+                ]
+              }
+            >
+              <Text
+                scale="S"
+                style={
+                  Array [
+                    Object {
+                      "color": "#E6EEF6",
+                    },
+                    Object {
+                      "fontSize": 16,
+                      "lineHeight": 20.8,
+                    },
+                  ]
+                }
+              >
                 <Text
                   onPress={[Function]}
                   style={
@@ -402,12 +410,10 @@ describe('HTMLViewV2', () => {
                   }
                 >
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -419,7 +425,7 @@ describe('HTMLViewV2', () => {
                   </Text>
                 </Text>
               </Text>
-            </View>
+            </View>,
             <View
               style={
                 Array [
@@ -461,7 +467,7 @@ describe('HTMLViewV2', () => {
                   a🕯️for Lorenz, Sascha & Maxim🖤
                 </Text>
               </Text>
-            </View>
+            </View>,
             <View
               style={
                 Array [
@@ -504,12 +510,10 @@ describe('HTMLViewV2', () => {
                   }
                 >
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -520,12 +524,10 @@ describe('HTMLViewV2', () => {
                     #
                   </Text>
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -570,12 +572,10 @@ describe('HTMLViewV2', () => {
                   }
                 >
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -586,12 +586,10 @@ describe('HTMLViewV2', () => {
                     #
                   </Text>
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -636,12 +634,10 @@ describe('HTMLViewV2', () => {
                   }
                 >
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -652,12 +648,10 @@ describe('HTMLViewV2', () => {
                     #
                   </Text>
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -702,12 +696,10 @@ describe('HTMLViewV2', () => {
                   }
                 >
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -718,12 +710,10 @@ describe('HTMLViewV2', () => {
                     #
                   </Text>
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -768,12 +758,10 @@ describe('HTMLViewV2', () => {
                   }
                 >
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -784,12 +772,10 @@ describe('HTMLViewV2', () => {
                     #
                   </Text>
                   <Text
+                    color={null}
                     scale="S"
                     style={
                       Array [
-                        Object {
-                          "color": "#E6EEF6",
-                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -801,8 +787,8 @@ describe('HTMLViewV2', () => {
                   </Text>
                 </Text>
               </Text>
-            </View>
-          </Text>
+            </View>,
+          ]
         `);
       });
     });
@@ -845,14 +831,15 @@ describe('HTMLViewV2', () => {
                           "parentNode": [Circular],
                           "value": "Hello world",
                         },
-                        Object {
-                          "attrs": Array [],
-                          "childNodes": Array [],
-                          "namespaceURI": "http://www.w3.org/1999/xhtml",
-                          "nodeName": "br",
-                          "parentNode": [Circular],
-                          "tagName": "br",
-                        },
+                      ],
+                      "namespaceURI": "http://www.w3.org/1999/xhtml",
+                      "nodeName": "p",
+                      "parentNode": [Circular],
+                      "tagName": "p",
+                    },
+                    Object {
+                      "attrs": Array [],
+                      "childNodes": Array [
                         Object {
                           "nodeName": "#text",
                           "parentNode": [Circular],

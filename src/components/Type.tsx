@@ -17,7 +17,7 @@ export type FontWeight = 'bold' | 'semiBold' | 'medium' | 'regular';
 export interface TypeProps extends TextProps {
   scale?: FontScale;
   bold?: boolean;
-  color?: ColorValue;
+  color?: ColorValue | null;
   semiBold?: boolean;
   medium?: boolean;
   weight?: FontWeight;
@@ -34,7 +34,7 @@ export const getTextStyle = (
   styles: ReturnType<StyleCreator>,
 ): StyleProp<TextStyle> => {
   return [
-    styles.text,
+    props.color === null ? undefined : styles.text,
     props.weight === 'bold' || props.bold ? styles.bold : undefined,
     props.weight === 'semiBold' || props.semiBold ? styles.semiBold : undefined,
     props.weight === 'medium' || props.medium ? styles.medium : undefined,

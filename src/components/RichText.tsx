@@ -106,8 +106,8 @@ export const RichText = ({
         props: {
           onPress: onLinkPress,
           color: getColor('primary'),
-          semiBold: true,
-        } as TypeProps,
+          medium: true,
+        },
       },
     }),
     [onLinkPress, getColor],
