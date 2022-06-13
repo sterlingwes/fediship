@@ -1,3 +1,5 @@
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useMemo, useState} from 'react';
 import {
   Image,
@@ -13,7 +15,7 @@ import {useRecentFavourites} from '../storage/recent-favourites';
 
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
-import {Emoji, TAccount, TStatus} from '../types';
+import {Emoji, RootStackParamList, TAccount, TStatus} from '../types';
 import {timeAgo} from '../utils/dates';
 import {Box} from './Box';
 import {EmojiName} from './EmojiName';
@@ -30,6 +32,7 @@ import {LoadingSpinner} from './LoadingSpinner';
 import {MediaAttachments} from './MediaAttachments';
 import {Poll} from './Poll';
 import {ReplyLine} from './ReplyLine';
+import {RichText} from './RichText';
 import {getType} from './status.util';
 import {Type} from './Type';
 
@@ -158,6 +161,8 @@ export const Status = (
     trackReblog,
     trackBookmark,
   } = useRecentFavourites();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const mainStatus = props.reblog ? props.reblog : props;
   const recentFav = favourites[mainStatus.url ?? mainStatus.uri];
   const recentReblog = reblogs[mainStatus.url ?? mainStatus.uri];
@@ -314,7 +319,17 @@ export const Status = (
               />
             ) : (
               <>
-                <HTMLView emojis={emojis} value={content} />
+                <RichText
+                  emojis={emojis}
+                  html={content}
+                  onMentionPress={({host, accountHandle}) =>
+                    navigation.push('Profile', {host, accountHandle})
+                  }
+                  onTagPress={({host, tag}) =>
+                    navigation.push('TagTimeline', {host, tag})
+                  }
+                />
+                {/* <HTMLView emojis={emojis} value={content} /> */}
                 {!truncated && (
                   <>
                     {mainStatus.poll && <Poll {...mainStatus.poll} />}

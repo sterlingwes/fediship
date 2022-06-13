@@ -64,10 +64,15 @@ const styleFor = (props: BoxProps) => {
 };
 
 const alignmentStyle = (props: BoxProps): ViewStyle => {
-  const base = {
-    flex: props.f,
-    flexDirection: props.fd,
-  };
+  const base = {} as ViewStyle;
+
+  if (props.f) {
+    base.flex = props.f;
+  }
+
+  if (props.fd) {
+    base.flexDirection = props.fd;
+  }
 
   if (props.sb) {
     return {
@@ -119,7 +124,9 @@ export const Box = ({
   children,
   style,
   ...props
-}: BoxProps & {children: ReactNode; style?: ViewStyle | ViewStyle[]}) => {
-  const styles = useMemo(() => styleFor(props), [props]);
-  return <View style={[styles, alignmentStyle(props), style]}>{children}</View>;
+}: BoxProps & {children?: ReactNode; style?: ViewStyle | ViewStyle[]}) => {
+  const styles = useMemo(() => {
+    return [styleFor(props), alignmentStyle(props), style].filter(s => !!s);
+  }, [props, style]);
+  return <View style={styles}>{children}</View>;
 };

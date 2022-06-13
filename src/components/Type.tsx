@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {ColorValue, StyleProp, Text, TextProps, TextStyle} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
@@ -39,15 +39,16 @@ export const getTextStyle = (
     props.weight === 'semiBold' || props.semiBold ? styles.semiBold : undefined,
     props.weight === 'medium' || props.medium ? styles.medium : undefined,
     getTextScaleStyle(props.scale),
-    props.center && {textAlign: 'center'},
+    props.center && {textAlign: 'center' as TextStyle['textAlign']},
     props.style,
     props.color ? {color: props.color} : undefined,
-  ];
+  ].filter(s => !!s);
 };
 
 export const Type = (props: TypeProps) => {
   const styles = useThemeStyle(styleCreator);
-  return <Text {...props} style={getTextStyle(props, styles)} />;
+  const textStyle = useMemo(() => getTextStyle(props, styles), [props, styles]);
+  return <Text {...props} style={textStyle} />;
 };
 
 const styleCreator: StyleCreator = ({getColor}) => ({
