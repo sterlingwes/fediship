@@ -44,6 +44,7 @@ import {XIcon} from './components/icons/XIcon';
 import {ImageCaptioner} from './screens/image-captioner';
 import {StatusActivity} from './screens/timelines/status-activity';
 import {Polls} from './screens/timelines/polls';
+import {OSSList} from './screens/about/oss-list';
 
 const Tab = createBottomTabNavigator();
 
@@ -207,6 +208,18 @@ const LoggedInStack = () => (
         presentation: 'containedTransparentModal',
         headerShown: false,
         orientation: 'all',
+      }}
+    />
+    <LIStack.Screen
+      name="OSSList"
+      component={OSSList}
+      options={{
+        presentation: 'fullScreenModal',
+        headerTitle: '🙏 Open Source ♥️',
+        headerRight: props => (
+          <HeaderRightButton back={props.canGoBack} IconComponent={XIcon} />
+        ),
+        orientation: 'portrait',
       }}
     />
   </LIStack.Navigator>

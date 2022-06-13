@@ -16,6 +16,8 @@ export const darkPalette: TThemeContext['palette'] = Object.freeze({
 
   baseTextColor: '#E6EEF6',
   contrastTextColor: '#0F1014',
+
+  shadowColor: '#0F1014',
 });
 
 export const darkNavigationTheme: NavTheme = Object.freeze({

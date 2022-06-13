@@ -1,11 +1,16 @@
 import React from 'react';
-import {ClipPath, Defs, G, Path, Rect, Svg} from 'react-native-svg';
+import {ClipPath, Defs, G, Path, Rect, Svg, SvgProps} from 'react-native-svg';
 import {screenWidth} from '../../dimensions';
 
-export const LogoBoat = ({size}: {size?: number}) => {
+interface Props extends SvgProps {
+  size?: number;
+}
+
+export const LogoBoat = ({size, ...props}: Props) => {
   const width = size ?? (screenWidth * 2) / 3;
   return (
     <Svg
+      {...props}
       width={width}
       height={width}
       preserveAspectRatio="xMidYMid meet"

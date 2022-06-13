@@ -2,6 +2,7 @@ import React from 'react';
 import {Image, View, ViewStyle} from 'react-native';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
+import {shadow} from '../utils/styles';
 
 export const AvatarImage = ({uri, style}: {uri: string; style?: ViewStyle}) => {
   const styles = useThemeStyle(styleCreator);
@@ -18,14 +19,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     borderRadius: 5,
     borderWidth: 2,
     borderColor: getColor('secondary'),
-    elevation: 4,
-    shadowColor: getColor('base'),
-    shadowOpacity: 0.05,
-    shadowRadius: 18,
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
+    ...shadow({getColor}),
     width: 100,
     height: 100,
   },

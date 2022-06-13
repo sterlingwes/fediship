@@ -15,6 +15,7 @@ export interface TThemeContext {
 
     baseTextColor: ColorValue;
     contrastTextColor: ColorValue;
+    shadowColor: ColorValue;
   };
 
   activeScheme: ColorSchemeName;
@@ -26,7 +27,7 @@ export interface TThemeContext {
 
 export type ValidColor = keyof TThemeContext['palette'];
 
-interface StyleCreatorApi {
+export interface StyleCreatorApi {
   getColor: (colorName: ValidColor) => ColorValue;
 }
 

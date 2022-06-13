@@ -3,6 +3,7 @@ import {StyleSheet, TouchableOpacity} from 'react-native';
 import {screenWidth} from '../dimensions';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
+import {Box} from './Box';
 import {ChevronInverted} from './icons/Chevron';
 import {Type} from './Type';
 
@@ -22,10 +23,14 @@ export const SimpleListRow = ({
       style={styles.listRow}
       activeOpacity={0.5}
       onPress={onPress}>
-      <Type scale="S" style={styles.label} numberOfLines={1}>
-        {label}
-      </Type>
-      {!hideChevron && <ChevronInverted color={getColor('primary')} />}
+      <Box pr={10} f={1}>
+        <Type scale="S" numberOfLines={1} ellipsizeMode="tail">
+          {label}
+        </Type>
+      </Box>
+      <Box>
+        {!hideChevron && <ChevronInverted color={getColor('primary')} />}
+      </Box>
     </TouchableOpacity>
   );
 };

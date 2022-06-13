@@ -65,3 +65,4 @@ _bundle/
 scripts/out
 
 /scripts/signing
+src/generated

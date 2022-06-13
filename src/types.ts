@@ -152,6 +152,7 @@ export type RootStackParamList = {
   Explore: undefined;
   Compose: undefined;
   User: undefined;
+  OSSList: undefined;
   Login: undefined;
   Authorize: {host: string; scope: string};
   UserMain: undefined;
