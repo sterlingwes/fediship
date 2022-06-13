@@ -79,7 +79,7 @@ export const useAPProfile = (
   };
 
   const fetchEmojis = async (remoteHost: string) => {
-    if (emojis.current) {
+    if (emojis.current.length) {
       return emojis.current;
     }
     const remoteMasto = getRemoteMasto(remoteHost);
