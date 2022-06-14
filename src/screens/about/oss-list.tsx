@@ -30,7 +30,14 @@ export const OSSList = () => {
   const renderItem = useMemo(
     (): ListRenderItem<PackageDetail> =>
       ({item}) =>
-        <SimpleListRow label={item.name} onPress={() => onPressItem(item)} />,
+        (
+          <SimpleListRow
+            icon="external-link"
+            iconColor="baseAccent"
+            label={item.name}
+            onPress={() => onPressItem(item)}
+          />
+        ),
     [onPressItem],
   );
 
@@ -45,7 +52,7 @@ export const OSSList = () => {
         <Box p={15} pt={5} style={styles.messageBoxHat}>
           <Type scale="S">
             This app is made possible by a number of open source libraries. Tap
-            any to view their code repository.
+            any below to learn more about them and their contributors.
           </Type>
         </Box>
         <Box style={styles.messageBox} />

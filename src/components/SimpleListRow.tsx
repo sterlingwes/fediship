@@ -1,23 +1,29 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {screenWidth} from '../dimensions';
-import {StyleCreator} from '../theme';
+import {StyleCreator, ValidColor} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {Box} from './Box';
 import {ChevronInverted} from './icons/Chevron';
+import {ExternalLink} from './icons/ExternalLinkIcon';
 import {Type} from './Type';
 
 export const SimpleListRow = ({
   onPress,
   label,
   hideChevron,
+  icon,
+  iconColor,
 }: {
   onPress: () => any;
   label: string;
   hideChevron?: boolean;
+  icon?: 'external-link' | 'chevron';
+  iconColor?: ValidColor;
 }) => {
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
+  const Icon = icon === 'external-link' ? ExternalLink : ChevronInverted;
   return (
     <TouchableOpacity
       style={styles.listRow}
@@ -29,7 +35,7 @@ export const SimpleListRow = ({
         </Type>
       </Box>
       <Box>
-        {!hideChevron && <ChevronInverted color={getColor('primary')} />}
+        {!hideChevron && <Icon color={getColor(iconColor ?? 'primary')} />}
       </Box>
     </TouchableOpacity>
   );
