@@ -2,6 +2,7 @@ import React, {useCallback, useMemo} from 'react';
 import {Linking} from 'react-native';
 import {useThemeGetters} from '../theme/utils';
 import {Emoji} from '../types';
+import {hitSlopV} from '../utils/touch';
 import {helperApi, HTMLNodeRenderer, HTMLViewV2} from './HTMLViewV2';
 import {Type, TypeProps} from './Type';
 
@@ -115,6 +116,7 @@ export const RichText = ({
           onPress: onLinkPress,
           color: getColor('primary'),
           medium: true,
+          hitSlop: hitSlopV(20),
         } as TypeProps,
       },
     }),
