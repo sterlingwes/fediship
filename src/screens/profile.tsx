@@ -303,8 +303,8 @@ const ProfileFields = ({
 
   return (
     <Box mt={10} pt={15} style={styles.fieldsContainer}>
-      {fields.map(field => (
-        <Box fd="row" mv={5}>
+      {fields.map((field, i) => (
+        <Box fd="row" mv={5} key={i}>
           <Box mr={10} f={1} style={{overflow: 'hidden'}} cv>
             <RichText emojis={emojis ?? []} html={field.name} />
           </Box>

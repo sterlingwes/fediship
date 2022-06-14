@@ -8,6 +8,7 @@ import {RootStackParamList, TMediaAttachment} from '../types';
 import {Type} from './Type';
 import {PlayCircleIcon} from './icons/PlayCircleIcon';
 import {RedundantImage} from './RedundantImage';
+import {Box} from './Box';
 
 const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
   width,
@@ -73,7 +74,7 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
 
   if (props.media.length === 1) {
     return (
-      <View style={styles.mediaTwo}>
+      <Box style={styles.mediaTwo} mb={5}>
         <View key={props.media[0].id} style={styles.flexColumn}>
           <Media
             {...{
@@ -82,13 +83,13 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
             }}
           />
         </View>
-      </View>
+      </Box>
     );
   }
 
   if (props.media.length === 2) {
     return (
-      <View style={styles.mediaTwo}>
+      <Box style={styles.mediaTwo} mb={5}>
         {props.media.map((attachment, i) => (
           <View key={attachment.id} style={styles.flexColumn}>
             <Media
@@ -96,14 +97,14 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
             />
           </View>
         ))}
-      </View>
+      </Box>
     );
   }
 
   if (props.media.length === 3) {
     const [first, second, third] = props.media;
     return (
-      <View style={[styles.mediaCluster]}>
+      <Box style={[styles.mediaCluster]} mb={5}>
         <View style={styles.mediaRow}>
           <View style={styles.flexColumn}>
             <View key={first.id} style={styles.flexColumn}>
@@ -127,14 +128,14 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
             ))}
           </View>
         </View>
-      </View>
+      </Box>
     );
   }
 
   if (props.media.length >= 4) {
     const [first, second, third, fourth] = props.media;
     return (
-      <View style={styles.mediaCluster}>
+      <Box style={styles.mediaCluster} mb={5}>
         <View style={styles.mediaRow}>
           {[first, second].map((attachment, i) => (
             <View key={attachment.id} style={styles.flexColumn}>
@@ -167,19 +168,19 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
             </View>
           ))}
         </View>
-      </View>
+      </Box>
     );
   }
 
   return (
-    <View style={styles.media}>
+    <Box style={styles.media} mb={5}>
       {props.media.map((attachment, i) => (
         <Media
           key={attachment.id}
           {...{...attachment, onOpenAttachment: () => onOpenAttachment(i)}}
         />
       ))}
-    </View>
+    </Box>
   );
 };
 
