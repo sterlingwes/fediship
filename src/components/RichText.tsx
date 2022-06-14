@@ -61,6 +61,7 @@ export const RichText = ({
   const onLinkPress = useCallback(
     async ({htmlNode}) => {
       const href = helperApi.getAttribute(htmlNode, 'href');
+
       if (!href || !href.value) {
         console.warn('onLinkPress element has no href');
         return;
@@ -93,7 +94,8 @@ export const RichText = ({
         }
       }
 
-      if (await Linking.canOpenURL(href.value)) {
+      const canOpen = await Linking.canOpenURL(href.value);
+      if (canOpen) {
         Linking.openURL(href.value);
       }
     },
@@ -109,10 +111,11 @@ export const RichText = ({
       a: {
         Component: Type,
         props: {
+          scale: 'S',
           onPress: onLinkPress,
           color: getColor('primary'),
           medium: true,
-        },
+        } as TypeProps,
       },
     }),
     [onLinkPress, getColor],

@@ -41,7 +41,7 @@ const spanHideRenderNode: HTMLNodeRenderer = (n, api) => {
 
 describe('HTMLViewV2', () => {
   describe('without valid html', () => {
-    it('should still render with Text element', () => {
+    it('should still render with Text element in paragraph View', () => {
       const tree = TestRenderer.create(
         <HTMLViewV2
           html="Not HTML"
@@ -49,9 +49,22 @@ describe('HTMLViewV2', () => {
         />,
       );
       expect(tree).toMatchInlineSnapshot(`
-        <Text>
-          Not HTML
-        </Text>
+        <View
+          style={
+            Array [
+              Object {
+                "paddingBottom": 10,
+              },
+              Object {},
+            ]
+          }
+        >
+          <Text>
+            <Text>
+              Not HTML
+            </Text>
+          </Text>
+        </View>
       `);
     });
   });
@@ -819,9 +832,56 @@ describe('HTMLViewV2', () => {
 
   describe('parseHtml', () => {
     describe('with no html tags', () => {
-      it('should not propagate lib error throw', () => {
+      it('should wrap in paragraph tags', () => {
         const html = 'I am plain text!';
-        expect(parseHtml(html)).toEqual(html);
+        expect(parseHtml(html)).toMatchInlineSnapshot(`
+          Object {
+            "childNodes": Array [
+              Object {
+                "attrs": Array [],
+                "childNodes": Array [
+                  Object {
+                    "attrs": Array [],
+                    "childNodes": Array [],
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "nodeName": "head",
+                    "parentNode": [Circular],
+                    "tagName": "head",
+                  },
+                  Object {
+                    "attrs": Array [],
+                    "childNodes": Array [
+                      Object {
+                        "attrs": Array [],
+                        "childNodes": Array [
+                          Object {
+                            "nodeName": "#text",
+                            "parentNode": [Circular],
+                            "value": "I am plain text!",
+                          },
+                        ],
+                        "namespaceURI": "http://www.w3.org/1999/xhtml",
+                        "nodeName": "p",
+                        "parentNode": [Circular],
+                        "tagName": "p",
+                      },
+                    ],
+                    "namespaceURI": "http://www.w3.org/1999/xhtml",
+                    "nodeName": "body",
+                    "parentNode": [Circular],
+                    "tagName": "body",
+                  },
+                ],
+                "namespaceURI": "http://www.w3.org/1999/xhtml",
+                "nodeName": "html",
+                "parentNode": [Circular],
+                "tagName": "html",
+              },
+            ],
+            "mode": "quirks",
+            "nodeName": "#document",
+          }
+        `);
       });
     });
 

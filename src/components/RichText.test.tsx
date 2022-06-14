@@ -25,22 +25,16 @@ describe('RichText', () => {
         />,
       );
       expect(tree).toMatchInlineSnapshot(`
-        Array [
-          <Image
-            source={
+        <View
+          style={
+            Array [
               Object {
-                "height": 18,
-                "uri": "https://some.url",
-                "width": 18,
-              }
-            }
-            style={
-              Object {
-                "height": 18,
-                "width": 18,
-              }
-            }
-          />,
+                "paddingBottom": 10,
+              },
+              Object {},
+            ]
+          }
+        >
           <Text
             color="#E6EEF6"
             scale="S"
@@ -59,9 +53,43 @@ describe('RichText', () => {
               ]
             }
           >
-             Hello and a good meowing everyone! Enjoy your day and stay safe! ❤️ :cat_hug_triangle:
-          </Text>,
-        ]
+            <Image
+              source={
+                Object {
+                  "height": 18,
+                  "uri": "https://some.url",
+                  "width": 18,
+                }
+              }
+              style={
+                Object {
+                  "height": 18,
+                  "width": 18,
+                }
+              }
+            />
+            <Text
+              color="#E6EEF6"
+              scale="S"
+              style={
+                Array [
+                  Object {
+                    "color": "#E6EEF6",
+                  },
+                  Object {
+                    "fontSize": 16,
+                    "lineHeight": 20.8,
+                  },
+                  Object {
+                    "color": "#E6EEF6",
+                  },
+                ]
+              }
+            >
+               Hello and a good meowing everyone! Enjoy your day and stay safe! ❤️ :cat_hug_triangle:
+            </Text>
+          </Text>
+        </View>
       `);
     });
   });
@@ -312,6 +340,7 @@ describe('RichText', () => {
                 color="#9baec8"
                 medium={true}
                 onPress={[Function]}
+                scale="S"
                 style={
                   Array [
                     Object {
@@ -321,8 +350,8 @@ describe('RichText', () => {
                       "fontWeight": "500",
                     },
                     Object {
-                      "fontSize": 20,
-                      "lineHeight": 26,
+                      "fontSize": 16,
+                      "lineHeight": 20.8,
                     },
                     Object {
                       "color": "#9baec8",
@@ -383,6 +412,7 @@ describe('RichText', () => {
                 color="#9baec8"
                 medium={true}
                 onPress={[Function]}
+                scale="S"
                 style={
                   Array [
                     Object {
@@ -392,8 +422,8 @@ describe('RichText', () => {
                       "fontWeight": "500",
                     },
                     Object {
-                      "fontSize": 20,
-                      "lineHeight": 26,
+                      "fontSize": 16,
+                      "lineHeight": 20.8,
                     },
                     Object {
                       "color": "#9baec8",

@@ -36,6 +36,10 @@ interface SingleTextChildNode extends Element {
 
 const br = '<br/>';
 const fixLinebreaking = (text: string) => {
+  if (!text || !text.trim()) {
+    return;
+  }
+
   const value = text
     .replace(/(<br([\s/]+)?>)+/g, br)
     .replace(/\n+/g, br)
@@ -45,7 +49,7 @@ const fixLinebreaking = (text: string) => {
   if (parts.length > 1) {
     return `<p>${parts.join('</p><p>')}</p>`;
   }
-  return value;
+  return `<p>${value}</p>`;
 };
 
 export const helperApi = Object.freeze({
@@ -89,6 +93,9 @@ export const helperApi = Object.freeze({
 export const parseHtml = (html: string, baseUrl = 'https://some.host') => {
   try {
     const cleanHtml = fixLinebreaking(html);
+    if (!cleanHtml) {
+      return;
+    }
     const result = mf2(cleanHtml, {baseUrl});
     return result.doc && result.doc.childNodes
       ? (result.doc as Document)
