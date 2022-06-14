@@ -68,6 +68,7 @@ export interface TStatus {
   spoiler_text?: string | null;
   emojis?: Emoji[] | null;
   media_attachments?: TMediaAttachment[];
+  visibility: Visibility | string;
 }
 
 export interface TStatusMapped extends TStatus {
@@ -102,6 +103,13 @@ export interface TNote {
   files: [];
   replyId: string;
   renoteId: string;
+}
+
+export enum Visibility {
+  Public = 'public', // Visible to everyone, shown in public timelines.
+  Unlisted = 'unlisted', // Visible to public, but not included in public timelines.
+  Private = 'private', // Visible to followers only, and to any mentioned users.
+  Direct = 'direct', // Visible only to mentioned users.
 }
 
 // https://docs.joinmastodon.org/entities/attachment/

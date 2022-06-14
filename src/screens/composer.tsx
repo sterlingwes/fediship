@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {Image, ScrollView, TouchableOpacity, View} from 'react-native';
+import {Image, ScrollView, TouchableOpacity} from 'react-native';
 import {nanoid} from '../utils/nanoid';
 
 import {useMyMastodonInstance} from '../api/hooks';
@@ -15,12 +15,14 @@ import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {flex} from '../utils/styles';
 import {screenHeight} from '../dimensions';
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
-import {RootStackParamList} from '../types';
+import {RootStackParamList, Visibility} from '../types';
 import {useFocusEffect} from '@react-navigation/native';
 import {SolidButton} from '../components/SolidButton';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {Type} from '../components/Type';
 import {getPendingCaptions} from './image-captioner';
+import {BottomSheet} from '../components/BottomSheet';
+import {RadioOptions} from '../components/RadioOptions';
 
 interface Attachment {
   uri: string;
@@ -67,6 +69,11 @@ const addCaptions = (
 const attachmentsForCaptioning = (attachments: Attachment[]) =>
   attachments.map(({uri, width, height}) => ({uri, width, height}));
 
+const visibilityOptions = Object.entries(Visibility).map(([label, id]) => ({
+  id,
+  label,
+}));
+
 export const Composer = ({
   navigation,
 }: BottomTabScreenProps<RootStackParamList, 'Compose'>) => {
@@ -82,12 +89,18 @@ export const Composer = ({
   const [attachmentStatuses, setAttachmentStatus] = useState<
     Record<string, AttachmentStatus>
   >({});
+  const [visibility, setVisibility] = useState(Visibility.Public);
+  const [vizModalShown, setVizModalShown] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       keyboardBanner.show();
     }, [keyboardBanner]),
   );
+
+  const onVisibilityChange = useCallback(() => {
+    setVizModalShown(true);
+  }, [setVizModalShown]);
 
   const attachmentsPayload = useMemo(() => {
     return attachments.map(({uri, name, type}) => ({
@@ -192,7 +205,7 @@ export const Composer = ({
   };
 
   return (
-    <View style={flex}>
+    <Box f={1}>
       <ScrollView style={flex}>
         <Box ph={15} pv={12}>
           <Input
@@ -233,10 +246,22 @@ export const Composer = ({
             {requireCaptions && (
               <SolidButton onPress={onCaption}>Caption</SolidButton>
             )}
+            <SolidButton onPress={onVisibilityChange}>Viz</SolidButton>
           </Box>
         </Box>
       </ScrollView>
-    </View>
+      <BottomSheet
+        visible={vizModalShown}
+        onClose={() => setVizModalShown(false)}>
+        <Box p={20}>
+          <RadioOptions
+            options={visibilityOptions}
+            selection={visibility}
+            onPress={id => setVisibility(id as Visibility)}
+          />
+        </Box>
+      </BottomSheet>
+    </Box>
   );
 };
 
