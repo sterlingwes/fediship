@@ -24,11 +24,13 @@ import {RootStackParamList, TStatusMapped} from '../types';
 import {EmptyList} from './EmptyList';
 import {ErrorBoundary} from './ErrorBoundary';
 
+type StatusOverrides = Partial<ComponentProps<typeof Status>>;
+
 const createTimelineRenderer =
   (
     navigation: NativeStackNavigationProp<RootStackParamList>,
     host: string | undefined,
-    statusOverrides?: Partial<ComponentProps<typeof Status>>,
+    statusOverrides?: StatusOverrides,
   ): ListRenderItem<TStatusMapped> =>
   row => {
     const status = row.item;
@@ -54,6 +56,7 @@ const createTimelineRenderer =
 
 interface StatusListProps extends ReturnType<typeof useTimeline> {
   showDetail?: boolean;
+  statusOverrides?: StatusOverrides;
 }
 
 export const StatusList = forwardRef(
@@ -65,6 +68,7 @@ export const StatusList = forwardRef(
       loadingMore,
       reloading,
       showDetail,
+      statusOverrides,
       fetchTimeline,
       reloadTimeline,
     }: StatusListProps,
@@ -83,8 +87,12 @@ export const StatusList = forwardRef(
     }));
 
     const renderItem = useMemo(
-      () => createTimelineRenderer(navigation, auth.host, {showDetail}),
-      [navigation, auth],
+      () =>
+        createTimelineRenderer(navigation, auth.host, {
+          ...statusOverrides,
+          showDetail,
+        }),
+      [navigation, auth, statusOverrides, showDetail],
     );
 
     const LoadFooter = useMemo(

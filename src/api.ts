@@ -230,14 +230,16 @@ export const useFavourites = (type: 'favourites' | 'bookmarks') => {
   const [nextPage, setNextPage] = useState<string | false>();
 
   const fetchTimeline = async (reset?: boolean) => {
-    if (nextPage === false || loading) {
+    if (!reset && (nextPage === false || loading)) {
       return;
     }
 
     setLoading(true);
     try {
       const method = type === 'favourites' ? 'getFavourites' : 'getBookmarks';
-      const result = await api[method](reset ? undefined : nextPage);
+      const result = await api[method](
+        reset ? undefined : nextPage || undefined,
+      );
       if (reset) {
         setStatuses(result.list);
       } else {

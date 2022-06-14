@@ -1,6 +1,7 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {forwardRef} from 'react';
+import React, {ComponentProps, forwardRef, useMemo} from 'react';
 import {useFavourites} from '../../api';
+import {Status} from '../../components/Status';
 import {StatusList} from '../../components/StatusList';
 import {RootStackParamList} from '../../types';
 import {useMount} from '../../utils/hooks';
@@ -22,6 +23,26 @@ export const FavouritesTimeline = forwardRef(
       });
     });
 
-    return <StatusList {...timeline} ref={ref} />;
+    const reloadCallbacks = useMemo((): Partial<
+      ComponentProps<typeof Status>
+    > => {
+      if (type === 'bookmarks') {
+        return {
+          onPressBookmark: () => timeline.fetchTimeline(true),
+        };
+      }
+
+      if (type === 'favourites') {
+        return {
+          onPressFavourite: () => timeline.fetchTimeline(true),
+        };
+      }
+
+      return {};
+    }, [type, timeline]);
+
+    return (
+      <StatusList {...timeline} statusOverrides={reloadCallbacks} ref={ref} />
+    );
   },
 );

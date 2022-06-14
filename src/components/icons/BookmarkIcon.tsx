@@ -5,13 +5,15 @@ import {Svg, SvgProps, Path} from 'react-native-svg';
 interface BookmarkProps extends SvgProps {
   width?: string | number;
   height?: string | number;
-  color?: ColorValue;
+  stroke?: ColorValue;
+  fill?: ColorValue;
 }
 
 export const BookmarkIcon = ({
   width,
   height,
-  color,
+  stroke,
+  fill,
   ...svgProps
 }: BookmarkProps) => {
   return (
@@ -20,8 +22,8 @@ export const BookmarkIcon = ({
       width={width ?? '24'}
       height={height ?? '24'}
       viewBox="0 0 24 24"
-      fill="none"
-      stroke={color ?? 'currentColor'}
+      fill={fill ?? 'none'}
+      stroke={stroke ?? 'currentColor'}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round">

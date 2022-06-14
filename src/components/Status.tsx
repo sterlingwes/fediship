@@ -150,6 +150,53 @@ const AvatarLock = () => {
   );
 };
 
+const PriorityAction = ({
+  icon,
+  active,
+  loading,
+  onPress,
+}: {
+  icon: 'bookmark' | 'favourite';
+  active: boolean | undefined;
+  loading: boolean;
+  onPress: () => void;
+}) => {
+  const styles = useThemeStyle(styleCreator);
+  const {getColor} = useThemeGetters();
+
+  const iconButton = useMemo(() => {
+    switch (icon) {
+      case 'favourite':
+        return (
+          <StarIcon
+            width="18"
+            height="18"
+            stroke={active ? 'transparent' : getColor('baseAccent')}
+            fill={active ? getColor('goldAccent') : undefined}
+          />
+        );
+      case 'bookmark':
+        return (
+          <BookmarkIcon
+            width="18"
+            height="18"
+            stroke={active ? 'transparent' : getColor('baseAccent')}
+            fill={active ? getColor('goldAccent') : undefined}
+          />
+        );
+    }
+  }, [icon, getColor, active]);
+
+  return (
+    <Pressable
+      disabled={loading}
+      onPress={onPress}
+      style={[styles.starButton, active && styles.starButtonFaved]}>
+      {loading ? <LoadingSpinner /> : iconButton}
+    </Pressable>
+  );
+};
+
 export const Status = (
   props: TStatus & {
     isLocal: boolean;
@@ -160,6 +207,8 @@ export const Status = (
     collapsed?: boolean;
     onPress: () => void;
     onPressAvatar?: (account: TAccount) => void;
+    onPressBookmark?: () => void;
+    onPressFavourite?: () => void;
   },
 ) => {
   const api = useMyMastodonInstance();
@@ -187,7 +236,6 @@ export const Status = (
   const [loadingReblog, setLoadingReblog] = useState(false);
   const [loadingBookmark, setLoadingBookmark] = useState(false);
   const styles = useThemeStyle(styleCreator);
-  const {getColor} = useThemeGetters();
 
   const onPressAvatar =
     typeof props.onPressAvatar === 'function'
@@ -206,6 +254,7 @@ export const Status = (
       setFaved(!faved);
     }
     setLoadingFav(false);
+    props.onPressFavourite?.();
   };
 
   const onReblog = async () => {
@@ -230,7 +279,10 @@ export const Status = (
       setBookmarked(!bookmarked);
     }
     setLoadingBookmark(false);
+    props.onPressBookmark?.();
   };
+
+  const priorityAction = props.onPressBookmark ? 'bookmark' : 'favourite';
 
   const [content, truncated] = useMemo(() => {
     const plainText = (mainStatus.content ?? '').replace(/<\/?[^<>]+>/g, '');
@@ -289,26 +341,20 @@ export const Status = (
                 }
               />
               {props.isLocal && !props.showDetail && (
-                <Pressable
-                  disabled={loadingFav}
-                  onPress={onFavourite}
-                  style={[
-                    styles.starButton,
-                    favourited && styles.starButtonFaved,
-                  ]}>
-                  {loadingFav ? (
-                    <LoadingSpinner />
-                  ) : (
-                    <StarIcon
-                      width="18"
-                      height="18"
-                      stroke={
-                        favourited ? 'transparent' : getColor('baseAccent')
-                      }
-                      fill={favourited ? getColor('goldAccent') : undefined}
-                    />
-                  )}
-                </Pressable>
+                <PriorityAction
+                  icon={priorityAction}
+                  loading={
+                    priorityAction === 'favourite'
+                      ? loadingFav
+                      : loadingBookmark
+                  }
+                  onPress={
+                    priorityAction === 'favourite' ? onFavourite : onBookmark
+                  }
+                  active={
+                    priorityAction === 'favourite' ? favourited : bookmarked
+                  }
+                />
               )}
             </View>
           </View>
@@ -493,7 +539,7 @@ const StatusActionBar = ({
         ) : (
           <BookmarkIcon
             {...commonIconProps}
-            color={getColor(bookmarkIconColor)}
+            stroke={getColor(bookmarkIconColor)}
             onPress={onBookmark}
           />
         )}
