@@ -11,6 +11,10 @@ import {shadow} from '../../utils/styles';
 import {PackageDetail} from './oss.types';
 
 const list = Licenses as PackageDetail[];
+list.unshift({
+  name: 'feather (icons)',
+  repo: {type: '', url: 'https://github.com/feathericons/feather'},
+} as PackageDetail);
 
 export const OSSList = () => {
   const styles = useThemeStyle(styleCreator);
