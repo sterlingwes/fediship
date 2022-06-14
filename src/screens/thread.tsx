@@ -2,19 +2,89 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useMemo, useRef, useState} from 'react';
 import {
   FlatList,
+  Linking,
   ListRenderItem,
   RefreshControl,
   StyleSheet,
-  View,
+  TouchableOpacity,
 } from 'react-native';
 import {useThread} from '../api';
+import {Box} from '../components/Box';
+import {ExternalLink} from '../components/icons/ExternalLinkIcon';
+import {FrownIcon} from '../components/icons/FrownIcon';
+import {LockIcon} from '../components/icons/LockIcon';
 import {InfoBanner} from '../components/InfoBanner';
 import {InlineReply} from '../components/InlineReply';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
+import {useThemeGetters} from '../theme/utils';
 import {RootStackParamList, TStatusMapped} from '../types';
 import {resolveTerminatingTootIds} from './thread/thread.util';
+
+const ThreadError = ({
+  error,
+  statusUrl,
+}: {
+  error: string;
+  statusUrl: string | undefined;
+}) => {
+  const {getColor} = useThemeGetters();
+
+  if (error.includes('authenticated')) {
+    return (
+      <Box c f={1}>
+        <Box mb={20}>
+          <LockIcon
+            width={50}
+            height={50}
+            strokeWidth={1}
+            color={getColor('baseAccent')}
+          />
+        </Box>
+        <Box mb={15}>
+          <Type medium>Unable to get status detail.</Type>
+        </Box>
+        <Box ph={20}>
+          <Type scale="S">
+            Sorry, the thread status you tapped is on an instance that requires
+            authentication. You can try opening the web version instead.
+          </Type>
+        </Box>
+        {!!statusUrl && (
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => Linking.openURL(statusUrl)}>
+            <Box p={20}>
+              <Type scale="S" color={getColor('primary')}>
+                Open in Browser <ExternalLink color={getColor('primary')} />
+              </Type>
+            </Box>
+          </TouchableOpacity>
+        )}
+      </Box>
+    );
+  }
+
+  return (
+    <Box c f={1}>
+      <Box mb={20}>
+        <FrownIcon
+          width={50}
+          height={50}
+          strokeWidth={1}
+          color={getColor('baseAccent')}
+        />
+      </Box>
+      <Box mb={15}>
+        <Type medium>Unable to retreive status thread.</Type>
+      </Box>
+      <Box ph={20}>
+        <Type scale="S">{error}</Type>
+      </Box>
+    </Box>
+  );
+};
 
 export const Thread = ({
   navigation,
@@ -126,11 +196,7 @@ export const Thread = ({
   );
 
   if (error) {
-    return (
-      <View>
-        <Type>Error! {error}</Type>
-      </View>
-    );
+    return <ThreadError error={error} statusUrl={statusUrl} />;
   }
 
   const incompleteThreadBanner = localFallback ? <IncompleteThread /> : null;

@@ -3,12 +3,18 @@ import {ColorValue} from 'react-native';
 import {Svg, Path, Rect} from 'react-native-svg';
 
 interface LockIconProps {
-  width?: string;
-  height?: string;
+  width?: string | number;
+  height?: string | number;
   color?: ColorValue;
+  strokeWidth?: number;
 }
 
-export const LockIcon = ({width, height, color}: LockIconProps) => {
+export const LockIcon = ({
+  width,
+  height,
+  color,
+  strokeWidth,
+}: LockIconProps) => {
   return (
     <Svg
       width={width ?? '24'}
@@ -16,7 +22,7 @@ export const LockIcon = ({width, height, color}: LockIconProps) => {
       viewBox="0 0 24 24"
       fill="none"
       stroke={color ?? 'currentColor'}
-      strokeWidth="2"
+      strokeWidth={strokeWidth ?? '2'}
       strokeLinecap="round"
       strokeLinejoin="round">
       <Rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
