@@ -3,7 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
 import React from 'react';
-import {LogBox} from 'react-native';
+import {LogBox, Platform} from 'react-native';
 import {Profile} from './screens/profile';
 import {
   ThemeProvider,
@@ -185,9 +185,10 @@ const LoggedInStack = () => (
       options={{
         presentation: 'fullScreenModal',
         headerTitle: 'Choose Instance',
-        headerRight: props => (
-          <HeaderRightButton back={props.canGoBack} IconComponent={XIcon} />
-        ),
+        headerRight: props =>
+          Platform.OS === 'ios' ? (
+            <HeaderRightButton back={props.canGoBack} IconComponent={XIcon} />
+          ) : null,
       }}
     />
     <LIStack.Screen
@@ -214,9 +215,10 @@ const LoggedInStack = () => (
       options={{
         presentation: 'fullScreenModal',
         headerTitle: '🙏 Open Source ♥️',
-        headerRight: props => (
-          <HeaderRightButton back={props.canGoBack} IconComponent={XIcon} />
-        ),
+        headerRight: props =>
+          Platform.OS === 'ios' ? (
+            <HeaderRightButton back={props.canGoBack} IconComponent={XIcon} />
+          ) : null,
         orientation: 'portrait',
       }}
     />
