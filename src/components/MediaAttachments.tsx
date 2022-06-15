@@ -17,7 +17,8 @@ const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
 
 const Media = (
   props: TMediaAttachment & {
-    imageStyle?: ImageStyle;
+    large?: boolean;
+    imageStyle?: ImageStyle | ImageStyle[];
     onOpenAttachment: () => void;
   },
 ) => {
@@ -37,7 +38,11 @@ const Media = (
                 uri: props.preview_url,
                 ...dimensProps(props.meta.small ?? {}),
               }}
-              style={[styles.previewImage, props.imageStyle]}
+              style={[
+                styles.previewImage,
+                props.large && styles.previewLarge,
+                props.imageStyle,
+              ]}
             />
           </Pressable>
         );
@@ -49,7 +54,11 @@ const Media = (
             onPress={props.onOpenAttachment}>
             <Image
               source={{uri: props.preview_url}}
-              style={[styles.previewImage, props.imageStyle]}
+              style={[
+                styles.previewImage,
+                props.large && styles.previewLarge,
+                props.imageStyle,
+              ]}
             />
             <View style={styles.mediaPlayableIcon}>
               <PlayCircleIcon color={getColor('contrastTextColor')} />
@@ -64,7 +73,13 @@ const Media = (
   return componentForType(props.type);
 };
 
-export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
+export const MediaAttachments = ({
+  large,
+  ...props
+}: {
+  media: TMediaAttachment[];
+  large?: boolean;
+}) => {
   const styles = useThemeStyle(styleCreator);
 
   const navigation =
@@ -74,11 +89,12 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
 
   if (props.media.length === 1) {
     return (
-      <Box style={styles.mediaTwo} mb={5}>
+      <Box style={[styles.mediaTwo, large && styles.noRadius]} mb={5}>
         <View key={props.media[0].id} style={styles.flexColumn}>
           <Media
             {...{
               ...props.media[0],
+              large,
               onOpenAttachment: () => onOpenAttachment(0),
             }}
           />
@@ -89,11 +105,15 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
 
   if (props.media.length === 2) {
     return (
-      <Box style={styles.mediaTwo} mb={5}>
+      <Box style={[styles.mediaTwo, large && styles.noRadius]} mb={5}>
         {props.media.map((attachment, i) => (
           <View key={attachment.id} style={styles.flexColumn}>
             <Media
-              {...{...attachment, onOpenAttachment: () => onOpenAttachment(i)}}
+              {...{
+                ...attachment,
+                large,
+                onOpenAttachment: () => onOpenAttachment(i),
+              }}
             />
           </View>
         ))}
@@ -104,13 +124,20 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
   if (props.media.length === 3) {
     const [first, second, third] = props.media;
     return (
-      <Box style={[styles.mediaCluster]} mb={5}>
+      <Box style={[styles.mediaCluster, large && styles.noRadius]} mb={5}>
         <View style={styles.mediaRow}>
           <View style={styles.flexColumn}>
             <View key={first.id} style={styles.flexColumn}>
               <Media
-                {...{...first, onOpenAttachment: () => onOpenAttachment(0)}}
-                imageStyle={styles.previewImageSpanTwoRows}
+                {...{
+                  ...first,
+                  large,
+                  onOpenAttachment: () => onOpenAttachment(0),
+                }}
+                imageStyle={[
+                  styles.previewImageSpanTwoRows,
+                  large && styles.previewImageSpanTwoRowsLarge,
+                ]}
               />
             </View>
           </View>
@@ -120,9 +147,13 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
                 <Media
                   {...{
                     ...attachment,
+                    large,
                     onOpenAttachment: () => onOpenAttachment(i + 1),
                   }}
-                  imageStyle={styles.previewImageTwoRows}
+                  imageStyle={[
+                    styles.previewImageTwoRows,
+                    large && styles.previewImageTwoRowsLarge,
+                  ]}
                 />
               </View>
             ))}
@@ -135,16 +166,20 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
   if (props.media.length >= 4) {
     const [first, second, third, fourth] = props.media;
     return (
-      <Box style={styles.mediaCluster} mb={5}>
+      <Box style={[styles.mediaCluster, large && styles.noRadius]} mb={5}>
         <View style={styles.mediaRow}>
           {[first, second].map((attachment, i) => (
             <View key={attachment.id} style={styles.flexColumn}>
               <Media
                 {...{
                   ...attachment,
+                  large,
                   onOpenAttachment: () => onOpenAttachment(i),
                 }}
-                imageStyle={styles.previewImageTwoRows}
+                imageStyle={[
+                  styles.previewImageTwoRows,
+                  large && styles.previewImageTwoRowsLarge,
+                ]}
               />
             </View>
           ))}
@@ -155,9 +190,13 @@ export const MediaAttachments = (props: {media: TMediaAttachment[]}) => {
               <Media
                 {...{
                   ...attachment,
+                  large,
                   onOpenAttachment: () => onOpenAttachment(i + 2),
                 }}
-                imageStyle={styles.previewImageTwoRows}
+                imageStyle={[
+                  styles.previewImageTwoRows,
+                  large && styles.previewImageTwoRowsLarge,
+                ]}
               />
               {props.media.length > 4 && i === 1 && (
                 <View style={styles.moreCount}>
@@ -206,6 +245,9 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     flexDirection: 'row',
     borderRadius: 8,
   },
+  noRadius: {
+    borderRadius: undefined,
+  },
   flexColumn: {
     flex: 1,
   },
@@ -214,6 +256,9 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     width: '100%',
     resizeMode: 'cover',
   },
+  previewLarge: {
+    height: 220,
+  },
   video: {
     minHeight: 150,
     width: '100%',
@@ -221,8 +266,14 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   previewImageTwoRows: {
     height: 75,
   },
+  previewImageTwoRowsLarge: {
+    height: 110,
+  },
   previewImageSpanTwoRows: {
     height: 152,
+  },
+  previewImageSpanTwoRowsLarge: {
+    height: 222,
   },
   mediaThumbnail: {
     flex: 1,

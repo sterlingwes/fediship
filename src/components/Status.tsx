@@ -12,6 +12,7 @@ import {
 import {useMyMastodonInstance} from '../api/hooks';
 import {screenWidth} from '../dimensions';
 import {useRecentFavourites} from '../storage/recent-favourites';
+import {retrieveMediaStatusAllPref} from '../storage/settings/appearance';
 
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
@@ -29,6 +30,7 @@ import {ShareGraphIcon} from './icons/ShareGraphIcon';
 import {StarIcon} from './icons/StarIcon';
 import {LoadingSpinner} from './LoadingSpinner';
 import {MediaAttachments} from './MediaAttachments';
+import {MediaStatus} from './MediaStatus';
 import {Poll} from './Poll';
 import {ReplyLine} from './ReplyLine';
 import {RichText} from './RichText';
@@ -302,6 +304,10 @@ export const Status = (
     () => [...(mainStatus.emojis ?? []), ...(mainStatus.account.emojis ?? [])],
     [mainStatus],
   );
+
+  if (retrieveMediaStatusAllPref() && mainStatus.media_attachments?.length) {
+    return <MediaStatus {...props} />;
+  }
 
   return (
     <Pressable onPress={props.onPress} style={styles.container}>

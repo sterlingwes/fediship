@@ -1,4 +1,4 @@
-import React, {ReactNode, useMemo} from 'react';
+import React, {ReactNode, useMemo, useState} from 'react';
 import {
   ListRenderItem,
   SectionList,
@@ -8,6 +8,10 @@ import {
   Switch,
 } from 'react-native';
 import {Type} from '../../components/Type';
+import {
+  retrieveMediaStatusAllPref,
+  saveMediaStatusAllPref,
+} from '../../storage/settings/appearance';
 import {StyleCreator} from '../../theme';
 import {useTheme, useThemeStyle} from '../../theme/utils';
 import {flex} from '../../utils/styles';
@@ -38,6 +42,9 @@ const ListHeader = ({section: {title}}: {section: {title: string}}) => {
 export const AppearanceSettings = () => {
   const theme = useTheme();
   const styles = useThemeStyle(styleCreator);
+  const [mediaStatusAll, setMediaStatusAll] = useState(
+    retrieveMediaStatusAllPref() ?? false,
+  );
 
   const menuItems = useMemo(
     (): MenuSection[] => [
@@ -82,8 +89,30 @@ export const AppearanceSettings = () => {
           },
         ],
       },
+      {
+        title: 'Timelines',
+        data: [
+          {
+            label: 'Always show large media',
+            onPress: () => {
+              setMediaStatusAll(!mediaStatusAll);
+              saveMediaStatusAllPref(!mediaStatusAll);
+            },
+            rightSide: (
+              <Switch
+                disabled={theme.systemSetting}
+                onValueChange={on => {
+                  setMediaStatusAll(on);
+                  saveMediaStatusAllPref(on);
+                }}
+                value={mediaStatusAll}
+              />
+            ),
+          },
+        ],
+      },
     ],
-    [theme],
+    [mediaStatusAll, theme, setMediaStatusAll],
   );
 
   const renderItem: ListRenderItem<typeof menuItems[0]['data'][0]> = ({

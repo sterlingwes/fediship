@@ -1,5 +1,5 @@
 import React, {ReactNode, useMemo} from 'react';
-import {View, ViewStyle} from 'react-native';
+import {ScrollView, View, ViewStyle} from 'react-native';
 
 interface SpacingBoxProps {
   // margin: horizontal, vertical, top, right, etc.
@@ -28,6 +28,8 @@ interface BoxProps extends SpacingBoxProps {
   c?: boolean; // center (horizontal & vertical)
   ch?: boolean; // center horizontal
   cv?: boolean; // center vertical
+  hMax?: number; // max height
+  scroll?: boolean; // overflow: scroll
 }
 
 const propStyleMap: Record<keyof SpacingBoxProps, keyof ViewStyle> =
@@ -77,6 +79,10 @@ const alignmentStyle = (props: BoxProps): ViewStyle => {
 
   if (props.fw) {
     base.flexWrap = 'wrap';
+  }
+
+  if (props.hMax) {
+    base.maxHeight = props.hMax;
   }
 
   if (props.sb) {
@@ -133,5 +139,8 @@ export const Box = ({
   const styles = useMemo(() => {
     return [styleFor(props), alignmentStyle(props), style].filter(s => !!s);
   }, [props, style]);
-  return <View style={styles}>{children}</View>;
+
+  const Container = props.scroll ? ScrollView : View;
+
+  return <Container style={styles}>{children}</Container>;
 };

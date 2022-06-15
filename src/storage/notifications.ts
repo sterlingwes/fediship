@@ -10,7 +10,9 @@ export const getLastFetch = () => {
   if (lastFetchCache) {
     return lastFetchCache;
   }
-  storage.getNumber('last_fetch');
+  const last = storage.getNumber('last_fetch');
+  lastFetchCache = last;
+  return last;
 };
 
 export const markFetch = () => {
