@@ -5,10 +5,18 @@ import {readJson} from './utils';
 
 const storage = new MMKV({id: 'notifications'});
 
-export const getLastFetch = () => storage.getNumber('last_fetch');
+let lastFetchCache: number | undefined;
+export const getLastFetch = () => {
+  if (lastFetchCache) {
+    return lastFetchCache;
+  }
+  storage.getNumber('last_fetch');
+};
 
 export const markFetch = () => {
-  storage.set('last_fetch', Date.now());
+  const now = Date.now();
+  storage.set('last_fetch', now);
+  lastFetchCache = now;
 };
 
 export const markTabRead = () => storage.set('tab_read', Date.now());

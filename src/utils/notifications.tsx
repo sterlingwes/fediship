@@ -114,16 +114,34 @@ const fetchFrequency = 120000; // 2 mins
 
 const NotificationContext = React.createContext<{
   tabRead: boolean;
+  newNotifCount: number;
+  loadingNotifications: boolean;
   setTabRead: Dispatch<SetStateAction<boolean>>;
+  setNewNotifCount: Dispatch<SetStateAction<number>>;
+  setLoadingNotifications: Dispatch<SetStateAction<boolean>>;
 }>({
   tabRead: true,
+  newNotifCount: 0,
+  loadingNotifications: false,
   setTabRead: () => {},
+  setNewNotifCount: () => {},
+  setLoadingNotifications: () => {},
 });
 
 export const NotificationProvider = ({children}: {children: JSX.Element}) => {
   const [tabRead, setTabRead] = useState(true);
+  const [newNotifCount, setNewNotifCount] = useState(0);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
   return (
-    <NotificationContext.Provider value={{tabRead, setTabRead}}>
+    <NotificationContext.Provider
+      value={{
+        tabRead,
+        newNotifCount,
+        loadingNotifications,
+        setTabRead,
+        setNewNotifCount,
+        setLoadingNotifications,
+      }}>
       {children}
     </NotificationContext.Provider>
   );
@@ -163,11 +181,16 @@ export const useNotificationsForTypes = (types: Array<NotificationType>) => {
 export const useNotifications = () => {
   const api = useMyMastodonInstance();
 
-  const fetching = useRef(false);
-  const {tabRead, setTabRead} = useContext(NotificationContext);
-  const [loadingNotifications, setLoadingNotifications] = useState(false);
-  const [lastFetch, setLastFetch] = useState(getLastFetch());
-  const [newNotifCount, setNewNotifCount] = useState(0);
+  const {
+    tabRead,
+    newNotifCount,
+    loadingNotifications,
+    setTabRead,
+    setNewNotifCount,
+    setLoadingNotifications,
+  } = useContext(NotificationContext);
+
+  const localFetching = useRef(false);
   const [notifs, setNotifs] = useState<NotificationGroups>(getNotifGroup());
   const initialWatermarks = useRef(getNotifWatermarks());
 
@@ -176,9 +199,11 @@ export const useNotifications = () => {
       const currentAppState = AppState.currentState;
 
       const fetchNotifs = async () => {
-        if (fetching.current) {
+        if (localFetching.current) {
           return;
         }
+
+        const lastFetch = getLastFetch();
 
         if (
           currentAppState === 'background' ||
@@ -187,9 +212,8 @@ export const useNotifications = () => {
           return;
         }
 
-        fetching.current = true;
         markFetch();
-        setLastFetch(Date.now());
+        localFetching.current = true;
 
         try {
           const notifications = await api.getNotifications();
@@ -225,12 +249,15 @@ export const useNotifications = () => {
           console.error(e);
         }
 
-        fetching.current = false;
+        localFetching.current = false;
       };
 
       setLoadingNotifications(true);
       fetchNotifs().then(() => setLoadingNotifications(false));
-    }, [setNotifs, api, lastFetch, setTabRead]),
+
+      // given how expensive re-evaluating this callback could be, take care
+      // in ensuring these dependencies rarely change
+    }, [setNotifs, api, setTabRead, setNewNotifCount, setLoadingNotifications]),
   );
 
   const readTab = () => {
