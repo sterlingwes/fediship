@@ -1,17 +1,17 @@
 import React from 'react';
 import {ColorValue} from 'react-native';
-import {Svg, SvgProps, Circle, Line} from 'react-native-svg';
+import {Svg, SvgProps, Circle, Rect, Polyline} from 'react-native-svg';
 
-interface XCircleProps extends SvgProps {
+interface ImageIconProps extends SvgProps {
   color?: ColorValue;
 }
 
-export const XCircleIcon = ({
+export const ImageIcon = ({
   width,
   height,
   color,
   ...svgProps
-}: XCircleProps) => {
+}: ImageIconProps) => {
   return (
     <Svg
       {...svgProps}
@@ -20,12 +20,12 @@ export const XCircleIcon = ({
       viewBox="0 0 24 24"
       fill="none"
       stroke={color ?? 'currentColor'}
-      strokeWidth="2"
+      strokeWidth={svgProps.strokeWidth ?? '2'}
       strokeLinecap="round"
       strokeLinejoin="round">
-      <Circle cx="12" cy="12" r="10" />
-      <Line x1="15" y1="9" x2="9" y2="15" />
-      <Line x1="9" y1="9" x2="15" y2="15" />
+      <Rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <Circle cx="8.5" cy="8.5" r="1.5" />
+      <Polyline points="21 15 16 10 5 21" />
     </Svg>
   );
 };

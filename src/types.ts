@@ -158,7 +158,7 @@ export type RootStackParamList = {
   Local: TimelineParams;
   Federated: TimelineParams;
   Explore: undefined;
-  Compose: undefined;
+  Compose: undefined | {inReplyToId: string; routeTime: number};
   User: undefined;
   OSSList: undefined;
   Login: undefined;

@@ -15,6 +15,7 @@ import {
   TStatusMapped,
   TThread,
   TToken,
+  Visibility,
 } from '../types';
 
 import {HTTPClient, ClientOptions} from './http-client';
@@ -45,6 +46,7 @@ export class MastodonApiClient extends HTTPClient {
       status: string;
       in_reply_to_id?: string;
       media_ids?: string[];
+      visibility?: Visibility;
     },
     idempotencyKey?: string,
   ) {

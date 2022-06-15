@@ -27,6 +27,8 @@ export const ImageCaptioner = (
   const {attachments} = props.route.params;
   const [currentIndex, setIndex] = useState(0);
   const [keyboardShown, setKeyboardShown] = useState(false);
+  const [captionMap, setCaptionMap] =
+    useState<Record<string, string>>(pendingCaptions);
 
   useMount(() => {
     const showSub = Keyboard.addListener(
@@ -72,12 +74,13 @@ export const ImageCaptioner = (
         <Box p={12} mb={40}>
           <Input
             multiline
-            defaultValue={pendingCaptions[uri] ?? ''}
             numberOfLines={2}
             placeholder="Add an image caption"
             onChangeText={text => {
               pendingCaptions[uri] = text;
+              setCaptionMap(pendingCaptions);
             }}
+            value={captionMap[uri] ?? ''}
           />
         </Box>
         <Box fd="row" ch>

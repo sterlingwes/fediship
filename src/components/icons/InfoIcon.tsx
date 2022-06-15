@@ -1,16 +1,15 @@
 import React from 'react';
 import {ColorValue} from 'react-native';
-import {Svg, Circle, Line} from 'react-native-svg';
+import {Svg, Circle, Line, SvgProps} from 'react-native-svg';
 
-interface InfoIconProps {
-  width?: string;
-  height?: string;
+interface InfoIconProps extends SvgProps {
   color?: ColorValue;
 }
 
-export const InfoIcon = ({width, height, color}: InfoIconProps) => {
+export const InfoIcon = ({width, height, color, ...props}: InfoIconProps) => {
   return (
     <Svg
+      {...props}
       width={width ?? '24'}
       height={height ?? '24'}
       viewBox="0 0 24 24"

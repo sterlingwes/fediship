@@ -23,6 +23,12 @@ import {Type} from '../components/Type';
 import {getPendingCaptions} from './image-captioner';
 import {BottomSheet} from '../components/BottomSheet';
 import {RadioOptions} from '../components/RadioOptions';
+import {EyeIcon} from '../components/icons/EyeIcon';
+import {startCase} from '../utils/strings';
+import {ImageIcon} from '../components/icons/ImageIcon';
+import {InfoIcon} from '../components/icons/InfoIcon';
+import {XCircleIcon} from '../components/icons/XCircleIcon';
+import {TrashIcon} from '../components/icons/TrashIcon';
 
 interface Attachment {
   uri: string;
@@ -49,16 +55,28 @@ const AssetPreview = ({
   height: number | undefined;
   editable: boolean;
   onPress: () => void;
-}) => (
-  <TouchableOpacity activeOpacity={0.5} onPress={onPress} disabled={!editable}>
-    <Image
-      source={{uri, width, height}}
-      resizeMode="cover"
-      style={{width: 75, height: 75}}
-    />
-  </TouchableOpacity>
-);
-
+}) => {
+  const styles = useThemeStyle(styleCreator);
+  return (
+    <TouchableOpacity
+      activeOpacity={0.5}
+      onPress={onPress}
+      disabled={!editable}>
+      <Box mr={10} mb={5}>
+        <Image
+          source={{uri, width, height}}
+          resizeMode="cover"
+          style={{width: 75, height: 75, borderRadius: 2}}
+        />
+        {editable && (
+          <Box style={styles.imageDeleteTrashOverlay}>
+            <TrashIcon color="white" />
+          </Box>
+        )}
+      </Box>
+    </TouchableOpacity>
+  );
+};
 const addCaptions = (
   attachments: Array<{name: string; uri: string; type: string}>,
 ) => {
@@ -69,14 +87,30 @@ const addCaptions = (
 const attachmentsForCaptioning = (attachments: Attachment[]) =>
   attachments.map(({uri, width, height}) => ({uri, width, height}));
 
+const subLabelForViz = (vizId: Visibility) => {
+  switch (vizId) {
+    case Visibility.Public:
+      return 'Shown in public timelines';
+    case Visibility.Unlisted:
+      return 'Public but not included in timelines';
+    case Visibility.Private:
+      return 'Shown to followers & mentioned only';
+    case Visibility.Direct:
+      return 'Visible only to those mentioned';
+  }
+};
+
 const visibilityOptions = Object.entries(Visibility).map(([label, id]) => ({
   id,
   label,
+  subLabel: subLabelForViz(id),
 }));
 
 export const Composer = ({
   navigation,
+  route,
 }: BottomTabScreenProps<RootStackParamList, 'Compose'>) => {
+  const {inReplyToId, routeTime} = route.params ?? {};
   const api = useMyMastodonInstance();
   const keyboardBanner = useKeyboardBanner();
   const [textValue, setTextValue] = useState('');
@@ -89,7 +123,13 @@ export const Composer = ({
   const [attachmentStatuses, setAttachmentStatus] = useState<
     Record<string, AttachmentStatus>
   >({});
-  const [visibility, setVisibility] = useState(Visibility.Public);
+  const [visibility, setVisibility] = useState(
+    inReplyToId ? Visibility.Unlisted : Visibility.Public,
+  );
+  const [[replyId, replyIdSetTime], setReplyId] = useState([
+    inReplyToId,
+    routeTime,
+  ]);
   const [vizModalShown, setVizModalShown] = useState(false);
 
   useFocusEffect(
@@ -97,6 +137,16 @@ export const Composer = ({
       keyboardBanner.show();
     }, [keyboardBanner]),
   );
+
+  useEffect(() => {
+    // update reply state if re-routed
+    if (
+      (routeTime && replyIdSetTime && replyIdSetTime < routeTime) ||
+      (!replyIdSetTime && inReplyToId)
+    ) {
+      setReplyId([inReplyToId, routeTime]);
+    }
+  }, [replyId, routeTime, inReplyToId, replyIdSetTime, setReplyId]);
 
   const onVisibilityChange = useCallback(() => {
     setVizModalShown(true);
@@ -123,7 +173,10 @@ export const Composer = ({
         );
       }
 
-      await api.sendStatus({status: textValue, media_ids}, idempotency.current);
+      await api.sendStatus(
+        {status: textValue, media_ids, visibility, in_reply_to_id: replyId},
+        idempotency.current,
+      );
       return () => {
         setTextValue('');
         navigation.navigate('Profile', {self: true});
@@ -132,7 +185,15 @@ export const Composer = ({
 
     registerSendListener(onSend);
     return () => removeSendListener(onSend);
-  }, [attachmentsPayload, textValue, api, keyboardBanner, navigation]);
+  }, [
+    attachmentsPayload,
+    textValue,
+    visibility,
+    replyId,
+    api,
+    keyboardBanner,
+    navigation,
+  ]);
 
   const onUpload = async () => {
     const result = await launchImageLibrary({
@@ -202,11 +263,31 @@ export const Composer = ({
     );
     setAttachments(filteredAttachments);
     setAttachmentStatus(filteredStatus);
+    if (!filteredAttachments.length) {
+      setAttachmentEdit(false);
+    }
   };
+
+  const replying = !!replyId;
 
   return (
     <Box f={1}>
       <ScrollView style={flex}>
+        {replying && (
+          <Box pt={20} ph={16} fd="row" cv>
+            <Type scale="S" medium color={getColor('primary')}>
+              Replying
+            </Type>
+            <Box ml={5}>
+              <XCircleIcon
+                width={18}
+                height={18}
+                color={getColor('primary')}
+                onPress={() => setReplyId([undefined, replyIdSetTime])}
+              />
+            </Box>
+          </Box>
+        )}
         <Box ph={15} pv={12}>
           <Input
             autoFocus
@@ -236,17 +317,33 @@ export const Composer = ({
               ) : null,
             )}
           </Box>
-          <Box fd="row">
-            <SolidButton onPress={onUpload}>Up</SolidButton>
-            {attachments.length > 0 && (
-              <SolidButton onPress={() => setAttachmentEdit(!attachmentEdit)}>
-                {attachmentEdit ? 'Editing' : 'Edit'}
+          <Box fd="row" fw>
+            <Box mr={10}>
+              <SolidButton onPress={onUpload} Icon={ImageIcon}>
+                Add Image
               </SolidButton>
+            </Box>
+            {attachments.length > 0 && (
+              <Box mr={10}>
+                <SolidButton
+                  onPress={() => setAttachmentEdit(!attachmentEdit)}
+                  Icon={attachmentEdit ? XCircleIcon : TrashIcon}>
+                  {attachmentEdit ? 'Cancel' : 'Delete'}
+                </SolidButton>
+              </Box>
             )}
             {requireCaptions && (
-              <SolidButton onPress={onCaption}>Caption</SolidButton>
+              <Box mr={10}>
+                <SolidButton onPress={onCaption} Icon={InfoIcon}>
+                  Caption
+                </SolidButton>
+              </Box>
             )}
-            <SolidButton onPress={onVisibilityChange}>Viz</SolidButton>
+            <Box mr={10}>
+              <SolidButton onPress={onVisibilityChange} Icon={EyeIcon}>
+                {startCase(visibility)}
+              </SolidButton>
+            </Box>
           </Box>
         </Box>
       </ScrollView>
@@ -257,7 +354,10 @@ export const Composer = ({
           <RadioOptions
             options={visibilityOptions}
             selection={visibility}
-            onPress={id => setVisibility(id as Visibility)}
+            onPress={id => {
+              setVisibility(id as Visibility);
+              setVizModalShown(false);
+            }}
           />
         </Box>
       </BottomSheet>
@@ -269,5 +369,13 @@ const styleCreator: StyleCreator = () => ({
   container: {},
   input: {
     minHeight: screenHeight / 4,
+  },
+  imageDeleteTrashOverlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: 'rgba(10,10,10,0.7)',
+    padding: 5,
+    borderRadius: 2,
   },
 });

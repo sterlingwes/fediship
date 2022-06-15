@@ -21,6 +21,10 @@ import {ReplyLine} from './ReplyLine';
 import {Type} from './Type';
 import {useUserProfile} from '../storage/user';
 import {Box} from './Box';
+import {ExternalLink} from './icons/ExternalLinkIcon';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../types';
 
 export const InlineReply = ({
   inReplyToId,
@@ -30,6 +34,8 @@ export const InlineReply = ({
   onlyReply?: boolean;
   onSent?: () => void;
 }) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const keyboardBanner = useKeyboardBanner();
   const [textValue, setTextValue] = useState('');
   const [replying, setReplying] = useState(false);
@@ -108,12 +114,24 @@ export const InlineReply = ({
             />
           </>
         ) : (
-          <TouchableOpacity
-            activeOpacity={0.5}
-            style={styles.replyBtn}
-            onPress={onPressReply}>
-            <Type color={getColor('baseAccent')}>Reply</Type>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={styles.replyBtn}
+              onPress={onPressReply}>
+              <Type color={getColor('baseAccent')}>Reply</Type>
+            </TouchableOpacity>
+            <ExternalLink
+              style={styles.externalLinkIconButton}
+              color={getColor('primary')}
+              onPress={() =>
+                navigation.navigate('Compose', {
+                  inReplyToId,
+                  routeTime: Date.now(),
+                })
+              }
+            />
+          </>
         )}
       </View>
     </View>
@@ -155,5 +173,10 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   userAvatarReplying: {
     opacity: 1,
+  },
+  externalLinkIconButton: {
+    position: 'absolute',
+    top: 14,
+    right: 14,
   },
 });
