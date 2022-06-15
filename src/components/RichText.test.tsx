@@ -338,6 +338,12 @@ describe('RichText', () => {
             >
               <Text
                 color="#9baec8"
+                hitSlop={
+                  Object {
+                    "bottom": 20,
+                    "top": 20,
+                  }
+                }
                 medium={true}
                 onPress={[Function]}
                 scale="S"
@@ -410,6 +416,12 @@ describe('RichText', () => {
               </Text>
               <Text
                 color="#9baec8"
+                hitSlop={
+                  Object {
+                    "bottom": 20,
+                    "top": 20,
+                  }
+                }
                 medium={true}
                 onPress={[Function]}
                 scale="S"
