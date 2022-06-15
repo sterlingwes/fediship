@@ -245,9 +245,9 @@ const NavigationRoot = () => {
   return (
     <NavigationContainer
       theme={
-        theme.activeScheme === 'dark'
-          ? darkNavigationTheme
-          : lightNavigationTheme
+        theme.activeScheme === 'light'
+          ? lightNavigationTheme
+          : darkNavigationTheme
       }>
       {auth.token ? <LoggedInStack /> : <LoggedOutStack />}
     </NavigationContainer>
