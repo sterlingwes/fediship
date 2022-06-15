@@ -55,63 +55,69 @@ export const ImageViewer = (
   return (
     <View style={styles.container}>
       <View style={styles.shadowBox} />
-      <Wrapper style={styles.zoomView}>
-        {['video', 'gifv'].includes(target.type) ? (
-          <Video
-            controls
-            repeat={target.type === 'gifv'}
-            source={{uri: target.url}}
-            poster={target.preview_url}
-            posterResizeMode="cover"
-            style={{
-              width: screenWidth - imagePadding * 2,
-              aspectRatio:
-                target.meta.original.width / target.meta.original.height,
-            }}
-          />
-        ) : (
-          <RedundantImage
-            onLoadStart={() => setLoading(true)}
-            onLoadEnd={() => setLoading(false)}
-            source={{uri: target.url}}
-            fallbackUri={target.remote_url}
-            style={styles.img}
-          />
-        )}
-        {loading && <LoadingSpinner size="large" style={styles.loading} />}
-      </Wrapper>
-      <SafeAreaView edges={['bottom']} style={styles.button}>
-        {!loading && !!target.description && (
-          <Box p={12}>
-            <Type center scale="S">
-              {target.description}
-            </Type>
-          </Box>
-        )}
-        <Box fd="row" ch>
-          {attachments.length > 1 && (
-            <OutlineButton
-              onPress={onPrevious}
-              style={styles.bottomButton}
-              disabled={!attachments[currentIndex - 1]}>
-              Previous
-            </OutlineButton>
-          )}
-          <OutlineButton
-            onPress={props.navigation.goBack}
-            style={styles.bottomButton}>
-            Close
-          </OutlineButton>
-          {attachments.length > 1 && (
-            <OutlineButton
-              onPress={onNext}
-              style={styles.bottomButton}
-              disabled={!attachments[currentIndex + 1]}>
-              Next
-            </OutlineButton>
-          )}
+      <Box f={1}>
+        <Box f={1}>
+          <Wrapper style={styles.zoomView}>
+            {['video', 'gifv'].includes(target.type) ? (
+              <Video
+                controls
+                repeat={target.type === 'gifv'}
+                source={{uri: target.url}}
+                poster={target.preview_url}
+                posterResizeMode="cover"
+                style={{
+                  width: screenWidth - imagePadding * 2,
+                  aspectRatio:
+                    target.meta.original.width / target.meta.original.height,
+                }}
+              />
+            ) : (
+              <RedundantImage
+                onLoadStart={() => setLoading(true)}
+                onLoadEnd={() => setLoading(false)}
+                source={{uri: target.url}}
+                fallbackUri={target.remote_url}
+                style={styles.img}
+              />
+            )}
+            {loading && <LoadingSpinner size="large" style={styles.loading} />}
+          </Wrapper>
         </Box>
-      </SafeAreaView>
+        <Box style={styles.bottomContainer}>
+          <SafeAreaView edges={['bottom']}>
+            {!loading && !!target.description && (
+              <Box p={12} hMax={150} scroll>
+                <Type center scale="S">
+                  {target.description}
+                </Type>
+              </Box>
+            )}
+            <Box fd="row" ch>
+              {attachments.length > 1 && (
+                <OutlineButton
+                  onPress={onPrevious}
+                  style={styles.bottomButton}
+                  disabled={!attachments[currentIndex - 1]}>
+                  Previous
+                </OutlineButton>
+              )}
+              <OutlineButton
+                onPress={props.navigation.goBack}
+                style={styles.bottomButton}>
+                Close
+              </OutlineButton>
+              {attachments.length > 1 && (
+                <OutlineButton
+                  onPress={onNext}
+                  style={styles.bottomButton}
+                  disabled={!attachments[currentIndex + 1]}>
+                  Next
+                </OutlineButton>
+              )}
+            </Box>
+          </SafeAreaView>
+        </Box>
+      </Box>
     </View>
   );
 };
@@ -139,7 +145,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     height: '100%',
     resizeMode: 'contain',
   },
-  button: {
+  bottomContainer: {
     backgroundColor: getColor('base'),
   },
   bottomButton: {
