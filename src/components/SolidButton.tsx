@@ -1,7 +1,7 @@
 import React, {ComponentType, ReactNode} from 'react';
-import {Pressable, ViewStyle} from 'react-native';
+import {ColorValue, Pressable, ViewStyle} from 'react-native';
 import {SvgProps} from 'react-native-svg';
-import {StyleCreator, ValidColor} from '../theme';
+import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {Box} from './Box';
 import {LoadingSpinner} from './LoadingSpinner';
@@ -12,7 +12,7 @@ interface ButtonProps {
   loading?: boolean;
   onPress: () => any;
   children: ReactNode;
-  Icon?: ComponentType<SvgProps & {color: ValidColor}>;
+  Icon?: ComponentType<SvgProps & {color: ColorValue}>;
   style?: ViewStyle;
 }
 
