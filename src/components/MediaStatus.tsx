@@ -18,7 +18,7 @@ import {LoadingSpinner} from './LoadingSpinner';
 import {MediaAttachments} from './MediaAttachments';
 import {ReplyLine} from './ReplyLine';
 import {RichText} from './RichText';
-import {getType} from './status.util';
+import {getType, truncateHtmlText} from './status.util';
 import {Type} from './Type';
 import {ViewMoreButton} from './ViewMoreButton';
 
@@ -215,32 +215,14 @@ export const MediaStatus = (
 
   const priorityAction = props.onPressBookmark ? 'bookmark' : 'favourite';
 
-  const [content, truncated] = useMemo(() => {
-    const textChunks = mainStatus.content
-      .replace(/^<p>/, '')
-      .replace(/<\/p>$/, '')
-      .split(/<\/p><p>/);
-
-    let count = 0;
-    const tooLongIndex = textChunks.findIndex(chunk => {
-      count += chunk.length;
-      if (count > 100) {
-        return true;
-      }
-      return false;
-    });
-
-    console.log({textChunks, tooLongIndex, user: mainStatus.account.acct});
-
-    if (tooLongIndex !== -1) {
-      return [
-        `<p>${textChunks.slice(0, tooLongIndex + 1).join('</p><p>')}</p>`,
-        true,
-      ];
-    }
-
-    return [mainStatus.content, false];
-  }, [mainStatus.content]);
+  const [content, truncated] = useMemo(
+    () =>
+      truncateHtmlText({
+        text: mainStatus.content,
+        disable: props.focused ?? false,
+      }),
+    [mainStatus.content, props.focused],
+  );
 
   const emojis = useMemo(
     () => [...(mainStatus.emojis ?? []), ...(mainStatus.account.emojis ?? [])],

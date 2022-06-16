@@ -93,7 +93,7 @@ export const AppearanceSettings = () => {
         title: 'Timelines',
         data: [
           {
-            label: 'Always show large media',
+            label: 'Show media full width',
             onPress: () => {
               setMediaStatusAll(!mediaStatusAll);
               saveMediaStatusAllPref(!mediaStatusAll);

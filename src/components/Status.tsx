@@ -33,7 +33,7 @@ import {MediaStatus} from './MediaStatus';
 import {Poll} from './Poll';
 import {ReplyLine} from './ReplyLine';
 import {RichText} from './RichText';
-import {getType} from './status.util';
+import {getType, truncateHtmlText} from './status.util';
 import {Type} from './Type';
 import {ViewMoreButton} from './ViewMoreButton';
 
@@ -273,19 +273,14 @@ export const Status = (
 
   const priorityAction = props.onPressBookmark ? 'bookmark' : 'favourite';
 
-  const [content, truncated] = useMemo(() => {
-    const plainText = (mainStatus.content ?? '').replace(/<\/?[^<>]+>/g, '');
-
-    if (props.focused) {
-      return [mainStatus.content, false];
-    }
-
-    if (plainText.length < 500) {
-      return [mainStatus.content, false];
-    }
-
-    return [mainStatus.content.slice(0, 500) + '...', true];
-  }, [mainStatus.content, props.focused]);
+  const [content, truncated] = useMemo(
+    () =>
+      truncateHtmlText({
+        text: mainStatus.content,
+        disable: props.focused ?? false,
+      }),
+    [mainStatus.content, props.focused],
+  );
 
   const emojis = useMemo(
     () => [...(mainStatus.emojis ?? []), ...(mainStatus.account.emojis ?? [])],
@@ -403,6 +398,7 @@ export const Status = (
                   bookmarked: wasBookmarked,
                   loadingBookmark,
                   onBookmark,
+                  hasMedia: !!mainStatus.media_attachments?.length,
                 }}
               />
             )}
@@ -440,6 +436,7 @@ const StatusActionBar = ({
   loadingBookmark,
   loadingReblog,
   shareUrl,
+  hasMedia,
   onReblog,
   onBookmark,
 }: {
@@ -452,6 +449,7 @@ const StatusActionBar = ({
   loadingBookmark: boolean;
   loadingReblog: boolean;
   shareUrl: string;
+  hasMedia?: boolean;
   onReblog: () => void;
   onBookmark: () => void;
 }) => {
@@ -484,7 +482,7 @@ const StatusActionBar = ({
     : 'blueAccent';
 
   return (
-    <Box mb={10} pt={detailed ? 10 : 15} fd="row" f={1}>
+    <Box mb={10} pt={detailed ? 10 : hasMedia ? 10 : 0} fd="row" f={1}>
       <Box fd="row" style={[styles.statsBox, detailed && styles.statsBoxEqual]}>
         {loadingReblog ? (
           <LoadingSpinner />

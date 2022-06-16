@@ -191,7 +191,7 @@ export const Thread = ({
   };
 
   const LoadHeader = useMemo(
-    () => <LoadMoreFooter onPress={() => setInitialLoad(false)} />,
+    () => <LoadMoreFooter onPress={() => setInitialLoad(false)} noSafeArea />,
     [setInitialLoad],
   );
 

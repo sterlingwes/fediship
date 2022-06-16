@@ -4,6 +4,7 @@ import type {Document, ChildNode, Element, TextNode} from 'parse5';
 import {Emoji} from '../types';
 import {Box} from './Box';
 import {Image, PressableProps} from 'react-native';
+import {fixLinebreaking} from './status.util';
 
 interface ElementOverride<P> {
   Component: ComponentType<P>;
@@ -33,24 +34,6 @@ export type HTMLNodeRenderer = (
 interface SingleTextChildNode extends Element {
   childNodes: [TextNode];
 }
-
-const br = '<br/>';
-const fixLinebreaking = (text: string) => {
-  if (!text || !text.trim()) {
-    return;
-  }
-
-  const value = text
-    .replace(/(<br([\s/]+)?>)+/g, br)
-    .replace(/\n+/g, br)
-    .replace(/<p>/g, '')
-    .replace(/<\/?p>/g, br);
-  const parts = value.split(br).filter(s => !!s.trim());
-  if (parts.length > 1) {
-    return `<p>${parts.join('</p><p>')}</p>`;
-  }
-  return `<p>${value}</p>`;
-};
 
 export const helperApi = Object.freeze({
   hasTextChild: (n: ChildNode): n is SingleTextChildNode => {
