@@ -277,9 +277,9 @@ export const Status = (
     () =>
       truncateHtmlText({
         text: mainStatus.content,
-        disable: props.focused ?? false,
+        disable: (props.collapsed === false || props.focused) ?? false,
       }),
-    [mainStatus.content, props.focused],
+    [mainStatus.content, props.focused, props.collapsed],
   );
 
   const emojis = useMemo(
