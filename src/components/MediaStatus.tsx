@@ -16,9 +16,11 @@ import {LockIcon} from './icons/LockIcon';
 import {StarIcon} from './icons/StarIcon';
 import {LoadingSpinner} from './LoadingSpinner';
 import {MediaAttachments} from './MediaAttachments';
+import {ReplyLine} from './ReplyLine';
 import {RichText} from './RichText';
 import {getType} from './status.util';
 import {Type} from './Type';
+import {ViewMoreButton} from './ViewMoreButton';
 
 interface StatusHeaderProps {
   username: string | undefined;
@@ -213,19 +215,32 @@ export const MediaStatus = (
 
   const priorityAction = props.onPressBookmark ? 'bookmark' : 'favourite';
 
-  const [content] = useMemo(() => {
-    const plainText = (mainStatus.content ?? '').replace(/<\/?[^<>]+>/g, '');
+  const [content, truncated] = useMemo(() => {
+    const textChunks = mainStatus.content
+      .replace(/^<p>/, '')
+      .replace(/<\/p>$/, '')
+      .split(/<\/p><p>/);
 
-    if (props.focused) {
-      return [mainStatus.content, false];
+    let count = 0;
+    const tooLongIndex = textChunks.findIndex(chunk => {
+      count += chunk.length;
+      if (count > 100) {
+        return true;
+      }
+      return false;
+    });
+
+    console.log({textChunks, tooLongIndex, user: mainStatus.account.acct});
+
+    if (tooLongIndex !== -1) {
+      return [
+        `<p>${textChunks.slice(0, tooLongIndex + 1).join('</p><p>')}</p>`,
+        true,
+      ];
     }
 
-    if (plainText.length < 500) {
-      return [mainStatus.content, false];
-    }
-
-    return [mainStatus.content.slice(0, 500) + '...', true];
-  }, [mainStatus.content, props.focused]);
+    return [mainStatus.content, false];
+  }, [mainStatus.content]);
 
   const emojis = useMemo(
     () => [...(mainStatus.emojis ?? []), ...(mainStatus.account.emojis ?? [])],
@@ -235,7 +250,6 @@ export const MediaStatus = (
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
       <Box
-        pv={10}
         pt={15}
         f={1}
         style={[
@@ -257,27 +271,32 @@ export const MediaStatus = (
         {mainStatus.media_attachments && (
           <MediaAttachments media={mainStatus.media_attachments} large />
         )}
-        <Box fd="row" f={1} pr={20} pl={15}>
+        <Box fd="row" f={1} pr={20} pl={15} mt={-6}>
           {props.isLocal && !props.showDetail && (
-            <Box
-              mr={avatarRightMargin}
-              style={{minWidth: avatarWidth, minHeight: 50}}
-              ch>
-              <PriorityAction
-                icon={priorityAction}
-                loading={
-                  priorityAction === 'favourite' ? loadingFav : loadingBookmark
-                }
-                onPress={
-                  priorityAction === 'favourite' ? onFavourite : onBookmark
-                }
-                active={
-                  priorityAction === 'favourite' ? favourited : bookmarked
-                }
+            <View style={styles.statusLeftButtons}>
+              <ReplyLine
+                stretch
+                visible={props.lastStatus === false && props.hasReplies}
               />
-            </Box>
+              {props.isLocal && !props.showDetail && (
+                <PriorityAction
+                  icon={priorityAction}
+                  loading={
+                    priorityAction === 'favourite'
+                      ? loadingFav
+                      : loadingBookmark
+                  }
+                  onPress={
+                    priorityAction === 'favourite' ? onFavourite : onBookmark
+                  }
+                  active={
+                    priorityAction === 'favourite' ? favourited : bookmarked
+                  }
+                />
+              )}
+            </View>
           )}
-          <Box f={1} pt={5}>
+          <Box f={1} pt={10} pb={15}>
             {mainStatus.sensitive ||
               (!!mainStatus.spoiler_text && (
                 <Type scale="S" medium>
@@ -294,6 +313,7 @@ export const MediaStatus = (
                 navigation.push('TagTimeline', {host, tag})
               }
             />
+            {truncated && !!mainStatus.content && <ViewMoreButton />}
           </Box>
         </Box>
       </Box>
@@ -379,8 +399,8 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     flexDirection: 'column',
   },
   statusLeftButtons: {
-    flex: 1,
     alignItems: 'center',
+    width: 60,
     marginRight: 15,
     minHeight: 50,
   },

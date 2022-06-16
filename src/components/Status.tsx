@@ -22,7 +22,6 @@ import {Box} from './Box';
 import {EmojiName} from './EmojiName';
 import {BookmarkIcon} from './icons/BookmarkIcon';
 import {BoostIcon} from './icons/BoostIcon';
-import {ChevronInverted} from './icons/Chevron';
 import {LockIcon} from './icons/LockIcon';
 import {MessageIcon} from './icons/MessageIcon';
 import {ShareBoxIcon} from './icons/ShareBoxIcon';
@@ -36,6 +35,7 @@ import {ReplyLine} from './ReplyLine';
 import {RichText} from './RichText';
 import {getType} from './status.util';
 import {Type} from './Type';
+import {ViewMoreButton} from './ViewMoreButton';
 
 const CollapsedStatus = (props: TStatus & {collapsed: boolean}) => {
   const styles = useThemeStyle(styleCreator);
@@ -119,19 +119,6 @@ const StatusHeader = (props: StatusHeaderProps) => {
         </Type>
       </View>
       <Type scale="XS">{timeAgo(props.sendDate)}</Type>
-    </View>
-  );
-};
-
-const ViewMoreButton = ({left}: {left?: boolean}) => {
-  const styles = useThemeStyle(styleCreator);
-  const {getColor} = useThemeGetters();
-  return (
-    <View style={[styles.viewMore, left && styles.viewMoreLeft]}>
-      <Type scale="XS" semiBold style={styles.viewMoreText}>
-        View More
-      </Type>
-      <ChevronInverted color={getColor('primary')} width="18" />
     </View>
   );
 };
@@ -664,19 +651,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   replyLineLeader: {
     marginRight: 15,
-  },
-  viewMore: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  viewMoreLeft: {
-    justifyContent: 'flex-start',
-  },
-  viewMoreText: {
-    marginRight: 2,
-    marginBottom: 1,
-    color: getColor('primary'),
   },
   statsBox: {
     justifyContent: 'center',
