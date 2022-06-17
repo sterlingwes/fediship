@@ -1,7 +1,8 @@
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React from 'react';
-import {View} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {StyleSheet, View, ViewStyle} from 'react-native';
+import Animated from 'react-native-reanimated';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
@@ -12,32 +13,31 @@ interface FloatingHeaderProps {
   navigation: NativeStackNavigationProp<RootStackParamList>;
   title?: string;
   transparent?: boolean;
+  style?: ViewStyle;
 }
 
 export const FloatingHeader = ({
   navigation,
   title,
-  transparent,
+  style,
 }: FloatingHeaderProps) => {
   const {top} = useSafeAreaInsets();
   const styles = useThemeStyle(styleCreator);
 
   return (
-    <View
-      style={[
-        styles.header,
-        {paddingTop: top || 20},
-        !transparent && styles.headerOpaque,
-      ]}>
+    <View style={[styles.header, {paddingTop: top || 20}]}>
+      <Animated.View style={[styles.headerOpaque, style]} />
+      <Animated.View style={[styles.title, style]}>
+        <SafeAreaView edges={['top']}>
+          <Type center scale="XS" semiBold>
+            {title ?? ''}
+          </Type>
+        </SafeAreaView>
+      </Animated.View>
       <BackButton
         onPress={() => navigation.goBack()}
         style={[styles.headerBackBtn]}
-        transparent={transparent}
       />
-      <Type style={styles.title} semiBold>
-        {title ?? ''}
-      </Type>
-      <View />
     </View>
   );
 };
@@ -51,14 +51,17 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     paddingBottom: 10,
   },
   headerOpaque: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: getColor('base'),
     borderBottomColor: getColor('baseHighlight'),
     borderBottomWidth: 1,
   },
   headerBackBtn: {
+    top: -5,
     marginLeft: 20,
   },
   title: {
-    flex: 1,
+    paddingTop: 10,
+    ...StyleSheet.absoluteFillObject,
   },
 });

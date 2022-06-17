@@ -11,7 +11,16 @@ import {
   View,
   Image,
   InteractionManager,
+  ViewStyle,
 } from 'react-native';
+
+import Animated, {
+  useSharedValue,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  interpolate,
+} from 'react-native-reanimated';
+
 import {useErrorReporter} from '../api/worker.hooks';
 import {AvatarImage} from '../components/AvatarImage';
 import {Box} from '../components/Box';
@@ -191,8 +200,6 @@ const createProfileTimelineRenderer =
     );
   };
 
-const headerOpacityVerticalBreakpoint = 120;
-
 const errorMessage = (
   error: Error,
   host: string | undefined,
@@ -231,15 +238,15 @@ const ProfileError = ({
   host,
   account,
   navigation,
-  headerOpaque,
   showHeader,
+  headerStyle,
 }: {
   error: Error;
   host: string | undefined;
   account?: TAccount | undefined;
-  headerOpaque: boolean;
   navigation: NativeStackNavigationProp<RootStackParamList>;
   showHeader?: boolean;
+  headerStyle?: ViewStyle;
 }) => {
   const {loading, sent, sendErrorReport} = useErrorReporter();
   const styles = useThemeStyle(styleCreator);
@@ -274,7 +281,7 @@ const ProfileError = ({
           {...{
             navigation,
             title: '',
-            transparent: !headerOpaque,
+            style: headerStyle,
           }}
         />
       )}
@@ -335,7 +342,6 @@ export const Profile = ({
   const initialLoad = useRef(true);
   const scrollRef = useRef<FlatList<TStatusMapped> | null>();
   const scrollOffsetRef = useRef(0);
-  const [headerOpaque, setHeaderOpaque] = useState(false);
   const {account, self} = route.params;
   const styles = useThemeStyle(styleCreator);
 
@@ -420,41 +426,49 @@ export const Profile = ({
     [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef, self],
   );
 
+  const scrollY = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: e => {
+      scrollY.value = e.contentOffset.y;
+    },
+  });
+
+  const animatedStyles = useAnimatedStyle(() => {
+    const opacity = interpolate(scrollY.value, [50, 250], [0, 1]);
+    return {
+      opacity,
+    };
+  });
+
   if (error && !account) {
     return (
-      <ProfileError {...{error, host, headerOpaque, navigation}} showHeader />
+      <ProfileError
+        {...{error, host, headerStyle: animatedStyles, navigation}}
+        showHeader
+      />
     );
   }
 
   return (
     <View style={styles.container}>
-      <FlatList
-        ref={ref => (scrollRef.current = ref)}
+      <Animated.FlatList
         data={statuses}
         renderItem={renderItem}
         style={styles.container}
-        onScroll={event => {
-          scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
-          const aboveBreakpoint =
-            event.nativeEvent.contentOffset.y <=
-            headerOpacityVerticalBreakpoint;
-          if (aboveBreakpoint && headerOpaque) {
-            setHeaderOpaque(false);
-          }
-          if (aboveBreakpoint) {
-            return;
-          }
-          if (headerOpaque) {
-            return;
-          }
-          setHeaderOpaque(true);
-        }}
+        scrollEventThrottle={16}
+        onScroll={scrollHandler}
         ListHeaderComponent={headerComponent}
         ListFooterComponent={statuses.length && hasMore ? LoadFooter : null}
         ListEmptyComponent={() =>
           error ? (
             <ProfileError
-              {...{error, host, account, headerOpaque, navigation}}
+              {...{
+                error,
+                host,
+                headerStyle: animatedStyles,
+                account,
+                navigation,
+              }}
             />
           ) : (
             <EmptyList loading={loading} />
@@ -470,8 +484,8 @@ export const Profile = ({
       <FloatingHeader
         {...{
           navigation,
-          title: '',
-          transparent: !headerOpaque,
+          title: accountHandle ?? account?.acct,
+          style: animatedStyles,
         }}
       />
     </View>
