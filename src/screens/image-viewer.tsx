@@ -87,9 +87,11 @@ export const ImageViewer = (
           <SafeAreaView edges={['bottom']}>
             {!loading && !!target.description && (
               <Box p={12} hMax={150} scroll>
-                <Type center scale="S">
-                  {target.description}
-                </Type>
+                <Box m={10} mb={40}>
+                  <Type center={target.description?.length < 100} scale="S">
+                    {target.description}
+                  </Type>
+                </Box>
               </Box>
             )}
             <Box fd="row" ch>
