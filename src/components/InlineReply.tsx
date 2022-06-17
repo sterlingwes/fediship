@@ -24,7 +24,7 @@ import {Box} from './Box';
 import {ExternalLink} from './icons/ExternalLinkIcon';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../types';
+import {RootStackParamList, Visibility} from '../types';
 
 export const InlineReply = ({
   inReplyToId,
@@ -59,7 +59,11 @@ export const InlineReply = ({
       }
 
       await api.sendStatus(
-        {status: textValue, in_reply_to_id: inReplyToId},
+        {
+          status: textValue,
+          in_reply_to_id: inReplyToId,
+          visibility: Visibility.Unlisted,
+        },
         idempotency.current, // TODO: merge headers properly in HTTPClient
       );
       setTextValue('');

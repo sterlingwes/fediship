@@ -126,10 +126,9 @@ export const Composer = ({
   const [visibility, setVisibility] = useState(
     inReplyToId ? Visibility.Unlisted : Visibility.Public,
   );
-  const [[replyId, replyIdSetTime], setReplyId] = useState([
-    inReplyToId,
-    routeTime,
-  ]);
+  const [[replyId, replyIdSetTime], setReplyId] = useState<
+    [string | undefined, number | undefined]
+  >([inReplyToId, routeTime]);
   const [vizModalShown, setVizModalShown] = useState(false);
 
   useFocusEffect(
@@ -179,7 +178,15 @@ export const Composer = ({
       );
       return () => {
         setTextValue('');
-        navigation.navigate('Profile', {self: true});
+        setAttachments([]);
+        setAttachmentEdit(false);
+        setAttachmentError('');
+        setAttachmentStatus({});
+        const replying = !!inReplyToId;
+        setReplyId([undefined, Date.now()]);
+        if (!replying) {
+          navigation.navigate('Profile', {self: true});
+        }
       };
     };
 
