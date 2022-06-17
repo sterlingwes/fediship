@@ -277,10 +277,12 @@ export const useNotifications = () => {
     }
     const newGroup = {...notifs};
     setNotifs(newGroup);
-    storeNotifGroup(newGroup);
-    const watermarks = generateWatermarks(notifs);
-    storeNotifWatermarks(watermarks);
-    initialWatermarks.current = watermarks;
+    // storeNotifGroup(newGroup);
+
+    // TODO: rethink tracking read state that is separate from watermarks
+    // const watermarks = generateWatermarks(notifs);
+    // storeNotifWatermarks(watermarks);
+    // initialWatermarks.current = watermarks;
   };
 
   return {

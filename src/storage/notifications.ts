@@ -31,9 +31,23 @@ export const getNotifGroup = (): NotificationGroups =>
 
 export type NotifWatermarks = Record<keyof NotificationGroups, string>;
 
+let notifWatermarks: NotifWatermarks;
+
 export const storeNotifWatermarks = (watermarks: NotifWatermarks) => {
+  if (notifWatermarks && !Object.keys(watermarks).length) {
+    return;
+  }
+
+  notifWatermarks = watermarks;
   storage.set('notif_watermarks', JSON.stringify(watermarks));
 };
 
-export const getNotifWatermarks = (): NotifWatermarks | null =>
-  readJson('notif_watermarks', storage, null);
+export const getNotifWatermarks = (): NotifWatermarks | null => {
+  if (notifWatermarks) {
+    return notifWatermarks;
+  }
+
+  notifWatermarks =
+    readJson('notif_watermarks', storage, null) ?? ({} as NotifWatermarks);
+  return notifWatermarks;
+};
