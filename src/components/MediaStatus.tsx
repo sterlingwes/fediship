@@ -253,7 +253,7 @@ export const MediaStatus = (
         {mainStatus.media_attachments && (
           <MediaAttachments media={mainStatus.media_attachments} large />
         )}
-        <Box fd="row" f={1} pr={20} pl={15} mt={-6}>
+        <Box fd="row" f={1} pr={20} pl={15}>
           {props.isLocal && !props.showDetail && (
             <View style={styles.statusLeftButtons}>
               <ReplyLine
