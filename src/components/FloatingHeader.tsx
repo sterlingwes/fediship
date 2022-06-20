@@ -2,7 +2,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React from 'react';
 import {StyleSheet, View, ViewStyle} from 'react-native';
 import Animated from 'react-native-reanimated';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {StyleCreator} from '../theme';
 import {useThemeStyle} from '../theme/utils';
 import {RootStackParamList} from '../types';
@@ -25,14 +25,12 @@ export const FloatingHeader = ({
   const styles = useThemeStyle(styleCreator);
 
   return (
-    <View style={[styles.header, {paddingTop: top || 20}]}>
+    <View style={[styles.header, {paddingTop: top || 10}]}>
       <Animated.View style={[styles.headerOpaque, style]} />
-      <Animated.View style={[styles.title, style]}>
-        <SafeAreaView edges={['top']}>
-          <Type center scale="XS" semiBold>
-            {title ?? ''}
-          </Type>
-        </SafeAreaView>
+      <Animated.View style={[styles.title, {top: top || 10}, style]}>
+        <Type center scale="XS" semiBold>
+          {title ?? ''}
+        </Type>
       </Animated.View>
       <BackButton
         onPress={() => navigation.goBack()}
@@ -61,7 +59,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     marginLeft: 20,
   },
   title: {
-    paddingTop: 10,
+    paddingTop: 8,
     ...StyleSheet.absoluteFillObject,
   },
 });
