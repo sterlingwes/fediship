@@ -47,7 +47,15 @@ const getInitialTimelines = () => {
     return defaultTimelines;
   }
 
-  return saved;
+  const uniqueNames = new Set<string>();
+  return saved.filter(tl => {
+    if (uniqueNames.has(tl.name)) {
+      return false;
+    }
+
+    uniqueNames.add(tl.name);
+    return true;
+  });
 };
 
 export const SavedTimelineProvider = ({children}: {children: ReactNode}) => {
