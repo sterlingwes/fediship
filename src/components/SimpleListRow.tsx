@@ -14,19 +14,21 @@ export const SimpleListRow = ({
   hideChevron,
   icon,
   iconColor,
+  topBorder,
 }: {
   onPress: () => any;
   label: string;
   hideChevron?: boolean;
   icon?: 'external-link' | 'chevron';
   iconColor?: ValidColor;
+  topBorder?: boolean;
 }) => {
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
   const Icon = icon === 'external-link' ? ExternalLink : ChevronInverted;
   return (
     <TouchableOpacity
-      style={styles.listRow}
+      style={[styles.listRow, topBorder && styles.listRowTop]}
       activeOpacity={0.5}
       onPress={onPress}>
       <Box pr={10} f={1}>
@@ -49,6 +51,10 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     justifyContent: 'space-between',
     borderBottomColor: getColor('baseAccent'),
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  listRowTop: {
+    borderTopColor: getColor('baseAccent'),
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   peerName: {
     maxWidth: (screenWidth * 2) / 3,

@@ -45,6 +45,7 @@ import {ImageCaptioner} from './screens/image-captioner';
 import {StatusActivity} from './screens/timelines/status-activity';
 import {Polls} from './screens/timelines/polls';
 import {OSSList} from './screens/about/oss-list';
+import {About} from './screens/about/about';
 
 const Tab = createBottomTabNavigator();
 
@@ -210,15 +211,18 @@ const LoggedInStack = () => (
       }}
     />
     <LIStack.Screen
+      name="About"
+      component={About}
+      options={{
+        headerTitle: 'ℹ️ About the App',
+        orientation: 'portrait',
+      }}
+    />
+    <LIStack.Screen
       name="OSSList"
       component={OSSList}
       options={{
-        presentation: 'fullScreenModal',
         headerTitle: '🙏 Open Source ♥️',
-        headerRight: props =>
-          Platform.OS === 'ios' ? (
-            <HeaderRightButton back={props.canGoBack} IconComponent={XIcon} />
-          ) : null,
         orientation: 'portrait',
       }}
     />

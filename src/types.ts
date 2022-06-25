@@ -160,6 +160,7 @@ export type RootStackParamList = {
   Explore: undefined;
   Compose: undefined | {inReplyToId: string; routeTime: number};
   User: undefined;
+  About: undefined;
   OSSList: undefined;
   Login: undefined;
   Authorize: {host: string; scope: string};

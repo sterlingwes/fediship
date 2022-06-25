@@ -53,7 +53,7 @@ export const DrawerMenu = ({
       style={flex}
       contentContainerStyle={{minHeight: screenHeight - tabBarHeight * 2}}>
       <SafeAreaView edges={['top']} style={styles.boatContainer}>
-        <LogoBoat size={100} onPress={() => navigation.navigate('OSSList')} />
+        <LogoBoat size={100} onPress={() => navigation.navigate('About')} />
         <Type scale="L" bold>
           fediship
         </Type>
