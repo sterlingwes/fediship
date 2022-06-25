@@ -38,16 +38,15 @@ import {Type} from './Type';
 import {ViewMoreButton} from './ViewMoreButton';
 
 const CollapsedStatus = (props: TStatus & {collapsed: boolean}) => {
-  const styles = useThemeStyle(styleCreator);
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const spoilerText = (props.spoiler_text ?? '').trim();
   return (
     <View>
       {!!spoilerText && (
-        <Type style={styles.spoilerText} scale="S">
-          ⚠️ {props.spoiler_text}
-        </Type>
+        <Box mb={10}>
+          <RichText emojis={props.emojis ?? []} html={`${spoilerText}`} />
+        </Box>
       )}
       {!props.collapsed && (
         <>
@@ -562,10 +561,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   buttonLabel: {
     color: getColor('baseTextColor'),
     textAlign: 'center',
-  },
-  spoilerText: {
-    color: getColor('baseTextColor'),
-    marginBottom: 10,
   },
   statusContainer: {
     flex: 1,

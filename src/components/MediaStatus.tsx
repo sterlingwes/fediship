@@ -281,9 +281,10 @@ export const MediaStatus = (
           <Box f={1} pt={10} pb={15}>
             {mainStatus.sensitive ||
               (!!mainStatus.spoiler_text && (
-                <Type scale="S" medium>
-                  ⚠️ {mainStatus.spoiler_text}
-                </Type>
+                <RichText
+                  emojis={emojis}
+                  html={`⚠️ ${mainStatus.spoiler_text}`}
+                />
               ))}
             <RichText
               emojis={emojis}
@@ -325,10 +326,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   buttonLabel: {
     color: getColor('baseTextColor'),
     textAlign: 'center',
-  },
-  spoilerText: {
-    color: getColor('baseTextColor'),
-    marginBottom: 10,
   },
 
   statusFocused: {
