@@ -183,7 +183,7 @@ export const useAPProfile = (
 
       const timeline = result.ok
         ? result.timeline.map(toot => ({
-            ...(localTimelineByIdUrl[toot.id] ?? toot),
+            ...localOrAPFallback(toot, localTimelineByIdUrl[toot.id]),
             emojis: instanceEmojis,
           }))
         : localTimeline?.map(toot => ({
@@ -248,4 +248,15 @@ export const useAPProfile = (
     followLoading,
     onToggleFollow,
   };
+};
+
+const localOrAPFallback = (
+  apStatus: TStatusMapped,
+  localStatus: TStatusMapped,
+) => {
+  if (localStatus) {
+    return {...localStatus, pinned: apStatus?.pinned};
+  }
+
+  return apStatus;
 };
