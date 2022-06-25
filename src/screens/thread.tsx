@@ -9,16 +9,19 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {useThread} from '../api';
+import {useMyMastodonInstance} from '../api/hooks';
 import {Box} from '../components/Box';
 import {ExternalLink} from '../components/icons/ExternalLinkIcon';
 import {FrownIcon} from '../components/icons/FrownIcon';
 import {LockIcon} from '../components/icons/LockIcon';
+import {MessageIcon} from '../components/icons/MessageIcon';
 import {InfoBanner} from '../components/InfoBanner';
 import {InlineReply} from '../components/InlineReply';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {Status} from '../components/Status';
 import {Type} from '../components/Type';
-import {useThemeGetters} from '../theme/utils';
+import {StyleCreator} from '../theme';
+import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatusMapped} from '../types';
 import {resolveTerminatingTootIds} from './thread/thread.util';
 
@@ -91,6 +94,10 @@ export const Thread = ({
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Thread'>) => {
   const {statusUrl, id} = route.params;
+  const api = useMyMastodonInstance();
+  const styles = useThemeStyle(styleCreator);
+  const {getColor} = useThemeGetters();
+
   const [initialLoad, setInitialLoad] = useState(true);
   const filtered = useRef(false);
   const {thread, loading, fetchThread, error, localFallback} = useThread(
@@ -148,6 +155,16 @@ export const Thread = ({
     return statuses;
   }, [initialLoad, statuses, statusUrl]);
 
+  const searchThread = async (uri: string) => {
+    if (loading) {
+      return;
+    }
+    const statusMatch = await api.resolveStatus(uri);
+    if (statusMatch) {
+      fetchThread({localIdOverride: statusMatch.id});
+    }
+  };
+
   const renderItem: ListRenderItem<TStatusMapped> = ({item, index}) => {
     const localStatus = thread?.localStatuses?.[item.uri];
     const resolvedStatus = localStatus ?? item;
@@ -178,10 +195,34 @@ export const Thread = ({
       />
     );
 
-    if (!focused || !localStatus) {
+    if (!focused) {
       return statusComponent;
     }
 
+    if (!localStatus) {
+      return (
+        <>
+          {statusComponent}
+          <TouchableOpacity onPress={() => searchThread(item.uri)}>
+            <Box ph={20} style={styles.fetchThreadButton} pv={15} fd="row" c>
+              <Box mr={5}>
+                <MessageIcon
+                  color={getColor('primary')}
+                  strokeWidth={1}
+                  width={20}
+                  height={20}
+                />
+              </Box>
+              <Type scale="S" color={getColor('primary')}>
+                Enable Replies
+              </Type>
+            </Box>
+          </TouchableOpacity>
+        </>
+      );
+    }
+
+    console.log('reply id', {id: item.id});
     return (
       <>
         {statusComponent}
@@ -224,8 +265,12 @@ const IncompleteThread = () => (
   </InfoBanner>
 );
 
-const styles = StyleSheet.create({
+const styleCreator: StyleCreator = ({getColor}) => ({
   container: {
     flex: 1,
+  },
+  fetchThreadButton: {
+    borderBottomColor: getColor('baseAccent'),
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });

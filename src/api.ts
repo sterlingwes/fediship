@@ -322,24 +322,29 @@ const mergeContexts = (
   }
 };
 
-export const useThread = (statusUrl: string, localId: string) => {
+export const useThread = (statusUrl: string, localStatusId: string) => {
   const api = useMyMastodonInstance();
   const getRemoteMasto = useRemoteMastodonInstance();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [thread, setThread] = useState<TThread>();
+  const [localId, setLocalId] = useState(localStatusId);
   const [localFallback, setLocalFallback] = useState(false);
 
-  const fetchThread = async () => {
+  const fetchThread = async ({localIdOverride} = {localIdOverride: ''}) => {
+    if (localIdOverride) {
+      setLocalId(localIdOverride);
+    }
     const {host, statusId} = parseStatusUrl(statusUrl);
     if (!host || !statusId) {
       throw new Error('Cannot fetch thread with missing host & statusId');
     }
     setLoading(true);
     try {
-      const localResult = localId.startsWith('http')
+      const localIdInput = localIdOverride || localId;
+      const localResult = localIdInput.startsWith('http')
         ? undefined
-        : await api.getThread(localId);
+        : await api.getThread(localIdInput);
       const localStatuses: Record<string, TStatusMapped> = {};
       if (localResult && localResult.response) {
         const {ancestors, descendants} = localResult.response;

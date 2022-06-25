@@ -404,6 +404,19 @@ export class MastodonApiClient extends HTTPClient {
     return response.body as TSearchResults;
   }
 
+  async resolveStatus(statusUri: string) {
+    const response = await this.authedGet(
+      `/api/v2/search?q=${encodeURIComponent(
+        statusUri,
+      )}&type=statuses&resolve=true`,
+    );
+    if (!response.ok) {
+      return;
+    }
+
+    return (response.body as TSearchResults).statuses?.[0];
+  }
+
   async createApplication({name}: {name: string}) {
     const response = await this.post(
       'apps',

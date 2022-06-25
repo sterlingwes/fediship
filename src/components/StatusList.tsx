@@ -19,7 +19,7 @@ import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {Status} from '../components/Status';
 import {useAuth} from '../storage/auth';
 import {StyleCreator} from '../theme';
-import {useThemeStyle} from '../theme/utils';
+import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatusMapped} from '../types';
 import {EmptyList} from './EmptyList';
 import {ErrorBoundary} from './ErrorBoundary';
@@ -43,6 +43,8 @@ const createTimelineRenderer =
         {...status}
         {...statusOverrides}
         onPress={() => {
+          // TODO: nextId should only be a localId, right now we're passing remote ids
+          // which is leading to failed requests to the local instance
           navigation.push('Thread', {statusUrl: nextStatusUrl, id: nextId});
         }}
         onPressAvatar={account => {
@@ -80,6 +82,7 @@ export const StatusList = forwardRef(
     const scrollOffsetRef = useRef(0);
     const scrollRef = useRef<FlatList<TStatusMapped> | null>();
     const styles = useThemeStyle(styleCreator);
+    const {getColor} = useThemeGetters();
 
     useImperativeHandle(ref, () => ({
       scrollToTop: () => scrollRef.current?.scrollToOffset({offset: 0}),
@@ -126,6 +129,8 @@ export const StatusList = forwardRef(
             style={styles.container}
             refreshControl={
               <RefreshControl
+                tintColor={getColor('primary')}
+                colors={[getColor('primary')]}
                 refreshing={reloading}
                 onRefresh={reloadTimeline}
               />
