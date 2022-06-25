@@ -114,6 +114,7 @@ export const Composer = ({
   const api = useMyMastodonInstance();
   const keyboardBanner = useKeyboardBanner();
   const [textValue, setTextValue] = useState('');
+  const [sendError, setSendError] = useState('');
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
   const idempotency = useRef(nanoid());
@@ -172,10 +173,18 @@ export const Composer = ({
         );
       }
 
-      await api.sendStatus(
-        {status: textValue, media_ids, visibility, in_reply_to_id: replyId},
+      const replyParams = replyId ? {in_reply_to_id: replyId} : {};
+      const response = await api.sendStatus(
+        {status: textValue, media_ids, visibility, ...replyParams},
         idempotency.current,
       );
+
+      if (!response.ok) {
+        const error = await response.getErrorSafely();
+        setSendError(error);
+        return () => {};
+      }
+
       return () => {
         setTextValue('');
         setAttachments([]);
@@ -199,6 +208,7 @@ export const Composer = ({
     replyId,
     api,
     keyboardBanner,
+    inReplyToId,
     navigation,
   ]);
 
@@ -293,6 +303,13 @@ export const Composer = ({
                 onPress={() => setReplyId([undefined, replyIdSetTime])}
               />
             </Box>
+          </Box>
+        )}
+        {!!sendError && (
+          <Box ph={15} pv={20}>
+            <Type scale="S" color={getColor('error')}>
+              {sendError}
+            </Type>
           </Box>
         )}
         <Box ph={15} pv={12}>

@@ -23,6 +23,7 @@ export const Input = forwardRef<TextInput, Props>(({value, ...props}, ref) => {
       ref={ref}
       autoCorrect={false}
       spellCheck={false}
+      textAlignVertical="top"
       style={[getTextScaleStyle(props.scale ?? 'M'), props.style]}
       placeholderTextColor={getColor('baseAccent')}>
       <Type scale={props.scale} style={style}>
