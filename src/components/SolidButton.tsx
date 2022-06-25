@@ -61,6 +61,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     elevation: 6,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonLabel: {
     color: getColor('baseTextColor'),
