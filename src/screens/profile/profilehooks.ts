@@ -87,10 +87,24 @@ export const useAPProfile = (
     return emojis.current;
   };
 
-  const fetchTimeline = async () => {
+  const fetchTimeline = async (
+    {
+      nextPageRecurse,
+      profileRecurse,
+    }: {
+      nextPageRecurse: string | undefined;
+      profileRecurse: TAccount | undefined;
+    } = {
+      nextPageRecurse: undefined,
+      profileRecurse: undefined,
+    },
+  ) => {
     const idParts = getIdParts();
+    const nextPageUrl = nextPageRecurse ?? nextPage;
+    const alreadyLoading = loading && !nextPageRecurse;
+    const profileForMerge = profileRecurse ?? profile;
 
-    if (!nextPage || loading || !profile || !idParts.host) {
+    if (!nextPageUrl || alreadyLoading || !profileForMerge || !idParts.host) {
       return;
     }
 
@@ -99,18 +113,23 @@ export const useAPProfile = (
     try {
       const remoteActivityPub = getRemoteAPInstance(idParts.host);
       const response = await remoteActivityPub.getProfileTimeline(
-        nextPage,
-        profile,
+        nextPageUrl,
+        profileForMerge,
       );
       if (response) {
-        setStatuses(
-          statuses.concat(
-            response.result
-              .filter(toot => !pinnedIds.current.includes(toot.id))
-              .map(toot => ({...toot, emojis: emojis.current})),
-          ),
-        );
+        const appendable = response.result
+          .filter(toot => !pinnedIds.current.includes(toot.id))
+          .map(toot => ({...toot, emojis: emojis.current}));
+        setStatuses(statuses.concat(appendable));
         setNextPage(response.pageInfo?.next ?? false);
+
+        if (appendable.length < 3 && response.pageInfo?.next) {
+          fetchTimeline({
+            nextPageRecurse: response.pageInfo.next,
+            profileRecurse,
+          });
+          return;
+        }
       }
     } catch (e: unknown) {
       console.error(e);
@@ -197,6 +216,21 @@ export const useAPProfile = (
 
       if (remoteOrLocalProfile) {
         setProfile(remoteOrLocalProfile);
+      }
+
+      if (
+        remoteOrLocalProfile &&
+        timeline &&
+        timeline.length < 3 &&
+        result.ok &&
+        result.pageInfo?.next
+      ) {
+        setRefreshing(false);
+        fetchTimeline({
+          nextPageRecurse: result.pageInfo.next,
+          profileRecurse: remoteOrLocalProfile,
+        });
+        return;
       }
     } catch (e: unknown) {
       console.error(e);
