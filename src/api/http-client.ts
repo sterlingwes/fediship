@@ -6,6 +6,7 @@ export interface ClientOptions {
   token?: string;
   pathBase?: string;
   acceptHeader?: string;
+  fetchOverride?: ReturnType<typeof createFetchProxy>;
 }
 
 export class HTTPClient {
@@ -14,7 +15,7 @@ export class HTTPClient {
 
   constructor(options: ClientOptions) {
     this.options = options;
-    this.fetch = createFetchProxy();
+    this.fetch = options.fetchOverride ?? createFetchProxy();
   }
 
   get host() {

@@ -37,31 +37,36 @@ import {
 } from '../types';
 
 interface MenuSection {
+  key: string;
   title: string;
   data: MenuItem[];
 }
 
-interface Status {
+interface Item {
+  key: string;
+}
+
+interface Status extends Item {
   type: 'status';
   status: TStatusMapped;
 }
 
-interface Account {
+interface Account extends Item {
   type: 'account';
   account: TAccount;
 }
 
-interface TrendTag {
+interface TrendTag extends Item {
   type: 'tag';
   trendTag: TPeerTagTrend;
 }
 
-interface PeerInstance {
+interface PeerInstance extends Item {
   type: 'peer';
   host: string;
 }
 
-interface Search {
+interface Search extends Item {
   type: 'search';
 }
 
@@ -102,16 +107,19 @@ const transformSearchResults = (
       switch (type) {
         case 'accounts':
           return {
+            key: item.url,
             type: 'account',
             account: item,
           } as Account;
         case 'statuses':
           return {
+            key: item.url,
             type: 'status',
             status: item,
           } as Status;
         case 'hashtags':
           return {
+            key: item.url,
             type: 'tag',
             trendTag: item,
           } as TrendTag;
@@ -119,7 +127,7 @@ const transformSearchResults = (
           throw new Error(`Unsupported search result type ${type}`);
       }
     });
-    return sections.concat({title: titleForType(type), data});
+    return sections.concat({key: type, title: titleForType(type), data});
   }, [] as MenuSection[]);
 };
 
@@ -150,11 +158,13 @@ export const Explore = forwardRef(
     const sectionData = useMemo(
       (): MenuSection[] => [
         {
+          key: 'search',
           title: '',
           data: [{type: 'search'}],
         },
         ...transformSearchResults(searchResults),
         {
+          key: 'peers',
           title: 'Peer Instances',
           data: peers.map(host => ({type: 'peer', host})),
         },
@@ -217,6 +227,7 @@ export const Explore = forwardRef(
                   <Text>
                     {tags.map(tag => (
                       <Type
+                        key={tag}
                         scale="S"
                         style={styles.tag}
                         onPress={() => onTagPress(tag)}>

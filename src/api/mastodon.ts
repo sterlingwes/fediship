@@ -33,6 +33,7 @@ export class MastodonApiClient extends HTTPClient {
       host: options?.host ?? '',
       token: options?.token,
       pathBase: `/api/v${options?.apiVersion ?? 1}`,
+      fetchOverride: options?.fetchOverride,
     });
     this.mastoOptions = options ?? {host: ''};
   }
