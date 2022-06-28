@@ -14,6 +14,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ImageViewer} from './src/screens/image-viewer';
 import {StatusStory} from './stories/status.stories';
 import {useTheme} from './src/theme/utils';
+import {TabbedHome} from './src/screens/tabbed-home';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,7 @@ const StoryContainer = () => {
             : darkNavigationTheme
         }>
         <Stack.Navigator>
+          <Stack.Screen name="TabbedHome" component={TabbedHome} />
           <Stack.Screen name="Status" component={StatusStory} />
           <Stack.Screen
             name="ImageViewer"
