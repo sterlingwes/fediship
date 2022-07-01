@@ -86,7 +86,7 @@ const StatusHeader = (props: StatusHeaderProps) => {
   return (
     <View style={styles.statusHeader}>
       <View style={styles.statusHeaderActorsLabels}>
-        {props.booster && (
+        {!!props.booster && (
           <Type
             scale="XS"
             semiBold
