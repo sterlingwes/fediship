@@ -101,8 +101,23 @@ export const User = ({
         ],
       },
       {
-        title: 'Toots',
+        title: 'Statuses',
         data: [
+          {
+            label: withNewBadge(
+              notifs,
+              ['mention', 'favourite', 'reblog'],
+              'Interactions',
+            ),
+            newCount:
+              (notifs.mention?.length ?? 0) +
+              (notifs.favourite?.length ?? 0) +
+              (notifs.reblog?.length ?? 0),
+            onPress: () => {
+              readType(['mention', 'favourite', 'reblog']);
+              navigation.push('StatusActivity');
+            },
+          },
           {
             label: 'Favorites',
             onPress: () => {
@@ -115,21 +130,7 @@ export const User = ({
             onPress: () =>
               navigation.push('FavouritesTimeline', {type: 'bookmarks'}),
           },
-          {
-            label: withNewBadge(
-              notifs,
-              ['mention', 'favourite', 'reblog'],
-              'Your Activity',
-            ),
-            newCount:
-              (notifs.mention?.length ?? 0) +
-              (notifs.favourite?.length ?? 0) +
-              (notifs.reblog?.length ?? 0),
-            onPress: () => {
-              readType(['mention', 'favourite', 'reblog']);
-              navigation.push('StatusActivity');
-            },
-          },
+
           {
             label: 'Polls',
             newCount: notifs.poll?.length,

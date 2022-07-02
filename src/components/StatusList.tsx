@@ -25,12 +25,14 @@ import {EmptyList} from './EmptyList';
 import {ErrorBoundary} from './ErrorBoundary';
 
 type StatusOverrides = Partial<ComponentProps<typeof Status>>;
+type ThreadParamOverrides = Partial<RootStackParamList['Thread']>;
 
 const createTimelineRenderer =
   (
     navigation: NativeStackNavigationProp<RootStackParamList>,
     host: string | undefined,
     statusOverrides?: StatusOverrides,
+    threadParamOverrides?: ThreadParamOverrides,
   ): ListRenderItem<TStatusMapped> =>
   row => {
     const status = row.item;
@@ -45,7 +47,11 @@ const createTimelineRenderer =
         onPress={() => {
           // TODO: nextId should only be a localId, right now we're passing remote ids
           // which is leading to failed requests to the local instance
-          navigation.push('Thread', {statusUrl: nextStatusUrl, id: nextId});
+          navigation.push('Thread', {
+            statusUrl: nextStatusUrl,
+            id: nextId,
+            ...threadParamOverrides,
+          });
         }}
         onPressAvatar={account => {
           navigation.push('Profile', {
@@ -58,6 +64,7 @@ const createTimelineRenderer =
 
 interface StatusListProps extends ReturnType<typeof useTimeline> {
   showDetail?: boolean;
+  showThreadFavouritedBy?: boolean;
   statusOverrides?: StatusOverrides;
 }
 
@@ -70,6 +77,7 @@ export const StatusList = forwardRef(
       loadingMore,
       reloading,
       showDetail,
+      showThreadFavouritedBy,
       statusOverrides,
       fetchTimeline,
       reloadTimeline,
@@ -91,11 +99,16 @@ export const StatusList = forwardRef(
 
     const renderItem = useMemo(
       () =>
-        createTimelineRenderer(navigation, auth.host, {
-          ...statusOverrides,
-          showDetail,
-        }),
-      [navigation, auth, statusOverrides, showDetail],
+        createTimelineRenderer(
+          navigation,
+          auth.host,
+          {
+            ...statusOverrides,
+            showDetail,
+          },
+          {showThreadFavouritedBy},
+        ),
+      [navigation, auth, statusOverrides, showDetail, showThreadFavouritedBy],
     );
 
     const LoadFooter = useMemo(

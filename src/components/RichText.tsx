@@ -2,6 +2,7 @@ import React, {useCallback, useMemo} from 'react';
 import {Linking} from 'react-native';
 import {useThemeGetters} from '../theme/utils';
 import {Emoji} from '../types';
+import {parseAccountUrl} from '../utils/strings';
 import {hitSlopV} from '../utils/touch';
 import {helperApi, HTMLNodeRenderer, HTMLViewV2} from './HTMLViewV2';
 import {Type, TypeProps} from './Type';
@@ -83,13 +84,8 @@ export const RichText = ({
         classes &&
         (classes.includes('u-url') || classes.includes('mention'))
       ) {
-        const urlParts = href.value.split('/');
-        const host = urlParts[2];
-        let accountHandle = urlParts.pop();
+        const {host, accountHandle} = parseAccountUrl(href.value) ?? {};
         if (host && accountHandle) {
-          if (accountHandle[0] === '@') {
-            accountHandle = accountHandle.substr(1);
-          }
           onMentionPress({host, accountHandle});
           return;
         }

@@ -9,6 +9,7 @@ import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {Emoji, RootStackParamList, TAccount, TStatus} from '../types';
 import {timeAgo} from '../utils/dates';
+import {parseAccountUrl} from '../utils/strings';
 import {Box} from './Box';
 import {EmojiName} from './EmojiName';
 import {BookmarkIcon} from './icons/BookmarkIcon';
@@ -19,6 +20,8 @@ import {MediaAttachments} from './MediaAttachments';
 import {ReplyLine} from './ReplyLine';
 import {RichText} from './RichText';
 import {getType, truncateHtmlText} from './status.util';
+import {StatusActionBar} from './StatusActionBar';
+import {StatusFavouritedByList} from './StatusFavouritedByList';
 import {Type} from './Type';
 import {ViewMoreButton} from './ViewMoreButton';
 
@@ -159,6 +162,7 @@ export const MediaStatus = (
     isLocal: boolean;
     focused?: boolean;
     showDetail?: boolean;
+    showFavouritedBy?: boolean;
     hasReplies?: boolean;
     lastStatus?: boolean;
     collapsed?: boolean;
@@ -223,6 +227,13 @@ export const MediaStatus = (
       }),
     [mainStatus.content, props.focused, props.collapsed],
   );
+
+  const onPressFavAccount = (account: TAccount) => {
+    const {host, accountHandle} = parseAccountUrl(account.url) ?? {};
+    if (host && accountHandle) {
+      navigation.push('Profile', {host, account, accountHandle});
+    }
+  };
 
   const emojis = useMemo(
     () => [...(mainStatus.emojis ?? []), ...(mainStatus.account.emojis ?? [])],
@@ -297,8 +308,47 @@ export const MediaStatus = (
               }
             />
             {truncated && !!mainStatus.content && <ViewMoreButton />}
+            {props.focused && props.isLocal && (
+              <StatusActionBar
+                {...{
+                  detailed: false,
+                  reblogged: false,
+                  reblogCount: props.reblogs_count,
+                  favouriteCount: props.favourites_count,
+                  replyCount: props.replies_count,
+                  loadingReblog: false,
+                  shareUrl: mainStatus.url ?? mainStatus.uri,
+                  bookmarked,
+                  loadingBookmark,
+                  onBookmark,
+                  hasMedia: !!mainStatus.media_attachments?.length,
+                }}
+              />
+            )}
+            {props.focused && props.showFavouritedBy && props.isLocal && (
+              <StatusFavouritedByList
+                statusId={mainStatus.id}
+                onPressAccount={onPressFavAccount}
+              />
+            )}
           </Box>
         </Box>
+        {props.showDetail && props.isLocal && (
+          <StatusActionBar
+            detailed
+            {...{
+              reblogged: false,
+              reblogCount: props.reblogs_count,
+              favouriteCount: props.favourites_count,
+              replyCount: props.replies_count,
+              loadingReblog: false,
+              shareUrl: mainStatus.url ?? mainStatus.uri,
+              bookmarked,
+              loadingBookmark,
+              onBookmark,
+            }}
+          />
+        )}
       </Box>
     </Pressable>
   );

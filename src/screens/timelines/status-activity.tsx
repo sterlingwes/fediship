@@ -47,13 +47,14 @@ export const StatusActivity = forwardRef(
 
     useMount(() => {
       navigation.setOptions({
-        headerTitle: 'Your Activity',
+        headerTitle: 'Interactions',
       });
     });
 
     return (
       <StatusList
         showDetail
+        showThreadFavouritedBy
         {...{...defaultStatusListProps, statuses, loading}}
         ref={ref}
       />

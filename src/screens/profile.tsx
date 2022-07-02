@@ -81,12 +81,17 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
   const styles = useThemeStyle(styleCreator);
 
   const tryFallbackHeader = useCallback(() => {
+    if (fallbackHeaderPending.current === false) {
+      return;
+    }
+
     if (
       profileImages.header &&
       props.apProfile?.header &&
       profileImages.header !== props.apProfile.header
     ) {
       setImages({...profileImages, header: props.apProfile.header});
+      fallbackHeaderPending.current = false;
     } else if (fallbackHeaderPending.current == null) {
       fallbackHeaderPending.current = true;
     }

@@ -91,12 +91,15 @@ export const useAPProfile = (
     {
       nextPageRecurse,
       profileRecurse,
+      existingStatuses,
     }: {
       nextPageRecurse: string | undefined;
       profileRecurse: TAccount | undefined;
+      existingStatuses: TStatusMapped[] | undefined;
     } = {
       nextPageRecurse: undefined,
       profileRecurse: undefined,
+      existingStatuses: undefined,
     },
   ) => {
     const idParts = getIdParts();
@@ -120,13 +123,15 @@ export const useAPProfile = (
         const appendable = response.result
           .filter(toot => !pinnedIds.current.includes(toot.id))
           .map(toot => ({...toot, emojis: emojis.current}));
-        setStatuses(statuses.concat(appendable));
+        const newStatuses = (existingStatuses ?? statuses).concat(appendable);
+        setStatuses(newStatuses);
         setNextPage(response.pageInfo?.next ?? false);
 
         if (appendable.length < 3 && response.pageInfo?.next) {
           fetchTimeline({
             nextPageRecurse: response.pageInfo.next,
             profileRecurse,
+            existingStatuses: newStatuses,
           });
           return;
         }
@@ -229,6 +234,7 @@ export const useAPProfile = (
         fetchTimeline({
           nextPageRecurse: result.pageInfo.next,
           profileRecurse: remoteOrLocalProfile,
+          existingStatuses: timeline,
         });
         return;
       }

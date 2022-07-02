@@ -93,7 +93,7 @@ export const Thread = ({
   navigation,
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Thread'>) => {
-  const {statusUrl, id} = route.params;
+  const {statusUrl, id, showThreadFavouritedBy} = route.params;
   const api = useMyMastodonInstance();
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
@@ -176,6 +176,7 @@ export const Thread = ({
         collapsed={false}
         isLocal={!!localStatus}
         focused={focused}
+        showFavouritedBy={showThreadFavouritedBy}
         {...resolvedStatus}
         hasReplies={!!statuses[index + 1]}
         lastStatus={
@@ -214,7 +215,7 @@ export const Thread = ({
                 />
               </Box>
               <Type scale="S" color={getColor('primary')}>
-                Enable Replies
+                Enable Interactions
               </Type>
             </Box>
           </TouchableOpacity>
@@ -222,7 +223,6 @@ export const Thread = ({
       );
     }
 
-    console.log('reply id', {id: item.id});
     return (
       <>
         {statusComponent}

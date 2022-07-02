@@ -323,6 +323,15 @@ export class MastodonApiClient extends HTTPClient {
     return response.ok;
   }
 
+  async getFavouritedBy(statusId: string) {
+    const response = await this.authedGet(`statuses/${statusId}/favourited_by`);
+    if (!response.ok) {
+      return undefined;
+    }
+
+    return response.body as TAccount[];
+  }
+
   async reblog(statusId: string) {
     const response = await this.authedPost(`statuses/${statusId}/reblog`);
     return response.ok;

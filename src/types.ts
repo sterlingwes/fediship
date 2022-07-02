@@ -188,7 +188,7 @@ export type RootStackParamList = {
     accountHandle?: string;
     self?: boolean;
   };
-  Thread: {statusUrl: string; id: string};
+  Thread: {statusUrl: string; id: string; showThreadFavouritedBy?: boolean};
   PeerProfile: {host: string};
   ImageViewer: {index: number; attachments: TMediaAttachment[]};
   ImageCaptioner: {
