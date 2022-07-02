@@ -13,7 +13,7 @@
     "bundle": "mkdir -p build && react-native bundle --bundle-output build/bundle --sourcemap-output build/bundle.map --dev false --entry-file index.js",
     "sourcemap-explorer": "source-map-explorer build/bundle build/bundle.map --json build/explorer.json",
     "oss-license": "mkdir -p build && react-native-oss-license --json > build/licenses.json",
-    "build-licenses": "mkdir -p src/generated && echo \"[]\" >> src/generated/licenses.json && yarn oss-license && yarn bundle && yarn sourcemap-explorer && ts-node scripts/licenses.ts > src/generated/licenses.json",
+    "build-licenses": "mkdir -p src/generated && echo \"[]\" > src/generated/licenses.json && yarn oss-license && yarn bundle && yarn sourcemap-explorer && ts-node scripts/licenses.ts > src/generated/licenses.json",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "types": "tsc --noEmit",
