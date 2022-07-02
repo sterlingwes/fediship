@@ -1,0 +1,47 @@
+name: CI
+on: push
+
+jobs:
+  job_dedupe_check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v3
+        with:
+          paths: '["**.js", "**.jsx", "**.ts", "**.tsx", ".github/workflows/js-checks.yml", "yarn.lock"]'
+
+  test:
+    needs: job_dedupe_check
+    if: ${{ needs.job_dedupe_check.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: sterlingwes/fediship/.github/actions/yarn-install@develop
+
+      - name: Run Jest
+        run: yarn test
+
+  lint:
+    needs: job_dedupe_check
+    if: ${{ needs.job_dedupe_check.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: sterlingwes/fediship/.github/actions/yarn-install@develop
+
+      - name: Run ESLint
+        run: yarn lint --quiet
+
+  types:
+    needs: job_dedupe_check
+    if: ${{ needs.job_dedupe_check.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: sterlingwes/fediship/.github/actions/yarn-install@develop
+
+      - name: Check types
+        run: yarn types
