@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: sterlingwes/fediship/.github/actions/yarn-install@develop
+      - uses: sterlingwes/fediship/.github/actions/yarn-install@main
 
       - name: Run Jest
         run: yarn test
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: sterlingwes/fediship/.github/actions/yarn-install@develop
+      - uses: sterlingwes/fediship/.github/actions/yarn-install@main
 
       - name: Run ESLint
         run: yarn lint --quiet
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: sterlingwes/fediship/.github/actions/yarn-install@develop
+      - uses: sterlingwes/fediship/.github/actions/yarn-install@main
 
       - name: Check types
         run: yarn types
