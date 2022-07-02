@@ -160,13 +160,13 @@ export const Explore = forwardRef(
         {
           key: 'search',
           title: '',
-          data: [{type: 'search'}],
+          data: [{key: 'search', type: 'search'}],
         },
         ...transformSearchResults(searchResults),
         {
           key: 'peers',
           title: 'Peer Instances',
-          data: peers.map(host => ({type: 'peer', host})),
+          data: peers.map(host => ({key: host, type: 'peer', host})),
         },
       ],
       [peers, searchResults],
