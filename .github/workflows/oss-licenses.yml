@@ -1,0 +1,32 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  job_dedupe_check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v3
+        with:
+          paths: '["yarn.lock"]'
+
+  licenses:
+    needs: job_dedupe_check
+    if: ${{ needs.job_dedupe_check.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: sterlingwes/fediship/.github/actions/yarn-install@main
+
+      - name: Build OSS license list
+        run: yarn build-licenses
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'update oss license list'

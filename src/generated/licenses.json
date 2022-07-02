@@ -1,0 +1,752 @@
+[
+  {
+    "name": "react-native",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/facebook/react-native.git"
+    },
+    "size": 627547
+  },
+  {
+    "name": "react-native-reanimated",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/software-mansion/react-native-reanimated.git"
+    },
+    "size": 396749
+  },
+  {
+    "name": "parse5",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/inikulin/parse5.git"
+    },
+    "size": 227593
+  },
+  {
+    "name": "date-fns",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/date-fns/date-fns.git"
+    },
+    "size": 175002
+  },
+  {
+    "name": "@gorhom/bottom-sheet",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/gorhom/react-native-bottom-sheet.git"
+    },
+    "size": 124626
+  },
+  {
+    "name": "css-tree",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/csstree/csstree.git"
+    },
+    "size": 103875
+  },
+  {
+    "name": "react-native-gesture-handler",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/software-mansion/react-native-gesture-handler.git"
+    },
+    "size": 93819
+  },
+  {
+    "name": "react-native-svg",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-native-community/react-native-svg.git"
+    },
+    "size": 88828
+  },
+  {
+    "name": "@react-navigation/core",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-navigation/react-navigation.git",
+      "directory": "packages/core"
+    },
+    "size": 68790
+  },
+  {
+    "name": "react-native-redash",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/wcandillon/redash.git"
+    },
+    "size": 63777
+  },
+  {
+    "name": "@react-navigation/drawer",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-navigation/react-navigation.git",
+      "directory": "packages/drawer"
+    },
+    "size": 46235
+  },
+  {
+    "name": "@sterlingwes/microformats-parser",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/microformats/microformats-parser.git"
+    },
+    "size": 25331
+  },
+  {
+    "name": "@react-navigation/elements",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-navigation/react-navigation.git",
+      "directory": "packages/elements"
+    },
+    "size": 22422
+  },
+  {
+    "name": "@openspacelabs/react-native-zoomable-view",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/openspacelabs/react-native-zoomable-view.git"
+    },
+    "size": 22248
+  },
+  {
+    "name": "@react-navigation/native",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-navigation/react-navigation.git",
+      "directory": "packages/native"
+    },
+    "size": 20271
+  },
+  {
+    "name": "@react-navigation/bottom-tabs",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-navigation/react-navigation.git",
+      "directory": "packages/bottom-tabs"
+    },
+    "size": 19331
+  },
+  {
+    "name": "css-select",
+    "license": "BSD-2-Clause",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/fb55/css-select.git"
+    },
+    "size": 18044
+  },
+  {
+    "name": "deprecated-react-native-prop-types",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/facebookarchive/react-native-deprecated-modules.git"
+    },
+    "size": 16040
+  },
+  {
+    "name": "lodash",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/lodash/lodash.git"
+    },
+    "size": 14036
+  },
+  {
+    "name": "react-native-toast-message",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/calintamas/react-native-toast-message.git"
+    },
+    "size": 13954
+  },
+  {
+    "name": "@react-navigation/routers",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-navigation/react-navigation.git",
+      "directory": "packages/routers"
+    },
+    "size": 13788
+  },
+  {
+    "name": "color-convert",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/Qix-/color-convert.git"
+    },
+    "size": 13728
+  },
+  {
+    "name": "react-native-video",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/react-native-community/react-native-video.git"
+    },
+    "size": 13249
+  },
+  {
+    "name": "@react-navigation/native-stack",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-navigation/react-navigation.git",
+      "directory": "packages/native-stack"
+    },
+    "size": 11372
+  },
+  {
+    "name": "source-map",
+    "license": "BSD-3-Clause",
+    "repo": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/mozilla/source-map.git"
+    },
+    "size": 10496
+  },
+  {
+    "name": "react-native-webview",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-native-webview/react-native-webview.git"
+    },
+    "size": 10061
+  },
+  {
+    "name": "react-native-screens",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/software-mansion/react-native-screens.git"
+    },
+    "size": 9947
+  },
+  {
+    "name": "domutils",
+    "license": "BSD-2-Clause",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/fb55/domutils.git"
+    },
+    "size": 9899
+  },
+  {
+    "name": "lodash.isequal",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/lodash/lodash.git"
+    },
+    "size": 9773
+  },
+  {
+    "name": "whatwg-fetch",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/github/fetch.git"
+    },
+    "size": 9492
+  },
+  {
+    "name": "css-what",
+    "license": "BSD-2-Clause",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/fb55/css-what.git"
+    },
+    "size": 9206
+  },
+  {
+    "name": "domhandler",
+    "license": "BSD-2-Clause",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/fb55/domhandler.git"
+    },
+    "size": 8898
+  },
+  {
+    "name": "@react-native-community/netinfo",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-native-netinfo/react-native-netinfo.git"
+    },
+    "size": 8171
+  },
+  {
+    "name": "@babel/runtime",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/babel/babel.git",
+      "directory": "packages/babel-runtime"
+    },
+    "size": 7616
+  },
+  {
+    "name": "@react-native/polyfills",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/facebook/react-native.git",
+      "directory": "packages/polyfills"
+    },
+    "size": 6898
+  },
+  {
+    "name": "@react-native/normalize-color",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/facebook/react-native.git",
+      "directory": "packages/normalize-color"
+    },
+    "size": 6775
+  },
+  {
+    "name": "query-string",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/sindresorhus/query-string.git"
+    },
+    "size": 6540
+  },
+  {
+    "name": "regenerator-runtime",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "https://github.com/facebook/regenerator/tree/master/packages/runtime"
+    },
+    "size": 6499
+  },
+  {
+    "name": "event-target-shim",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/mysticatea/event-target-shim.git"
+    },
+    "size": 6274
+  },
+  {
+    "name": "color",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/Qix-/color.git"
+    },
+    "size": 6133
+  },
+  {
+    "name": "react-native-mmkv",
+    "license": "(MIT AND BSD-3-Clause)",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/mrousavy/react-native-mmkv.git"
+    },
+    "size": 6043
+  },
+  {
+    "name": "react",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/facebook/react.git",
+      "directory": "packages/react"
+    },
+    "size": 6037
+  },
+  {
+    "name": "dom-serializer",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/cheeriojs/dom-renderer.git"
+    },
+    "size": 5855
+  },
+  {
+    "name": "@gorhom/portal",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/gorhom/react-native-portal.git"
+    },
+    "size": 5389
+  },
+  {
+    "name": "entities",
+    "license": "BSD-2-Clause",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/fb55/entities.git"
+    },
+    "size": 5081
+  },
+  {
+    "name": "react-native-safe-area-context",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/th3rdwave/react-native-safe-area-context.git"
+    },
+    "size": 4500
+  },
+  {
+    "name": "scheduler",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/facebook/react.git",
+      "directory": "packages/scheduler"
+    },
+    "size": 4458
+  },
+  {
+    "name": "promise",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/then/promise.git"
+    },
+    "size": 3681
+  },
+  {
+    "name": "color-name",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/dfcreative/color-name.git"
+    },
+    "size": 3428
+  },
+  {
+    "name": "color-string",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/Qix-/color-string.git"
+    },
+    "size": 3226
+  },
+  {
+    "name": "hoist-non-react-statics",
+    "license": "BSD-3-Clause",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/mridgway/hoist-non-react-statics.git"
+    },
+    "size": 3178
+  },
+  {
+    "name": "svg-arc-to-cubic-bezier",
+    "license": "ISC",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/colinmeinke/svg-arc-to-cubic-bezier.git"
+    },
+    "size": 2107
+  },
+  {
+    "name": "abort-controller",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/mysticatea/abort-controller.git"
+    },
+    "size": 2054
+  },
+  {
+    "name": "metro-runtime",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/facebook/metro.git"
+    },
+    "size": 1942
+  },
+  {
+    "name": "stacktrace-parser",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/errwischt/stacktrace-parser.git"
+    },
+    "size": 1816
+  },
+  {
+    "name": "nth-check",
+    "license": "BSD-2-Clause",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/fb55/nth-check.git"
+    },
+    "size": 1528
+  },
+  {
+    "name": "base64-js",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/beatgammit/base64-js.git"
+    },
+    "size": 1401
+  },
+  {
+    "name": "nanoid",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/ai/nanoid.git"
+    },
+    "size": 1213
+  },
+  {
+    "name": "react-native-get-random-values",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/LinusU/react-native-get-random-values.git"
+    },
+    "size": 1136
+  },
+  {
+    "name": "normalize-svg-path",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/jkroso/normalize-svg-path.git"
+    },
+    "size": 1057
+  },
+  {
+    "name": "react-freeze",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/software-mansion-labs/react-freeze.git"
+    },
+    "size": 1037
+  },
+  {
+    "name": "object-assign",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/sindresorhus/object-assign.git"
+    },
+    "size": 937
+  },
+  {
+    "name": "decode-uri-component",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/SamVerschueren/decode-uri-component.git"
+    },
+    "size": 929
+  },
+  {
+    "name": "@react-native/assets",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/facebook/react-native.git"
+    },
+    "size": 927
+  },
+  {
+    "name": "react-native-image-picker",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/react-native-image-picker/react-native-image-picker.git"
+    },
+    "size": 805
+  },
+  {
+    "name": "fast-base64-decode",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/LinusU/fast-base64-decode.git"
+    },
+    "size": 769
+  },
+  {
+    "name": "prop-types",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/facebook/prop-types.git"
+    },
+    "size": 760
+  },
+  {
+    "name": "domelementtype",
+    "license": "BSD-2-Clause",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/fb55/domelementtype.git"
+    },
+    "size": 624
+  },
+  {
+    "name": "use-subscription",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/facebook/react.git",
+      "directory": "packages/use-subscription"
+    },
+    "size": 587
+  },
+  {
+    "name": "parse-svg-path",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/jkroso/parse-svg-path.git"
+    },
+    "size": 523
+  },
+  {
+    "name": "abs-svg-path",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git://github.com/jkroso/abs-svg-path.git"
+    },
+    "size": 427
+  },
+  {
+    "name": "invariant",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/zertosh/invariant.git"
+    },
+    "size": 365
+  },
+  {
+    "name": "simple-swizzle",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/qix-/node-simple-swizzle.git"
+    },
+    "size": 265
+  },
+  {
+    "name": "split-on-first",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/sindresorhus/split-on-first.git"
+    },
+    "size": 249
+  },
+  {
+    "name": "is-arrayish",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/qix-/node-is-arrayish.git"
+    },
+    "size": 227
+  },
+  {
+    "name": "nullthrows",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/zertosh/nullthrows.git"
+    },
+    "size": 221
+  },
+  {
+    "name": "keymirror",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/STRML/keyMirror.git"
+    },
+    "size": 214
+  },
+  {
+    "name": "filter-obj",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/sindresorhus/filter-obj.git"
+    },
+    "size": 184
+  },
+  {
+    "name": "escape-string-regexp",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/sindresorhus/escape-string-regexp.git"
+    },
+    "size": 177
+  },
+  {
+    "name": "strict-uri-encode",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/kevva/strict-uri-encode.git"
+    },
+    "size": 160
+  },
+  {
+    "name": "boolbase",
+    "license": "ISC",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/fb55/boolbase.git"
+    },
+    "size": 83
+  },
+  {
+    "name": "warn-once",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/satya164/warn-once.git"
+    },
+    "size": 41
+  }
+]
