@@ -15,7 +15,7 @@
       "type": "git",
       "url": "git+https://github.com/software-mansion/react-native-reanimated.git"
     },
-    "size": 396749
+    "size": 397637
   },
   {
     "name": "parse5",
@@ -42,7 +42,7 @@
       "type": "git",
       "url": "git+https://github.com/gorhom/react-native-bottom-sheet.git"
     },
-    "size": 124626
+    "size": 124866
   },
   {
     "name": "css-tree",
@@ -60,7 +60,7 @@
       "type": "git",
       "url": "git+https://github.com/software-mansion/react-native-gesture-handler.git"
     },
-    "size": 93819
+    "size": 93887
   },
   {
     "name": "react-native-svg",
@@ -88,7 +88,7 @@
       "type": "git",
       "url": "git+https://github.com/wcandillon/redash.git"
     },
-    "size": 63777
+    "size": 64181
   },
   {
     "name": "@react-navigation/drawer",
@@ -98,7 +98,7 @@
       "url": "git+https://github.com/react-navigation/react-navigation.git",
       "directory": "packages/drawer"
     },
-    "size": 46235
+    "size": 46291
   },
   {
     "name": "@sterlingwes/microformats-parser",
@@ -108,6 +108,15 @@
       "url": "git+https://github.com/microformats/microformats-parser.git"
     },
     "size": 25331
+  },
+  {
+    "name": "react-native-video-controls",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/itsnubix/react-native-video-controls.git"
+    },
+    "size": 23717
   },
   {
     "name": "@react-navigation/elements",
@@ -158,6 +167,15 @@
     "size": 18044
   },
   {
+    "name": "lodash",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/lodash/lodash.git"
+    },
+    "size": 18004
+  },
+  {
     "name": "deprecated-react-native-prop-types",
     "license": "MIT",
     "repo": {
@@ -165,15 +183,6 @@
       "url": "git+ssh://git@github.com/facebookarchive/react-native-deprecated-modules.git"
     },
     "size": 16040
-  },
-  {
-    "name": "lodash",
-    "license": "MIT",
-    "repo": {
-      "type": "git",
-      "url": "git+https://github.com/lodash/lodash.git"
-    },
-    "size": 14036
   },
   {
     "name": "react-native-toast-message",
