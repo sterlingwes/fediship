@@ -45,6 +45,7 @@
     "react-native-svg": "^12.3.0",
     "react-native-toast-message": "^2.1.5",
     "react-native-video": "^5.2.0",
+    "react-native-video-controls": "^2.8.1",
     "react-native-webview": "^11.21.0"
   },
   "devDependencies": {

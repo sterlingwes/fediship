@@ -2,7 +2,7 @@ import {ReactNativeZoomableView} from '@openspacelabs/react-native-zoomable-view
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
 import {StyleSheet, View, ViewStyle} from 'react-native';
-import Video from 'react-native-video';
+import Video from 'react-native-video-controls';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {OutlineButton} from '../components/OutlineButton';
 import {RedundantImage} from '../components/RedundantImage';
@@ -51,6 +51,9 @@ export const ImageViewer = (
 
   const target = attachments[currentIndex];
   const Wrapper = target.type === 'image' ? ZoomPanView : View;
+  const width = screenWidth - imagePadding * 2;
+  const height =
+    (target.meta.original.height / target.meta.original.width) * width;
 
   return (
     <View style={styles.container}>
@@ -60,15 +63,14 @@ export const ImageViewer = (
           <Wrapper style={styles.zoomView}>
             {['video', 'gifv'].includes(target.type) ? (
               <Video
-                controls
+                disableBack
                 repeat={target.type === 'gifv'}
                 source={{uri: target.url}}
                 poster={target.preview_url}
                 posterResizeMode="cover"
                 style={{
-                  width: screenWidth - imagePadding * 2,
-                  aspectRatio:
-                    target.meta.original.width / target.meta.original.height,
+                  width,
+                  height,
                 }}
               />
             ) : (
