@@ -29,6 +29,7 @@ import {ImageIcon} from '../components/icons/ImageIcon';
 import {InfoIcon} from '../components/icons/InfoIcon';
 import {XCircleIcon} from '../components/icons/XCircleIcon';
 import {TrashIcon} from '../components/icons/TrashIcon';
+import {parseStatus} from './composer.utils';
 
 interface Attachment {
   uri: string;
@@ -174,8 +175,10 @@ export const Composer = ({
       }
 
       const replyParams = replyId ? {in_reply_to_id: replyId} : {};
+      const {status, cw} = parseStatus(textValue);
+      const spoilerParams = cw ? {spoiler_text: cw} : {};
       const response = await api.sendStatus(
-        {status: textValue, media_ids, visibility, ...replyParams},
+        {status, media_ids, visibility, ...replyParams, ...spoilerParams},
         idempotency.current,
       );
 

@@ -47,6 +47,7 @@ export class MastodonApiClient extends HTTPClient {
       status: string;
       in_reply_to_id?: string;
       media_ids?: string[];
+      spoiler_text?: string;
       visibility?: Visibility;
     },
     idempotencyKey?: string,
