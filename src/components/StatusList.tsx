@@ -1,5 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {FlashList, ListRenderItem} from '@shopify/flash-list';
 import React, {
   ComponentProps,
   forwardRef,
@@ -7,13 +8,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import {
-  FlatList,
-  InteractionManager,
-  ListRenderItem,
-  RefreshControl,
-  View,
-} from 'react-native';
+import {InteractionManager, RefreshControl, View} from 'react-native';
 import {useTimeline} from '../api';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {Status} from '../components/Status';
@@ -40,7 +35,6 @@ const createTimelineRenderer =
     const nextId = status.reblog ? status.reblog.id : status.id;
     return (
       <Status
-        key={status.id}
         isLocal={status.sourceHost === host}
         {...status}
         {...statusOverrides}
@@ -88,7 +82,7 @@ export const StatusList = forwardRef(
     const navigation =
       useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const scrollOffsetRef = useRef(0);
-    const scrollRef = useRef<FlatList<TStatusMapped> | null>();
+    const scrollRef = useRef<FlashList<TStatusMapped> | null>();
     const styles = useThemeStyle(styleCreator);
     const {getColor} = useThemeGetters();
 
@@ -135,11 +129,11 @@ export const StatusList = forwardRef(
     return (
       <ErrorBoundary>
         <View style={styles.screen}>
-          <FlatList
+          <FlashList
             ref={nodeRef => (scrollRef.current = nodeRef)}
             data={statuses}
             renderItem={renderItem}
-            style={styles.container}
+            estimatedItemSize={100}
             refreshControl={
               <RefreshControl
                 tintColor={getColor('primary')}
@@ -162,9 +156,6 @@ export const StatusList = forwardRef(
 
 const styleCreator: StyleCreator = ({getColor}) => ({
   screen: {
-    flex: 1,
-  },
-  container: {
     flex: 1,
   },
   loadingMoreBar: {
