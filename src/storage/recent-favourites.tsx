@@ -34,6 +34,9 @@ export const FavouritesProvider = ({children}: {children: ReactNode}) => {
 
   const trackStatusFavourite = useCallback(
     (localStatusUrl: string, favourited = true) => {
+      if (!localStatusUrl) {
+        return;
+      }
       favourites[localStatusUrl] = favourited;
       setFavourites({
         ...favourites,
