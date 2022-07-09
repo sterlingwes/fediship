@@ -41,7 +41,7 @@ export const StatusFavouritedByList = ({
   return (
     <Box f={1} mt={10}>
       {loading && <LoadingSpinner size="small" />}
-      {favouritedBy && (
+      {favouritedBy && favouritedBy.length > 0 && (
         <Box f={1}>
           <Type scale="XS">Favourited by:</Type>
 
