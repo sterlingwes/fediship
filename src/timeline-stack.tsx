@@ -155,6 +155,7 @@ export const TimelineStack = ({
       }}>
       {timelines.map(tl => (
         <Drawer.Screen
+          key={tl.name}
           name={tl.name}
           component={dynamicScreens[tl.name]}
           initialParams={initialParamsForTimelineType(tl)}
