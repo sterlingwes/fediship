@@ -13,10 +13,8 @@ import {timeAgo} from '../utils/dates';
 import {parseAccountUrl} from '../utils/strings';
 import {Box} from './Box';
 import {EmojiName} from './EmojiName';
-import {BookmarkIcon} from './icons/BookmarkIcon';
 import {LockIcon} from './icons/LockIcon';
-import {StarIcon} from './icons/StarIcon';
-import {LoadingSpinner} from './LoadingSpinner';
+import {StatusActionButton} from './icons/StatusActionButton';
 import {MediaAttachments} from './MediaAttachments';
 import {MediaStatus} from './MediaStatus';
 import {Poll} from './Poll';
@@ -126,53 +124,6 @@ const AvatarLock = () => {
         color={getColor('primary')}
       />
     </View>
-  );
-};
-
-const PriorityAction = ({
-  icon,
-  active,
-  loading,
-  onPress,
-}: {
-  icon: 'bookmark' | 'favourite';
-  active: boolean | undefined;
-  loading: boolean;
-  onPress: () => void;
-}) => {
-  const styles = useThemeStyle(styleCreator);
-  const {getColor} = useThemeGetters();
-
-  const iconButton = useMemo(() => {
-    switch (icon) {
-      case 'favourite':
-        return (
-          <StarIcon
-            width="18"
-            height="18"
-            stroke={active ? 'transparent' : getColor('baseAccent')}
-            fill={active ? getColor('goldAccent') : undefined}
-          />
-        );
-      case 'bookmark':
-        return (
-          <BookmarkIcon
-            width="18"
-            height="18"
-            stroke={active ? 'transparent' : getColor('baseAccent')}
-            fill={active ? getColor('goldAccent') : undefined}
-          />
-        );
-    }
-  }, [icon, getColor, active]);
-
-  return (
-    <Pressable
-      disabled={loading}
-      onPress={onPress}
-      style={[styles.starButton, active && styles.starButtonFaved]}>
-      {loading ? <LoadingSpinner /> : iconButton}
-    </Pressable>
   );
 };
 
@@ -327,7 +278,7 @@ export const Status = (
                 }
               />
               {props.isLocal && !props.showDetail && (
-                <PriorityAction
+                <StatusActionButton
                   icon={priorityAction}
                   loading={
                     priorityAction === 'favourite'
@@ -521,18 +472,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     alignItems: 'center',
     marginRight: 15,
     minHeight: 50,
-  },
-  starButton: {
-    position: 'absolute',
-    top: 8,
-    padding: 4,
-    backgroundColor: getColor('base'),
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: getColor('baseAccent'),
-  },
-  starButtonFaved: {
-    borderColor: getColor('goldAccent'),
   },
   replyLineLeader: {
     marginRight: 15,
