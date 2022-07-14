@@ -142,6 +142,7 @@ export const StatusList = forwardRef(
                 onRefresh={reloadTimeline}
               />
             }
+            keyExtractor={item => item.uri ?? item.id}
             onScroll={event => {
               scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
             }}

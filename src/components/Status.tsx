@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Image, StyleSheet, Pressable, View} from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
 import {useRecentFavourites} from '../storage/recent-favourites';
@@ -154,6 +154,7 @@ export const Status = (
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const mainStatus = props.reblog ? props.reblog : props;
+  const lastId = useRef(mainStatus.uri);
   const recentFav = favourites[mainStatus.url ?? mainStatus.uri];
   const recentReblog = reblogs[mainStatus.url ?? mainStatus.uri];
   const recentBookmark = bookmarks[mainStatus.url ?? mainStatus.uri];
@@ -167,6 +168,18 @@ export const Status = (
   const [loadingReblog, setLoadingReblog] = useState(false);
   const [loadingBookmark, setLoadingBookmark] = useState(false);
   const styles = useThemeStyle(styleCreator);
+
+  useEffect(() => {
+    if (lastId.current !== mainStatus.uri) {
+      lastId.current = mainStatus.uri;
+      setFaved(mainStatus.favourited);
+      setReblogged(mainStatus.reblogged);
+      setBookmarked(mainStatus.bookmarked);
+      setLoadingFav(false);
+      setLoadingReblog(false);
+      setLoadingBookmark(false);
+    }
+  }, [mainStatus]);
 
   const onPressAvatar =
     typeof props.onPressAvatar === 'function'
