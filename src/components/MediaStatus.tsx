@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {useMemo, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import {Image, StyleSheet, Pressable, View} from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
 import {useRecentFavourites} from '../storage/recent-favourites';
@@ -129,13 +129,21 @@ export const MediaStatus = (
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const mainStatus = props.reblog ? props.reblog : props;
+  const lastId = useRef(mainStatus.uri);
   const recentFav = favourites[mainStatus.url ?? mainStatus.uri];
   const [faved, setFaved] = useState(mainStatus.favourited);
   const [bookmarked, setBookmarked] = useState(mainStatus.bookmarked);
-  const favourited = recentFav || faved;
   const [loadingFav, setLoadingFav] = useState(false);
   const [loadingBookmark, setLoadingBookmark] = useState(false);
   const styles = useThemeStyle(styleCreator);
+
+  if (lastId.current !== mainStatus.uri) {
+    lastId.current = mainStatus.uri;
+    setFaved(mainStatus.favourited || recentFav);
+    setBookmarked(mainStatus.bookmarked);
+    setLoadingFav(false);
+    setLoadingBookmark(false);
+  }
 
   const onPressAvatar =
     typeof props.onPressAvatar === 'function'
@@ -233,9 +241,7 @@ export const MediaStatus = (
                   onPress={
                     priorityAction === 'favourite' ? onFavourite : onBookmark
                   }
-                  active={
-                    priorityAction === 'favourite' ? favourited : bookmarked
-                  }
+                  active={priorityAction === 'favourite' ? faved : bookmarked}
                 />
               )}
             </View>

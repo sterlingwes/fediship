@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import {Image, StyleSheet, Pressable, View} from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
 import {useRecentFavourites} from '../storage/recent-favourites';
@@ -161,7 +161,6 @@ export const Status = (
   const [faved, setFaved] = useState(mainStatus.favourited);
   const [reblogged, setReblogged] = useState(mainStatus.reblogged);
   const [bookmarked, setBookmarked] = useState(mainStatus.bookmarked);
-  const favourited = recentFav || faved;
   const wasReblogged = recentReblog || reblogged;
   const wasBookmarked = recentBookmark || bookmarked;
   const [loadingFav, setLoadingFav] = useState(false);
@@ -169,17 +168,15 @@ export const Status = (
   const [loadingBookmark, setLoadingBookmark] = useState(false);
   const styles = useThemeStyle(styleCreator);
 
-  useEffect(() => {
-    if (lastId.current !== mainStatus.uri) {
-      lastId.current = mainStatus.uri;
-      setFaved(mainStatus.favourited);
-      setReblogged(mainStatus.reblogged);
-      setBookmarked(mainStatus.bookmarked);
-      setLoadingFav(false);
-      setLoadingReblog(false);
-      setLoadingBookmark(false);
-    }
-  }, [mainStatus]);
+  if (lastId.current !== mainStatus.uri) {
+    lastId.current = mainStatus.uri;
+    setFaved(mainStatus.favourited || recentFav);
+    setReblogged(mainStatus.reblogged);
+    setBookmarked(mainStatus.bookmarked);
+    setLoadingFav(false);
+    setLoadingReblog(false);
+    setLoadingBookmark(false);
+  }
 
   const onPressAvatar =
     typeof props.onPressAvatar === 'function'
@@ -301,9 +298,7 @@ export const Status = (
                   onPress={
                     priorityAction === 'favourite' ? onFavourite : onBookmark
                   }
-                  active={
-                    priorityAction === 'favourite' ? favourited : bookmarked
-                  }
+                  active={priorityAction === 'favourite' ? faved : bookmarked}
                 />
               )}
             </View>
