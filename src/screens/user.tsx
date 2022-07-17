@@ -167,6 +167,10 @@ export const User = ({
         title: 'Settings',
         data: [
           {
+            label: 'About the App',
+            onPress: () => navigation.push('About'),
+          },
+          {
             label: 'Appearance',
             onPress: () => navigation.push('AppearanceSettings'),
           },

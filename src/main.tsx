@@ -97,7 +97,7 @@ const LoggedInStack = () => (
       name="About"
       component={About}
       options={{
-        headerTitle: 'ℹ️ About the App',
+        headerTitle: 'About the App',
         orientation: 'portrait',
       }}
     />
