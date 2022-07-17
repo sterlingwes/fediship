@@ -17,7 +17,7 @@ interface RichTextProps {
 const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) => {
   return (props.emojis ?? []).reduce((content, emoji) => {
     return content.replace(
-      `:${emoji.shortcode}:`,
+      new RegExp(`:${emoji.shortcode}:`, 'g'),
       `<emoji src="${emoji.url}"></emoji>`,
     );
   }, props.content ?? '');
