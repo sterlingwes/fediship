@@ -91,10 +91,7 @@ export const RichText = ({
         }
       }
 
-      const canOpen = await Linking.canOpenURL(href.value);
-      if (canOpen) {
-        Linking.openURL(href.value);
-      }
+      Linking.openURL(href.value);
     },
     [onMentionPress, onTagPress],
   );
