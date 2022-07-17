@@ -516,7 +516,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     resizeMode: 'cover',
   },
   headerSpacer: {
-    minHeight: 130,
+    minHeight: 140,
   },
   headerAvatar: {
     position: 'absolute',

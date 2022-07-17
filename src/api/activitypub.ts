@@ -36,6 +36,65 @@ export class ActivityPubClient extends HTTPClient {
       }
     | {ok: false; error: string}
   > {
+    const accountResult = await this.getAccountByHandle(host, handle);
+    if (!accountResult.ok || !accountResult.account) {
+      return {ok: false, error: accountResult.error!};
+    }
+
+    const {account, outbox, featured} = accountResult;
+
+    try {
+      const pinnedIds: string[] = [];
+      let timeline: TStatusMapped[] = [];
+      let tlResult;
+
+      const outboxUrl = `${outbox}?page=true`;
+      tlResult = await this.getProfileTimeline(outboxUrl, account);
+      timeline = tlResult?.result ?? [];
+
+      if (!tlResult) {
+        return {
+          ok: false,
+          error: 'No outbox',
+        };
+      }
+
+      if (featured) {
+        const featuredCollection = await this.get(featured);
+        if (isOrderedCollection(featuredCollection.body)) {
+          timeline = featuredCollection.body.orderedItems
+            .map(item => {
+              pinnedIds.push(item.id);
+              return transformActivity(item, {
+                account,
+                host: this.host,
+                pinned: true,
+              });
+            })
+            .concat(
+              (tlResult?.result ?? []).filter(
+                toot => !pinnedIds.includes(toot.id),
+              ),
+            );
+        }
+      }
+
+      return {
+        ok: true,
+        account,
+        timeline,
+        pinnedIds,
+        pageInfo: tlResult?.pageInfo,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: (e as Error).message,
+      };
+    }
+  }
+
+  async getAccountByHandle(host: string, handle: string) {
     const webfinger = await this.getWebfinger(host, handle);
     if (!webfinger) {
       return {
@@ -46,85 +105,41 @@ export class ActivityPubClient extends HTTPClient {
     const profileLink = webfinger.links.find(
       link => link.rel === 'self' && link.type.includes('json'),
     );
-    if (profileLink) {
-      try {
-        const result = await this.get(profileLink.href);
 
-        if (!result.ok) {
-          const error = await result.getError();
-          return {
-            ok: false,
-            error: error ?? 'Failed to fetch remote profile',
-          };
-        } else if (result.status !== 200) {
-          return {
-            ok: false,
-            error: "User's instance does not support the ActivityPub protocol.",
-          };
-        }
+    if (!profileLink) {
+      return {
+        ok: false,
+        error: 'Unexpected webfinger response (no profile link)',
+      };
+    }
 
-        if (isPerson(result.body)) {
-          const account = transformPerson(
-            profileLink.href,
-            result.body as APPerson,
-          );
+    const result = await this.get(profileLink.href);
 
-          const pinnedIds: string[] = [];
-          let timeline: TStatusMapped[] = [];
-          let tlResult;
+    if (!result.ok) {
+      const error = await result.getError();
+      return {
+        ok: false,
+        error: error ?? 'Failed to fetch remote profile',
+      };
+    } else if (result.status !== 200) {
+      return {
+        ok: false,
+        error: "User's instance does not support the ActivityPub protocol.",
+      };
+    }
 
-          if (result.body.outbox) {
-            const outboxUrl = `${result.body.outbox}?page=true`;
-            tlResult = await this.getProfileTimeline(outboxUrl, account);
-            timeline = tlResult?.result ?? [];
-
-            if (!tlResult) {
-              return {
-                ok: false,
-                error: 'No outbox',
-              };
-            }
-
-            if (result.body.featured) {
-              const featuredCollection = await this.get(result.body.featured);
-              if (isOrderedCollection(featuredCollection.body)) {
-                timeline = featuredCollection.body.orderedItems
-                  .map(item => {
-                    pinnedIds.push(item.id);
-                    return transformActivity(item, {
-                      account,
-                      host: this.host,
-                      pinned: true,
-                    });
-                  })
-                  .concat(
-                    (tlResult?.result ?? []).filter(
-                      toot => !pinnedIds.includes(toot.id),
-                    ),
-                  );
-              }
-            }
-          }
-
-          return {
-            ok: true,
-            account,
-            timeline,
-            pinnedIds,
-            pageInfo: tlResult?.pageInfo,
-          };
-        }
-      } catch (e) {
-        return {
-          ok: false,
-          error: (e as Error).message,
-        };
-      }
+    if (isPerson(result.body)) {
+      return {
+        ok: true,
+        account: transformPerson(profileLink.href, result.body as APPerson),
+        outbox: result.body.outbox,
+        featured: result.body.featured,
+      };
     }
 
     return {
       ok: false,
-      error: `Unexpected response from ${host}`,
+      error: 'Profile link is not a valid AP Person',
     };
   }
 

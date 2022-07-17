@@ -1,7 +1,11 @@
 import {useCallback, useState} from 'react';
 import {TSearchResults} from '../types';
 import {useMount} from '../utils/hooks';
-import {useMyMastodonInstance, useRemoteMastodonInstance} from './hooks';
+import {
+  useMyMastodonInstance,
+  useRemoteActivityPubInstance,
+  useRemoteMastodonInstance,
+} from './hooks';
 
 export const useInstanceTrends = (host: string) => {
   const getApi = useRemoteMastodonInstance();
@@ -27,21 +31,42 @@ export const useInstanceTrends = (host: string) => {
   return {loadingTags, tags};
 };
 
+const specificAccountSearch = (term: string) =>
+  term.trim().split(/[@.]/).length >= 3 && term.trim().includes(' ') === false;
+
 export const useSearch = () => {
   const api = useMyMastodonInstance();
+  const getRemoteApi = useRemoteActivityPubInstance();
   const [searching, setSearching] = useState(false);
   const [searchResults, setResults] = useState<TSearchResults>();
 
   const search = useCallback(
     async (query: string) => {
       setSearching(true);
+      if (specificAccountSearch(query)) {
+        const [handle, host] = query.trim().split('@');
+        const remoteApi = getRemoteApi(host);
+        const accountResponse = await remoteApi.getAccountByHandle(
+          host,
+          handle,
+        );
+        if (accountResponse.ok) {
+          setResults({
+            accounts: [accountResponse.account!],
+            statuses: [],
+            hashtags: [],
+          });
+          setSearching(false);
+          return;
+        }
+      }
       const results = await api.search(query);
       if (results) {
         setResults(results);
       }
       setSearching(false);
     },
-    [api, setResults],
+    [api, setResults, getRemoteApi],
   );
 
   const clearResults = useCallback(() => {

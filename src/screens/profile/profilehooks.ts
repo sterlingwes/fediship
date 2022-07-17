@@ -167,7 +167,7 @@ export const useAPProfile = (
       const userIdent = `${idParts.handle}@${idParts.host}`;
       let localAccount: TAccount | undefined;
       let localTimeline: TStatusMapped[] | undefined;
-      let localTimelineByIdUrl: Record<string, TStatusMapped>;
+      let localTimelineByIdUrl: Record<string, TStatusMapped> = {};
       localAccount = await api.findAccount(userIdent);
       if (localAccount?.id) {
         const relationship = await api.getRelationship(localAccount.id);
