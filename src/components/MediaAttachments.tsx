@@ -90,7 +90,7 @@ export const MediaAttachments = ({
   if (props.media.length === 1) {
     return (
       <Box style={[styles.mediaTwo, large && styles.noRadius]} mb={5}>
-        <View key={props.media[0].id} style={styles.flexColumn}>
+        <View style={styles.flexColumn}>
           <Media
             {...{
               ...props.media[0],
