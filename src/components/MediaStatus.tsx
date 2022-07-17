@@ -17,7 +17,7 @@ import {StatusActionButton} from './icons/StatusActionButton';
 import {MediaAttachments} from './MediaAttachments';
 import {ReplyLine} from './ReplyLine';
 import {RichText} from './RichText';
-import {getType, truncateHtmlText} from './status.util';
+import {getType, getUsername, truncateHtmlText} from './status.util';
 import {StatusActionBar} from './StatusActionBar';
 import {StatusFavouritedByList} from './StatusFavouritedByList';
 import {Type} from './Type';
@@ -38,7 +38,7 @@ interface StatusHeaderProps {
 
 const StatusHeader = (props: StatusHeaderProps) => {
   const styles = useThemeStyle(styleCreator);
-
+  const {displayName, username} = props;
   return (
     <Box fd="row" f={1} mb={10} pr={20} pl={15} sb>
       <Pressable onPress={props.onPressAvatar} style={styles.avatar}>
@@ -76,7 +76,7 @@ const StatusHeader = (props: StatusHeaderProps) => {
         )}
         <Type scale="S" semiBold numberOfLines={1}>
           <EmojiName
-            name={props.displayName || props.username || ''}
+            name={getUsername({displayName, username})}
             emojis={props.userEmojis}
           />{' '}
           <Type scale="S" style={styles.statusHeaderType}>

@@ -10,6 +10,29 @@ export const getType = (props: TStatus) => {
   return '';
 };
 
+const stripInvisibleChars = (str: string | undefined) =>
+  // mastodon seems to allow invisible chars from user input
+  // eslint-disable-next-line no-control-regex
+  str ? str.replace(new RegExp('[^\u0000-\u007E]', 'g'), '') : undefined;
+
+export const getUsername = ({
+  displayName,
+  username,
+}: {
+  displayName?: string;
+  username?: string;
+}) => {
+  const cleanName = stripInvisibleChars(displayName);
+  if (cleanName) {
+    return cleanName;
+  }
+  const cleanUName = stripInvisibleChars(username);
+  if (cleanUName) {
+    return cleanUName;
+  }
+  return '👤';
+};
+
 const br = '<br/>';
 
 const splitLinebreaks = (text: string) => {
