@@ -2,6 +2,8 @@ package org.mobywan.fediship;
 
 import android.os.Bundle;
 
+import androidx.core.splashscreen.SplashScreen;
+
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
@@ -10,6 +12,7 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
     super.onCreate(null);
   }
 
