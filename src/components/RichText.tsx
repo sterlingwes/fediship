@@ -14,10 +14,14 @@ interface RichTextProps {
   onTagPress?: (_: {host: string; tag: string}) => void;
 }
 
+const escapeRegex = (pattern: string) => {
+  return pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+};
+
 const contentWithEmojis = (props: {content: string; emojis: Emoji[]}) => {
   return (props.emojis ?? []).reduce((content, emoji) => {
     return content.replace(
-      new RegExp(`:${emoji.shortcode}:`, 'g'),
+      new RegExp(`:${escapeRegex(emoji.shortcode)}:`, 'g'),
       `<emoji src="${emoji.url}"></emoji>`,
     );
   }, props.content ?? '');
