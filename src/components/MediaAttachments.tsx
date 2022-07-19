@@ -66,7 +66,11 @@ const Media = (
           </Pressable>
         );
       default:
-        return null;
+        return (
+          <Box ph={20} pv={10} style={styles.notSupportedBox}>
+            <Type scale="S">{`${type} media type not yet supported`}</Type>
+          </Box>
+        );
     }
   };
 
@@ -298,5 +302,8 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'black',
     opacity: 0.4,
+  },
+  notSupportedBox: {
+    backgroundColor: getColor('contrastTextColor'),
   },
 });
