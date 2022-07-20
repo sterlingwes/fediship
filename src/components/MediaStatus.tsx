@@ -53,7 +53,7 @@ const StatusHeader = (props: StatusHeaderProps) => {
         {props.locked && <AvatarLock />}
       </Pressable>
       <View style={styles.statusHeaderActorsLabels}>
-        {props.booster && (
+        {!!props.booster && (
           <Type
             scale="XS"
             semiBold
