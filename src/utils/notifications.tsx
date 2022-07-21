@@ -17,25 +17,16 @@ import {
 import {AppState} from 'react-native';
 import {
   getLastFetch,
+  getLastTypeReads,
   getNotifGroup,
-  getNotifWatermarks,
   markFetch,
   markTabRead,
-  NotifWatermarks,
+  ReadTimeLookup,
+  saveLastNotifTime,
+  setLastTypeReads,
   storeNotifGroup,
-  storeNotifWatermarks,
 } from '../storage/notifications';
 import {useMount} from './hooks';
-
-const generateWatermarks = (notifs: NotificationGroups) => {
-  return (Object.keys(notifs) as Array<keyof NotificationGroups>).reduce(
-    (acc, notifType) => ({
-      ...acc,
-      [notifType]: notifs[notifType][0]?.id,
-    }),
-    {} as NotifWatermarks,
-  );
-};
 
 const supportedNotifTypes: TNotification['type'][] = [
   'follow',
@@ -44,20 +35,6 @@ const supportedNotifTypes: TNotification['type'][] = [
   'reblog',
   'poll',
 ];
-
-/**
- * returns true if a notification type has an id watermark that doesn't match
- * one that was fetched or saved - this probably indicates a new notification
- * has arrived
- */
-const compareWatermarks = (
-  savedWatermark: NotifWatermarks,
-  newWatermark: NotifWatermarks,
-) => {
-  return !!supportedNotifTypes.find(notifType => {
-    return newWatermark[notifType] !== savedWatermark[notifType];
-  });
-};
 
 const groupTypes = (notifications: NormalizedNotif[]): NotificationGroups =>
   notifications.reduce(
@@ -68,43 +45,30 @@ const groupTypes = (notifications: NormalizedNotif[]): NotificationGroups =>
     {} as NotificationGroups,
   );
 
-const filterByWatermarks = (
-  notifs: NotificationGroups,
-  watermarks?: NotifWatermarks | undefined | null,
-): NotificationGroups =>
-  watermarks
-    ? (Object.keys(notifs) as Array<keyof NotificationGroups>).reduce(
-        (acc, type) => {
-          if (notifs[type]?.[0] && notifs[type][0].id === watermarks[type]) {
-            return {
-              ...acc,
-              [type]: [],
-            };
-          }
-
-          return acc;
-        },
-        notifs,
-      )
-    : notifs;
-
 const countNotifs = (notifs: NotificationGroups) =>
   Object.values(notifs).reduce((acc, entries) => acc + entries.length, 0);
 
-const filterNotifTypes = (notifs: TNotification[]): NormalizedNotif[] =>
+const isNew = (notif: TNotification, lastReadTimes: ReadTimeLookup) => {
+  const lastTime = lastReadTimes[notif.type];
+  return !lastTime || lastTime < new Date(notif.created_at).valueOf();
+};
+
+const filterNotifTypes = (
+  notifs: TNotification[],
+  lastReadTimes: ReadTimeLookup,
+): NormalizedNotif[] =>
   notifs
-    .filter(notif => supportedNotifTypes.includes(notif.type))
+    .filter(
+      notif =>
+        supportedNotifTypes.includes(notif.type) && isNew(notif, lastReadTimes),
+    )
     .map(notif => ({
       ...notif,
-      key: notif.created_at ? new Date(notif.created_at).valueOf() : notif.id,
+      key: new Date(notif.created_at).valueOf(),
     }))
     .sort((a, b) => {
       if (typeof a.key === 'number' && typeof b.key === 'number') {
         return b.key - a.key;
-      }
-
-      if (typeof a.key === 'string' && typeof b.key === 'string') {
-        return b.key.localeCompare(a.key);
       }
 
       return b.id.localeCompare(a.id);
@@ -192,7 +156,6 @@ export const useNotifications = () => {
 
   const localFetching = useRef(false);
   const [notifs, setNotifs] = useState<NotificationGroups>(getNotifGroup());
-  const initialWatermarks = useRef(getNotifWatermarks());
 
   useFocusEffect(
     useCallback(() => {
@@ -217,33 +180,17 @@ export const useNotifications = () => {
 
         try {
           const notifications = await api.getNotifications();
-          const supported = filterNotifTypes(notifications);
+          const previousReadTimes = getLastTypeReads();
+          const supported = filterNotifTypes(notifications, previousReadTimes);
           if (supported && supported.length) {
+            const currentLastTime = supported[0].key;
+            saveLastNotifTime(currentLastTime);
             const grouped = groupTypes(supported);
-            const groupedFiltered = filterByWatermarks(
-              grouped,
-              initialWatermarks.current,
-            );
-
-            storeNotifGroup(groupedFiltered);
-
-            const newWatermarks = generateWatermarks(grouped);
-
-            if (initialWatermarks.current == null) {
-              // initial load, skip checking watermarks until next fetch
-              initialWatermarks.current = newWatermarks;
-              storeNotifWatermarks(newWatermarks);
-              return;
-            }
-
-            if (compareWatermarks(initialWatermarks.current, newWatermarks)) {
-              initialWatermarks.current = newWatermarks;
-              storeNotifWatermarks(newWatermarks);
-              const count = countNotifs(groupedFiltered);
-              setNewNotifCount(count);
-              setTabRead(false);
-              setNotifs(groupedFiltered);
-            }
+            storeNotifGroup(grouped);
+            const count = countNotifs(grouped);
+            setNewNotifCount(count);
+            setTabRead(false);
+            setNotifs(grouped);
           }
         } catch (e) {
           console.error(e);
@@ -268,21 +215,29 @@ export const useNotifications = () => {
   const readType = (
     type: keyof NotificationGroups | Array<keyof NotificationGroups>,
   ) => {
+    const latest = getLastTypeReads();
+    let newTimes: ReadTimeLookup | undefined;
     if (Array.isArray(type)) {
-      type.forEach(t => {
-        delete notifs[t];
-      });
+      newTimes = type.reduce((acc, t) => ({...acc, [t]: Date.now()}), latest);
     } else {
-      delete notifs[type];
+      newTimes = {...latest, [type]: Date.now()};
     }
-    const newGroup = {...notifs};
-    setNotifs(newGroup);
-    // storeNotifGroup(newGroup);
 
-    // TODO: rethink tracking read state that is separate from watermarks
-    // const watermarks = generateWatermarks(notifs);
-    // storeNotifWatermarks(watermarks);
-    // initialWatermarks.current = watermarks;
+    setLastTypeReads(newTimes);
+
+    const notifList = Object.values(notifs).reduce(
+      (acc, arr) => acc.concat(arr),
+      [] as NormalizedNotif[],
+    );
+    const supported = filterNotifTypes(notifList, newTimes);
+    const grouped = groupTypes(supported);
+    storeNotifGroup(grouped);
+    const count = countNotifs(grouped);
+    setNewNotifCount(count);
+    setNotifs(grouped);
+    if (!count) {
+      setTabRead(true);
+    }
   };
 
   return {
@@ -292,9 +247,5 @@ export const useNotifications = () => {
     readTab,
     readType,
     loadingNotifications,
-    watermarks: {
-      current: initialWatermarks.current,
-      saved: getNotifWatermarks(),
-    },
   };
 };

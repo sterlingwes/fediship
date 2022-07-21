@@ -1,6 +1,6 @@
 import React from 'react';
-import {Text, View} from 'react-native';
-import {render, waitFor} from '@testing-library/react-native';
+import {Pressable, Text, View} from 'react-native';
+import {render, waitFor, fireEvent} from '@testing-library/react-native';
 import {NotificationProvider, useNotifications} from './notifications';
 import {MastodonProvider} from '../api/mastodon-context';
 import {NavigationContainer} from '@react-navigation/native';
@@ -64,6 +64,95 @@ describe('notifications e2e', () => {
     });
   });
 
+  describe('marking type as read', () => {
+    let wrapper: ReturnType<typeof createWrapper>;
+
+    const TestComponentReadable = () => {
+      const {tabRead, newNotifCount, loadingNotifications, readType} =
+        useNotifications();
+      const onPressReadFollows = () => readType('follow');
+      return (
+        <View>
+          {loadingNotifications ? <Text>Loading</Text> : <Text>Loaded</Text>}
+          <Text>tabRead: {tabRead.toString()}</Text>
+          <Text>newNotifCount: {newNotifCount}</Text>
+          <Pressable onPress={onPressReadFollows}>
+            <Text>Read Follows</Text>
+          </Pressable>
+        </View>
+      );
+    };
+
+    beforeEach(() => {
+      wrapper = createWrapper({
+        getNotifications: () =>
+          Promise.resolve([
+            {
+              id: '221',
+              created_at: '2022-06-05T17:08:39.145Z',
+              type: 'favourite',
+            },
+            {
+              id: '220',
+              created_at: '2022-06-05T11:08:39.145Z',
+              type: 'follow',
+            },
+            {
+              id: '219',
+              created_at: '2022-06-04T17:08:39.145Z',
+              type: 'follow',
+            },
+          ]),
+      });
+    });
+
+    it('should store new watermarks', async () => {
+      const result = render(<TestComponentReadable />, {wrapper});
+      await waitFor(() => result.getByText('Loaded'));
+      expect(result.toJSON()).toMatchInlineSnapshot(`
+        <View>
+          <Text>
+            Loaded
+          </Text>
+          <Text>
+            tabRead: 
+            false
+          </Text>
+          <Text>
+            newNotifCount: 
+            3
+          </Text>
+          <View
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+          >
+            <Text>
+              Read Follows
+            </Text>
+          </View>
+        </View>
+      `);
+
+      const el = await result.findByText('Read Follows');
+      await fireEvent(el, 'press');
+
+      expect(MockStore.setLastTypeReads).toHaveBeenCalledTimes(1);
+      expect(MockStore.setLastTypeReads).toHaveBeenCalledWith({
+        follow: expect.any(Number),
+      });
+    });
+  });
+
   describe('with notifications returned', () => {
     describe('initial fetch', () => {
       let wrapper: ReturnType<typeof createWrapper>;
@@ -97,10 +186,6 @@ describe('notifications e2e', () => {
               </Text>
             </View>
           `);
-
-          expect(MockStore.storeNotifWatermarks).toHaveBeenCalledWith({
-            favourite: '221',
-          });
         });
       });
     });
@@ -120,7 +205,9 @@ describe('notifications e2e', () => {
 
       beforeEach(() => {
         // @ts-expect-error magic mock
-        MockStore.resetMockNotificationsStore({watermarks: {favourite: '221'}});
+        MockStore.resetMockNotificationsStore({
+          lastTypeReads: {favourite: 1654448919145},
+        });
 
         getSpy = jest.fn(() =>
           Promise.resolve([
@@ -157,7 +244,9 @@ describe('notifications e2e', () => {
       let getSpy: jest.SpyInstance;
       beforeEach(() => {
         // @ts-expect-error magic mock
-        MockStore.resetMockNotificationsStore({watermarks: {favourite: '221'}});
+        MockStore.resetMockNotificationsStore({
+          lastTypeReads: {favourite: 1654448919145},
+        });
 
         getSpy = jest.fn(() =>
           Promise.resolve([
@@ -198,23 +287,19 @@ describe('notifications e2e', () => {
         `);
       });
 
-      it('should store watermarks after initial fetch', async () => {
+      it('should store new watermark after initial fetch', async () => {
         const result = render(<TestComponent />, {wrapper});
         await waitFor(() => result.getByText('Loaded'));
         expect(getSpy).toHaveBeenCalledTimes(1);
-        expect(MockStore.storeNotifWatermarks).toHaveBeenCalledTimes(1);
-        expect(MockStore.storeNotifWatermarks).toHaveBeenCalledWith({
-          favourite: '221',
-          follow: '222',
-        });
+        expect(MockStore.saveLastNotifTime).toHaveBeenCalledWith(1654535319145);
       });
 
       describe('subsequent fetch with the same notification result', () => {
         beforeEach(() => {
-          jest.spyOn(MockStore, 'getNotifWatermarks').mockReturnValue({
-            favourite: '221',
-            follow: '222',
-          } as MockStore.NotifWatermarks);
+          jest
+            .spyOn(MockStore, 'getLastTypeReads')
+            // @ts-expect-error partial mock
+            .mockReturnValue({favourite: 1654535319145});
         });
 
         it('should indicate no new notifications', async () => {
@@ -228,11 +313,11 @@ describe('notifications e2e', () => {
               </Text>
               <Text>
                 tabRead: 
-                true
+                false
               </Text>
               <Text>
                 newNotifCount: 
-                0
+                1
               </Text>
             </View>
           `);
@@ -244,10 +329,10 @@ describe('notifications e2e', () => {
           jest
             .spyOn(MockStore, 'getLastFetch')
             .mockReturnValue(Date.now() + 10e6);
-          jest.spyOn(MockStore, 'getNotifWatermarks').mockReturnValue({
-            favourite: '221',
-            follow: '222',
-          } as MockStore.NotifWatermarks);
+          jest
+            .spyOn(MockStore, 'getLastTypeReads')
+            // @ts-expect-error partial mock
+            .mockReturnValue({favourite: 1654448919145});
         });
 
         it('should not fetch & indicate no new notifications', async () => {

@@ -385,7 +385,7 @@ export interface TNotification {
   status?: TStatus | null;
 }
 
-export type NormalizedNotif = TNotification & {key: number | string};
+export type NormalizedNotif = TNotification & {key: number};
 export type NotificationGroups = Record<NotificationType, NormalizedNotif[]>;
 
 export interface TAccountRelationship {

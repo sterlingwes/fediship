@@ -6,7 +6,7 @@ export const markFetch = jest.fn(() => {
   lastFetch = Date.now();
 });
 
-let notifGroup: any;
+let notifGroup = {};
 
 export const storeNotifGroup = jest.fn(value => {
   notifGroup = value;
@@ -22,12 +22,20 @@ export const markTabRead = jest.fn(() => {
 
 export const getTabRead = jest.fn(() => tabRead);
 
-let watermarks: any;
+let lastNotifTime: string | undefined;
 
-export const getNotifWatermarks = jest.fn(() => watermarks);
+export const getLastNotifTime = jest.fn(() => lastNotifTime);
 
-export const storeNotifWatermarks = jest.fn(value => {
-  watermarks = value;
+export const saveLastNotifTime = jest.fn((lastTime: string) => {
+  lastNotifTime = lastTime;
+});
+
+let lastTypeReads: any;
+
+export const getLastTypeReads = jest.fn(() => lastTypeReads ?? {});
+
+export const setLastTypeReads = jest.fn(lastReads => {
+  lastTypeReads = lastReads;
 });
 
 export const resetMockNotificationsStore = (
@@ -36,5 +44,6 @@ export const resetMockNotificationsStore = (
   lastFetch = values.lastFetch;
   notifGroup = values.notifGroup;
   tabRead = values.tabRead;
-  watermarks = values.watermarks;
+  lastNotifTime = values.lastNotifTime;
+  lastTypeReads = values.lastTypeReads;
 };

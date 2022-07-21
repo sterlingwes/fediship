@@ -1,6 +1,6 @@
 import {MMKV} from 'react-native-mmkv';
 
-import {NotificationGroups} from '../types';
+import {NotificationGroups, NotificationType} from '../types';
 import {readJson} from './utils';
 
 const storage = new MMKV({id: 'notifications'});
@@ -29,25 +29,16 @@ export const storeNotifGroup = (notifGroup: NotificationGroups) =>
 export const getNotifGroup = (): NotificationGroups =>
   readJson('notif_group', storage, {} as NotificationGroups);
 
-export type NotifWatermarks = Record<keyof NotificationGroups, string>;
+export const getLastNotifTime = (): number | undefined =>
+  storage.getNumber('last_notif_time');
 
-let notifWatermarks: NotifWatermarks;
+export const saveLastNotifTime = (lastNotifTime: number) =>
+  storage.set('last_notif_time', lastNotifTime);
 
-export const storeNotifWatermarks = (watermarks: NotifWatermarks) => {
-  if (notifWatermarks && !Object.keys(watermarks).length) {
-    return;
-  }
+export type ReadTimeLookup = Record<NotificationType, number | undefined>;
 
-  notifWatermarks = watermarks;
-  storage.set('notif_watermarks', JSON.stringify(watermarks));
-};
+export const getLastTypeReads = (): ReadTimeLookup =>
+  readJson('last_type_read_times', storage, {} as ReadTimeLookup);
 
-export const getNotifWatermarks = (): NotifWatermarks | null => {
-  if (notifWatermarks) {
-    return notifWatermarks;
-  }
-
-  notifWatermarks =
-    readJson('notif_watermarks', storage, null) ?? ({} as NotifWatermarks);
-  return notifWatermarks;
-};
+export const setLastTypeReads = (typeReads: ReadTimeLookup) =>
+  storage.set('last_type_read_times', JSON.stringify(typeReads));
