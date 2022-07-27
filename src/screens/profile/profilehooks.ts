@@ -4,6 +4,7 @@ import {
   useRemoteActivityPubInstance,
   useRemoteMastodonInstance,
 } from '../../api/hooks';
+import {MastodonApiClient} from '../../api/mastodon';
 import {Emoji, TAccount, TStatusMapped} from '../../types';
 import {useMount} from '../../utils/hooks';
 import {getHostAndHandle} from '../../utils/mastodon';
@@ -120,9 +121,18 @@ export const useAPProfile = (
         profileForMerge,
       );
       if (response) {
-        const appendable = response.result
-          .filter(toot => !pinnedIds.current.includes(toot.id))
-          .map(toot => ({...toot, emojis: emojis.current}));
+        let appendable = response.result.filter(
+          toot => !pinnedIds.current.includes(toot.id),
+        );
+
+        appendable = await appendable.reduce(async (chain, toot) => {
+          const statusList = await chain;
+          const resolvedStatus = await localOrAPFallback(toot, undefined, api);
+          return statusList.concat({
+            ...resolvedStatus,
+            emojis: emojis.current,
+          });
+        }, Promise.resolve([]) as Promise<TStatusMapped[]>);
         const newStatuses = (existingStatuses ?? statuses).concat(appendable);
         setStatuses(newStatuses);
         setNextPage(response.pageInfo?.next ?? false);
@@ -206,10 +216,18 @@ export const useAPProfile = (
       );
 
       const timeline = result.ok
-        ? result.timeline.map(toot => ({
-            ...localOrAPFallback(toot, localTimelineByIdUrl[toot.id]),
-            emojis: instanceEmojis,
-          }))
+        ? await result.timeline.reduce(async (chain, toot) => {
+            const statusList = await chain;
+            const resolvedStatus = await localOrAPFallback(
+              toot,
+              localTimelineByIdUrl[toot.id],
+              api,
+            );
+            return statusList.concat({
+              ...resolvedStatus,
+              emojis: instanceEmojis,
+            });
+          }, Promise.resolve([]) as Promise<TStatusMapped[]>)
         : localTimeline?.map(toot => ({
             ...toot,
             emojis: instanceEmojis,
@@ -290,12 +308,31 @@ export const useAPProfile = (
   };
 };
 
-const localOrAPFallback = (
+const localOrAPFallback = async (
   apStatus: TStatusMapped,
-  localStatus: TStatusMapped,
+  localStatus: TStatusMapped | undefined,
+  api: MastodonApiClient,
 ) => {
   if (localStatus) {
     return {...localStatus, pinned: apStatus?.pinned};
+  }
+
+  // resolve from local if status has media (for cover image)
+  const video = (apStatus.media_attachments ?? []).find(
+    media => media.type === 'video',
+  );
+  if (video) {
+    let statusUrl = apStatus.id;
+    if (statusUrl.endsWith('/activity')) {
+      statusUrl = statusUrl.replace(/\/activity$/, '');
+    }
+    const status = await api.resolveStatus(statusUrl);
+    if (status) {
+      return {
+        ...status,
+        sourceHost: api.host,
+      } as TStatusMapped;
+    }
   }
 
   return apStatus;
