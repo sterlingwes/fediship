@@ -116,10 +116,10 @@ export const Poll = (props: TPoll) => {
     <View style={styles.pollContainer}>
       {poll.options.map((option, optionIndex) => (
         <Pressable
+          key={option.title}
           disabled={poll.expired}
           onPress={() => onSelect(optionIndex)}>
           <PollItem
-            key={option.title}
             {...option}
             selected={
               selections.includes(optionIndex) ||
