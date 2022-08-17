@@ -47,6 +47,7 @@ export const StatusActionButton = ({
     <Pressable
       disabled={loading}
       onPress={onPress}
+      hitSlop={10}
       style={[styles.starButton, active && styles.starButtonFaved]}>
       {loading ? <LoadingSpinner /> : iconButton}
     </Pressable>
