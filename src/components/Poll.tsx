@@ -160,7 +160,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   amountLine: {
     height: 5,
-    backgroundColor: 'lightgrey',
+    backgroundColor: getColor('baseTextColor'),
     borderRadius: 3,
   },
   pollOption: {
