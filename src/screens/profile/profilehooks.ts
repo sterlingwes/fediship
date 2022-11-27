@@ -13,34 +13,37 @@ const mergeRemoteIntoLocalProfile = (
   remote: TAccount | undefined,
   local: TAccount | undefined,
   emojis: Emoji[] | undefined,
-): TAccount => {
+): [TAccount, 'local' | 'merged' | 'remote'] => {
   if (!remote && local) {
-    return local;
+    return [local, 'local'];
   }
 
   if (remote && local) {
-    return {
-      ...local,
-      // select some values we'd prefer from the remote instance
-      // since they'll be fresher
-      note: remote.note,
-      avatar: remote.avatar,
-      avatar_static: remote.avatar_static,
-      header: remote.header,
-      header_static: remote.header_static,
-      emojis: [
-        ...(local.emojis ?? []),
-        ...(remote.emojis ?? []),
-        ...(emojis ?? []),
-      ],
-    };
+    return [
+      {
+        ...local,
+        // select some values we'd prefer from the remote instance
+        // since they'll be fresher
+        note: remote.note,
+        avatar: remote.avatar,
+        avatar_static: remote.avatar_static,
+        header: remote.header,
+        header_static: remote.header_static,
+        emojis: [
+          ...(local.emojis ?? []),
+          ...(remote.emojis ?? []),
+          ...(emojis ?? []),
+        ],
+      },
+      'merged',
+    ];
   }
 
   if (!remote) {
     throw new Error('No account profile available (network error).');
   }
 
-  return remote;
+  return [remote, 'remote'];
 };
 
 export const useAPProfile = (
@@ -54,6 +57,9 @@ export const useAPProfile = (
   const emojis = useRef<Emoji[]>([]);
   const [loading, setLoading] = useState(true);
   const [localId, setLocalId] = useState<string>();
+  const [profileSource, setProfileSource] = useState<
+    'local' | 'merged' | 'remote'
+  >('remote');
   const [refreshing, setRefreshing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [following, setFollowing] = useState<boolean | undefined>();
@@ -169,11 +175,6 @@ export const useAPProfile = (
     setLoading(true);
 
     try {
-      const remoteActivityPub = getRemoteAPInstance(idParts.host);
-      const result = await remoteActivityPub.getProfileByHandle(
-        idParts.host,
-        idParts.handle,
-      );
       const userIdent = `${idParts.handle}@${idParts.host}`;
       let localAccount: TAccount | undefined;
       let localTimeline: TStatusMapped[] | undefined;
@@ -193,15 +194,34 @@ export const useAPProfile = (
         );
       }
 
-      if (result.ok) {
-        pinnedIds.current = result.pinnedIds;
-        setNextPage(result.pageInfo?.next ?? false);
+      let remoteResult:
+        | Awaited<ReturnType<typeof remoteActivityPub['getProfileByHandle']>>
+        | undefined;
+
+      const remoteActivityPub = getRemoteAPInstance(idParts.host);
+      try {
+        remoteResult = await remoteActivityPub.getProfileByHandle(
+          idParts.host,
+          idParts.handle,
+        );
+
+        if (remoteResult.ok) {
+          pinnedIds.current = remoteResult.pinnedIds;
+          setNextPage(remoteResult.pageInfo?.next ?? false);
+        }
+      } catch (e: any) {
+        if (e.message.includes('not signed') === false) {
+          throw e;
+        }
       }
 
       const instanceEmojis = await fetchEmojis(idParts.host);
 
-      if (!result.ok && !localAccount) {
-        const e = new Error(result.error);
+      if (!remoteResult?.ok && !localAccount) {
+        const e = new Error(
+          remoteResult?.error ??
+            'Error fetching user profile which was also not accessible via your instance',
+        );
         // @ts-ignore
         e.meta = {userIdent};
         setLoading(false);
@@ -209,14 +229,14 @@ export const useAPProfile = (
         return;
       }
 
-      const remoteOrLocalProfile = mergeRemoteIntoLocalProfile(
-        result.ok ? result.account : undefined,
+      const [remoteOrLocalProfile, mergeSource] = mergeRemoteIntoLocalProfile(
+        remoteResult?.ok ? remoteResult.account : undefined,
         localAccount,
         instanceEmojis,
       );
 
-      const timeline = result.ok
-        ? await result.timeline.reduce(async (chain, toot) => {
+      const timeline = remoteResult?.ok
+        ? await remoteResult.timeline.reduce(async (chain, toot) => {
             const statusList = await chain;
             const resolvedStatus = await localOrAPFallback(
               toot,
@@ -237,20 +257,19 @@ export const useAPProfile = (
         setStatuses(timeline);
       }
 
-      if (remoteOrLocalProfile) {
-        setProfile(remoteOrLocalProfile);
-      }
+      setProfileSource(mergeSource);
+      setProfile(remoteOrLocalProfile);
 
       if (
         remoteOrLocalProfile &&
         timeline &&
         timeline.length < 3 &&
-        result.ok &&
-        result.pageInfo?.next
+        remoteResult?.ok &&
+        remoteResult.pageInfo?.next
       ) {
         setRefreshing(false);
         fetchTimeline({
-          nextPageRecurse: result.pageInfo.next,
+          nextPageRecurse: remoteResult.pageInfo.next,
           profileRecurse: remoteOrLocalProfile,
           existingStatuses: timeline,
         });
@@ -293,6 +312,7 @@ export const useAPProfile = (
 
   return {
     profile,
+    profileSource,
     statuses,
     fetchTimeline,
     fetchAccountAndTimeline,

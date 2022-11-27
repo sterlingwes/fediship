@@ -29,6 +29,7 @@ import {EmptyList} from '../components/EmptyList';
 import {FloatingHeader} from '../components/FloatingHeader';
 import {CheckCircleIcon} from '../components/icons/CheckCircleIcon';
 import {LockIcon} from '../components/icons/LockIcon';
+import {InfoBanner} from '../components/InfoBanner';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
 import {RichText} from '../components/RichText';
@@ -50,6 +51,7 @@ import {useAPProfile} from './profile/profilehooks';
 
 interface ProfileHeaderProps {
   profile: TAccount | undefined;
+  profileSource: 'local' | 'merged' | 'remote';
   apProfile: TAccount | undefined;
   following?: boolean | undefined;
   followToggleLoading?: boolean;
@@ -119,64 +121,75 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
   const {display_name, note, emojis, username, url, bot} = props.profile;
 
   return (
-    <View style={styles.header}>
-      {!!profileImages.header ? (
-        <Image
-          source={{uri: profileImages.header}}
-          style={styles.headerBgImage}
-          onError={tryFallbackHeader}
-        />
-      ) : (
-        <View style={styles.headerSpacer} />
-      )}
-      <View style={styles.headerBio}>
-        {!!profileImages.avatar && (
-          <AvatarImage uri={profileImages.avatar} style={styles.headerAvatar} />
+    <>
+      <View style={styles.header}>
+        {!!profileImages.header ? (
+          <Image
+            source={{uri: profileImages.header}}
+            style={styles.headerBgImage}
+            onError={tryFallbackHeader}
+          />
+        ) : (
+          <View style={styles.headerSpacer} />
         )}
-        {typeof props.following === 'boolean' && (
-          <SolidButton
-            style={styles.followBtn}
-            disabled={props.followToggleLoading}
-            onPress={props.onToggleFollow}>
-            {props.following ? 'Unfollow' : 'Follow'}
-          </SolidButton>
-        )}
-        <View style={styles.approvalRequiredContainer}>
-          {props.following === false && props.profile.locked && (
-            <>
-              <LockIcon
-                width="12"
-                height="12"
-                color={getColor('baseTextColor')}
-              />
-              <Type scale="XS" style={styles.approvalRequired}>
-                requires approval
-              </Type>
-            </>
+        <View style={styles.headerBio}>
+          {!!profileImages.avatar && (
+            <AvatarImage
+              uri={profileImages.avatar}
+              style={styles.headerAvatar}
+            />
           )}
-        </View>
-        <View style={styles.headerDisplayName}>
-          <Type scale="S" numberOfLines={1}>
-            <EmojiName name={display_name} emojis={emojis} />
+          {typeof props.following === 'boolean' && (
+            <SolidButton
+              style={styles.followBtn}
+              disabled={props.followToggleLoading}
+              onPress={props.onToggleFollow}>
+              {props.following ? 'Unfollow' : 'Follow'}
+            </SolidButton>
+          )}
+          <View style={styles.approvalRequiredContainer}>
+            {props.following === false && props.profile.locked && (
+              <>
+                <LockIcon
+                  width="12"
+                  height="12"
+                  color={getColor('baseTextColor')}
+                />
+                <Type scale="XS" style={styles.approvalRequired}>
+                  requires approval
+                </Type>
+              </>
+            )}
+          </View>
+          <View style={styles.headerDisplayName}>
+            <Type scale="S" numberOfLines={1}>
+              <EmojiName name={display_name} emojis={emojis} />
+            </Type>
+          </View>
+          <Type scale="S" medium style={styles.headerUsername}>
+            {bot ? '🤖 ' : ''}@{username}@{instanceHostName(url)}
           </Type>
+          <RichText
+            emojis={emojis ?? []}
+            html={note}
+            onMentionPress={profileParams =>
+              navigation.push('Profile', profileParams)
+            }
+            onTagPress={tagParams => navigation.push('TagTimeline', tagParams)}
+          />
+          <ProfileFields
+            fields={props.profile.fields}
+            emojis={props.profile.emojis}
+          />
         </View>
-        <Type scale="S" medium style={styles.headerUsername}>
-          {bot ? '🤖 ' : ''}@{username}@{instanceHostName(url)}
-        </Type>
-        <RichText
-          emojis={emojis ?? []}
-          html={note}
-          onMentionPress={profileParams =>
-            navigation.push('Profile', profileParams)
-          }
-          onTagPress={tagParams => navigation.push('TagTimeline', tagParams)}
-        />
-        <ProfileFields
-          fields={props.profile.fields}
-          emojis={props.profile.emojis}
-        />
       </View>
-    </View>
+      {props.profileSource === 'local' && (
+        <InfoBanner>
+          This user's profile could not be retrieved from their instance so you
+          may have a partial or stale view.
+        </InfoBanner>
+      )}
+    </>
   );
 };
 
@@ -372,6 +385,7 @@ export const Profile = ({
   const {
     error,
     profile,
+    profileSource,
     loading,
     statuses,
     refreshing,
@@ -393,13 +407,22 @@ export const Profile = ({
     () => (
       <ProfileHeader
         profile={profile ?? account}
+        profileSource={profileSource}
         apProfile={profile}
         following={self ? undefined : following}
         followToggleLoading={followLoading}
         onToggleFollow={onToggleFollow}
       />
     ),
-    [self, profile, account, following, followLoading, onToggleFollow],
+    [
+      self,
+      profile,
+      profileSource,
+      account,
+      following,
+      followLoading,
+      onToggleFollow,
+    ],
   );
 
   useEffect(() => {
