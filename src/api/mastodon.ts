@@ -164,10 +164,14 @@ export class MastodonApiClient extends HTTPClient {
   }
 
   async findAccount(acct: string) {
-    const response = await this.authedGet(`accounts/search?q=${acct}`);
-    if (response.ok && response.body.length > 0) {
-      return response.body[0] as TAccount;
+    const response = await this.authedGet(
+      `/api/v2/search?q=${acct}&type=accounts&resolve=true`,
+    );
+    if (!response.ok || !response.body?.accounts) {
+      return undefined;
     }
+
+    return (response.body as TSearchResults).accounts[0];
   }
 
   async getRelationship(accountId: string) {
