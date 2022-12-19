@@ -159,7 +159,7 @@ export const Status = (
   const recentFav = favourites[mainStatus.url ?? mainStatus.uri];
   const recentReblog = reblogs[mainStatus.url ?? mainStatus.uri];
   const recentBookmark = bookmarks[mainStatus.url ?? mainStatus.uri];
-  const [faved, setFaved] = useState(mainStatus.favourited);
+  const [faved, setFaved] = useState(recentFav || mainStatus.favourited);
   const [reblogged, setReblogged] = useState(mainStatus.reblogged);
   const [bookmarked, setBookmarked] = useState(mainStatus.bookmarked);
   const wasReblogged = recentReblog || reblogged;
@@ -171,7 +171,7 @@ export const Status = (
 
   if (lastId.current !== mainStatus.uri) {
     lastId.current = mainStatus.uri;
-    setFaved(mainStatus.favourited || recentFav);
+    setFaved(recentFav || mainStatus.favourited);
     setReblogged(mainStatus.reblogged);
     setBookmarked(mainStatus.bookmarked);
     setLoadingFav(false);
