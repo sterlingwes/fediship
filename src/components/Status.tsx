@@ -188,9 +188,17 @@ export const Status = (
 
   const onFavourite = async () => {
     setLoadingFav(true);
-    const success = faved
-      ? await api.unfavourite(mainStatus.id)
-      : await api.favourite(mainStatus.id);
+    let success = false;
+
+    if (props.isLocal) {
+      success = faved
+        ? await api.unfavourite(mainStatus.id)
+        : await api.favourite(mainStatus.id);
+    } else {
+      // remote status
+      success = faved ? false : await api.favouriteRemote(mainStatus.uri);
+    }
+
     if (success) {
       trackStatusFavourite(mainStatus.url ?? mainStatus.uri, !faved);
       setFaved(!faved);
@@ -288,7 +296,7 @@ export const Status = (
                   props.lastStatus === false && (props.hasReplies || replying)
                 }
               />
-              {props.isLocal && !props.showDetail && (
+              {!props.showDetail && (
                 <StatusActionButton
                   icon={priorityAction}
                   loading={

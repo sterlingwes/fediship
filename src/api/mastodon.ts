@@ -328,6 +328,15 @@ export class MastodonApiClient extends HTTPClient {
     return response.ok;
   }
 
+  async favouriteRemote(uri: string) {
+    const localStatus = await this.resolveStatus(uri);
+    if (!localStatus) {
+      return false;
+    }
+
+    return this.favourite(localStatus.id);
+  }
+
   async getFavouritedBy(statusId: string) {
     const response = await this.authedGet(`statuses/${statusId}/favourited_by`);
     if (!response.ok) {
