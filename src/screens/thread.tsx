@@ -24,6 +24,7 @@ import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatusMapped} from '../types';
 import {resolveTerminatingTootIds} from './thread/thread.util';
+import {screenHeight} from '../dimensions';
 
 const ThreadError = ({
   error,
@@ -247,6 +248,7 @@ export const Thread = ({
       data={focusedThread}
       renderItem={renderItem}
       style={styles.container}
+      contentContainerStyle={styles.contentContainer}
       contentInset={{bottom: 40}}
       refreshControl={
         <RefreshControl refreshing={loading} onRefresh={fetchThread} />
@@ -268,6 +270,9 @@ const IncompleteThread = () => (
 const styleCreator: StyleCreator = ({getColor}) => ({
   container: {
     flex: 1,
+  },
+  contentContainer: {
+    paddingBottom: screenHeight / 3,
   },
   fetchThreadButton: {
     borderBottomColor: getColor('baseAccent'),
