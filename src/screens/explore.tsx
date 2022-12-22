@@ -263,7 +263,11 @@ export const Explore = forwardRef(
                 ? status.reblog.uri
                 : status.uri;
               const nextId = status.reblog ? status.reblog.id : status.id;
-              navigation.push('Thread', {statusUrl: nextStatusUrl, id: nextId});
+              navigation.push('Thread', {
+                focusedStatusPreload: status,
+                statusUrl: nextStatusUrl,
+                id: nextId,
+              });
             }}
             isLocal
           />

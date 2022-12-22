@@ -207,7 +207,11 @@ const createProfileTimelineRenderer =
         key={status.id}
         {...status}
         onPress={() => {
-          navigation.push('Thread', {statusUrl: nextStatusUrl, id: nextId});
+          navigation.push('Thread', {
+            focusedStatusPreload: status,
+            statusUrl: nextStatusUrl,
+            id: nextId,
+          });
         }}
         onPressAvatar={
           (/*account */) => {

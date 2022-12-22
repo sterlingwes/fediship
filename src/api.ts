@@ -411,5 +411,12 @@ export const useThread = (statusUrl: string, localStatusId: string) => {
     fetchThread();
   });
 
-  return {thread, fetchThread, error, loading, localFallback};
+  return {
+    thread,
+    fetchThread,
+    error,
+    loading,
+    refreshing: !!thread && loading,
+    localFallback,
+  };
 };

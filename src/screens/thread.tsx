@@ -11,6 +11,7 @@ import {
 import {useThread} from '../api';
 import {useMyMastodonInstance} from '../api/hooks';
 import {Box} from '../components/Box';
+import {LoadingSpinner} from '../components/LoadingSpinner';
 import {ExternalLink} from '../components/icons/ExternalLinkIcon';
 import {FrownIcon} from '../components/icons/FrownIcon';
 import {LockIcon} from '../components/icons/LockIcon';
@@ -94,17 +95,16 @@ export const Thread = ({
   navigation,
   route,
 }: NativeStackScreenProps<RootStackParamList, 'Thread'>) => {
-  const {statusUrl, id, showThreadFavouritedBy} = route.params;
+  const {statusUrl, id, showThreadFavouritedBy, focusedStatusPreload} =
+    route.params;
   const api = useMyMastodonInstance();
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
 
   const [initialLoad, setInitialLoad] = useState(true);
   const filtered = useRef(false);
-  const {thread, loading, fetchThread, error, localFallback} = useThread(
-    statusUrl,
-    id,
-  );
+  const {thread, loading, refreshing, fetchThread, error, localFallback} =
+    useThread(statusUrl, id);
 
   const {statuses, terminatingIds} = useMemo(() => {
     let resolvedStatuses: TStatusMapped[] = [];
@@ -129,7 +129,7 @@ export const Thread = ({
 
     resolvedStatuses = [
       ...(thread?.ancestors ?? []),
-      ...(thread?.status ? [thread.status] : []),
+      ...(thread?.status ? [thread.status] : [focusedStatusPreload]),
       ...(thread?.descendants ?? []),
     ];
 
@@ -140,7 +140,7 @@ export const Thread = ({
         thread?.status?.id ?? '',
       ),
     };
-  }, [thread, localFallback]);
+  }, [thread, localFallback, focusedStatusPreload]);
 
   const focusedThread = useMemo(() => {
     const targetPosition = statuses.findIndex(
@@ -187,7 +187,11 @@ export const Thread = ({
           if (statusUrl === item.uri || item.id === id) {
             return;
           }
-          navigation.push('Thread', {statusUrl: item.uri, id: item.id});
+          navigation.push('Thread', {
+            focusedStatusPreload: item,
+            statusUrl: item.uri,
+            id: item.id,
+          });
         }}
         onPressAvatar={account => {
           navigation.push('Profile', {
@@ -242,6 +246,13 @@ export const Thread = ({
   }
 
   const incompleteThreadBanner = localFallback ? <IncompleteThread /> : null;
+  const HeaderComponent =
+    initialLoad && filtered.current ? LoadHeader : incompleteThreadBanner;
+  const FooterComponent = loading ? (
+    <Box pv={20}>
+      <LoadingSpinner />
+    </Box>
+  ) : null;
 
   return (
     <FlatList
@@ -251,11 +262,10 @@ export const Thread = ({
       contentContainerStyle={styles.contentContainer}
       contentInset={{bottom: 40}}
       refreshControl={
-        <RefreshControl refreshing={loading} onRefresh={fetchThread} />
+        <RefreshControl refreshing={refreshing} onRefresh={fetchThread} />
       }
-      ListHeaderComponent={
-        initialLoad && filtered.current ? LoadHeader : incompleteThreadBanner
-      }
+      ListHeaderComponent={HeaderComponent}
+      ListFooterComponent={FooterComponent}
     />
   );
 };
