@@ -120,7 +120,7 @@ export interface TMediaAttachment {
   preview_url: string;
   remote_url: string;
   text_url: null;
-  meta: {
+  meta?: {
     original: {
       width: number;
       height: number;

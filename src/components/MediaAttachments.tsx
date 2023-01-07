@@ -10,7 +10,10 @@ import {PlayCircleIcon} from './icons/PlayCircleIcon';
 import {RedundantImage} from './RedundantImage';
 import {Box} from './Box';
 
-const dimensProps = ({width, height}: TMediaAttachment['meta']['small']) => ({
+const dimensProps = ({
+  width,
+  height,
+}: NonNullable<TMediaAttachment['meta']>['small']) => ({
   width,
   height,
 });
@@ -26,6 +29,11 @@ const Media = (
   const {getColor} = useThemeGetters();
 
   const componentForType = (type: TMediaAttachment['type']) => {
+    if (!props.meta) {
+      console.warn('Invalid media attachment (no meta)');
+      return null;
+    }
+
     switch (type) {
       case 'image':
         return (
