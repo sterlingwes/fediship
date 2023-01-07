@@ -264,7 +264,7 @@ export const Explore = forwardRef(
                 : status.uri;
               const nextId = status.reblog ? status.reblog.id : status.id;
               navigation.push('Thread', {
-                focusedStatusPreload: status,
+                focusedStatusPreload: status.reblog ?? status,
                 statusUrl: nextStatusUrl,
                 id: nextId,
               });

@@ -42,7 +42,7 @@ const createTimelineRenderer =
           // TODO: nextId should only be a localId, right now we're passing remote ids
           // which is leading to failed requests to the local instance
           navigation.push('Thread', {
-            focusedStatusPreload: status,
+            focusedStatusPreload: status.reblog ?? status,
             statusUrl: nextStatusUrl,
             id: nextId,
             ...threadParamOverrides,

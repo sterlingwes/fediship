@@ -208,7 +208,7 @@ const createProfileTimelineRenderer =
         {...status}
         onPress={() => {
           navigation.push('Thread', {
-            focusedStatusPreload: status,
+            focusedStatusPreload: status.reblog ?? status,
             statusUrl: nextStatusUrl,
             id: nextId,
           });
