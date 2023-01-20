@@ -132,7 +132,7 @@ export const useNotificationsForTypes = (types: Array<NotificationType>) => {
         type => types.includes(type) === false,
       );
       const result = await api.getNotifications({excludeTypes});
-      setNotifs(result);
+      setNotifs(result.filter(notif => types.includes(notif.type)));
       setLoading(false);
     };
 
