@@ -1,7 +1,12 @@
-import {intervalToDuration} from 'date-fns';
+import {intervalToDuration, isValid} from 'date-fns';
 
 export const timeAgo = (priorDate: Date) => {
   const now = new Date();
+
+  if (!isValid(priorDate)) {
+    return '';
+  }
+
   const interval = intervalToDuration({start: priorDate, end: now});
   if (interval.years) {
     return `${interval.years}y`;

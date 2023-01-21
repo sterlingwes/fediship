@@ -51,6 +51,7 @@ export interface TStatus {
   id: string;
   bookmarked?: boolean;
   created_at: string;
+  edited_at?: string;
   content: string; // html
   account: TAccount;
   favourited?: boolean;
