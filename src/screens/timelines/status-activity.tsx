@@ -1,6 +1,6 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {forwardRef, useMemo} from 'react';
-import {StatusList} from '../../components/StatusList';
+import {LegacyStatusList} from '../../components/LegacyStatusList';
 import {useAuth} from '../../storage/auth';
 import {RootStackParamList, TStatus, TStatusMapped} from '../../types';
 import {useMount} from '../../utils/hooks';
@@ -52,7 +52,7 @@ export const StatusActivity = forwardRef(
     });
 
     return (
-      <StatusList
+      <LegacyStatusList
         showDetail
         showThreadFavouritedBy
         {...{...defaultStatusListProps, statuses, loading}}

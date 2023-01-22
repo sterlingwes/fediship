@@ -1,6 +1,6 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {forwardRef, useMemo} from 'react';
-import {StatusList} from '../../components/StatusList';
+import {LegacyStatusList} from '../../components/LegacyStatusList';
 import {useAuth} from '../../storage/auth';
 import {RootStackParamList, TStatus} from '../../types';
 import {useMount} from '../../utils/hooks';
@@ -36,7 +36,7 @@ export const Polls = forwardRef(
     });
 
     return (
-      <StatusList
+      <LegacyStatusList
         {...{...defaultStatusListProps, statuses, loading}}
         ref={ref}
       />

@@ -10,8 +10,8 @@ import React, {
 } from 'react';
 import {InteractionManager, RefreshControl, View} from 'react-native';
 import {useTimeline} from '../api';
-import {LoadMoreFooter} from '../components/LoadMoreFooter';
-import {Status} from '../components/Status';
+import {LoadMoreFooter} from './LoadMoreFooter';
+import {Status} from './Status';
 import {useAuth} from '../storage/auth';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
@@ -63,7 +63,7 @@ interface StatusListProps extends ReturnType<typeof useTimeline> {
   statusOverrides?: StatusOverrides;
 }
 
-export const StatusList = forwardRef(
+export const LegacyStatusList = forwardRef(
   (
     {
       hasMore,

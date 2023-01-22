@@ -2,7 +2,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {ComponentProps, forwardRef, useMemo} from 'react';
 import {useFavourites} from '../../api';
 import {Status} from '../../components/Status';
-import {StatusList} from '../../components/StatusList';
+import {LegacyStatusList} from '../../components/LegacyStatusList';
 import {RootStackParamList} from '../../types';
 import {useMount} from '../../utils/hooks';
 
@@ -42,7 +42,11 @@ export const FavouritesTimeline = forwardRef(
     }, [type, timeline]);
 
     return (
-      <StatusList {...timeline} statusOverrides={reloadCallbacks} ref={ref} />
+      <LegacyStatusList
+        {...timeline}
+        statusOverrides={reloadCallbacks}
+        ref={ref}
+      />
     );
   },
 );
