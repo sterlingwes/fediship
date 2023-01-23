@@ -458,7 +458,13 @@ export const Profile = ({
         loading={loadingMoreTemporaryTypeFix}
       />
     ),
-    [fetchTimeline, loadingMoreTypeFix, scrollOffsetRef, scrollRef, self],
+    [
+      fetchTimeline,
+      loadingMoreTemporaryTypeFix,
+      scrollOffsetRef,
+      scrollRef,
+      self,
+    ],
   );
 
   const scrollY = useSharedValue(0);
