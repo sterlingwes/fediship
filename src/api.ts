@@ -4,6 +4,9 @@ import {useMount} from './utils/hooks';
 import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
 import {parseStatusUrl} from './api/api.utils';
 import {useAuth} from './storage/auth';
+import {timelineMeta, timelines} from './api/timeline.state';
+import {batch} from '@legendapp/state';
+import {globalStatuses} from './api/status.state';
 
 export const useFollowers = (source = 'mine') => {
   const api = useMyMastodonInstance();
@@ -164,61 +167,78 @@ export const useTimeline = (timeline: 'home' | 'public') => {
 };
 
 export const useTagTimeline = (host: string, tag: string) => {
+  const mountRef = useRef(true);
+  const timelineId = `${host}/${tag}`;
+  const metaRef = timelineMeta[timelineId];
+  const timeline = timelines[timelineId];
+
   const getRemote = useRemoteMastodonInstance();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
-  const [nextPage, setNextPage] = useState<string | false>();
 
   const fetchTimeline = async (reset?: boolean) => {
-    if (nextPage === false || loading) {
+    const nextPage = metaRef.nextPage.peek();
+
+    if (nextPage === false || metaRef.loading.peek()) {
       return;
     }
 
-    setLoading(true);
+    metaRef.loading.set(true);
+
     try {
       const api = getRemote(host);
       const result = await api.getTagTimeline(
         tag,
         reset ? undefined : nextPage,
       );
-      if (reset) {
-        setStatuses(result.list);
-      } else {
-        setStatuses(statuses.concat(result.list));
+
+      if (!mountRef.current) {
+        return; // component unmounted before finish
       }
-      setNextPage(result?.pageInfo?.next ?? false);
+
+      batch(() => {
+        if (reset) {
+          timelines[timelineId].set([]);
+        }
+
+        result.list.forEach(status => {
+          globalStatuses[status.id].set(status);
+          timelines[timelineId].push(status.id);
+        });
+      });
+
+      metaRef.nextPage.set(result?.pageInfo?.next ?? false);
     } catch (e: unknown) {
       console.error(e);
-      setError((e as Error).message);
+      metaRef.error.set((e as Error).message);
     } finally {
-      setLoading(false);
+      metaRef.loading.set(false);
     }
   };
 
   const reloadTimeline = () => {
-    setNextPage(undefined);
+    metaRef.nextPage.set(undefined);
     return fetchTimeline(true);
   };
 
   useMount(() => {
     fetchTimeline(true);
+    return () => {
+      mountRef.current = false;
+    };
   });
 
-  const loadingMore = !!nextPage && loading;
-  const reloading =
-    typeof nextPage === 'undefined' && loading && !!statuses.length;
-  const hasMore = nextPage !== false;
+  // const loadingMore = !!nextPage && loading;
+  // const reloading =
+  //   typeof nextPage === 'undefined' && loading && !!statuses.length;
+  // const hasMore = nextPage !== false;
 
   return {
-    statuses,
+    timeline,
+    metaRef,
     fetchTimeline,
     reloadTimeline,
-    error,
-    loading,
-    loadingMore,
-    reloading,
-    hasMore,
+    // loadingMore,
+    // reloading,
+    // hasMore,
   };
 };
 

@@ -2,7 +2,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {forwardRef} from 'react';
 import {useTagTimeline} from '../api';
 import {SaveTimelineButton} from '../components/SaveTimelineButton';
-import {LegacyStatusList} from '../components/LegacyStatusList';
+import {StatusList} from '../components/StatusList';
 import {RootStackParamList} from '../types';
 import {useMount} from '../utils/hooks';
 
@@ -27,6 +27,6 @@ export const TagTimeline = forwardRef(
       });
     });
 
-    return <LegacyStatusList ref={ref} {...timeline} />;
+    return <StatusList ref={ref} {...timeline} />;
   },
 );

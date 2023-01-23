@@ -1,8 +1,16 @@
 import {observable} from '@legendapp/state';
 
 type TimelineId = string;
-type TimelineLookup = Record<TimelineId, string[] | undefined>;
+type TimelineLookup = Record<TimelineId, string[]>;
 
-const timelines = observable<TimelineLookup>({});
+export const timelines = observable<TimelineLookup>({});
 
-export const getTimeline = (timelineId: string) => timelines[timelineId].get();
+interface TimelineMeta {
+  loading: boolean;
+  error: string;
+  nextPage: string | undefined | false;
+}
+
+type TimelineMetaLookup = Record<TimelineId, TimelineMeta>;
+
+export const timelineMeta = observable<TimelineMetaLookup>({});

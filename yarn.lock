@@ -1121,10 +1121,10 @@
   resolved "https://registry.yarnpkg.com/@kessler/tableify/-/tableify-1.0.2.tgz#44fb4df25a3d3e4bb8b286e80c31f02b961152ac"
   integrity sha512-e4psVV9Fe2eBfS9xK2rzQ9lE5xS4tARm7EJzDb6sVZy3F+EMyHJ67i0NdBVR9BRyQx7YhogMCbB6R1QwXuBxMg==
 
-"@legendapp/state@^0.23.2":
-  version "0.23.2"
-  resolved "https://registry.yarnpkg.com/@legendapp/state/-/state-0.23.2.tgz#9fecd6fc9de89cf82f43d0ebc21574383e255b8a"
-  integrity sha512-GKJqAOe5eLuDDiAAbXCV5Wf88w7Br4k15g50nOc70m0451LsyxRTmOv7ALFhnhZpD05AHD9CVJSC/90epHJc6Q==
+"@legendapp/state@^1.0.0-rc.2":
+  version "1.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@legendapp/state/-/state-1.0.0-rc.2.tgz#b1123e3a0e5b64f45bf829f5a74e1e3b909016f2"
+  integrity sha512-xdIqHVqsq2cfGSFWNOxYHuylorHDM6ibMCnnW2YL5F3xKxVlaVm5rj1Mn8pobq7nUHmKkF7qc6Hgjll6dK6i1Q==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
