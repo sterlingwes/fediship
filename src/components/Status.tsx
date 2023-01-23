@@ -185,7 +185,7 @@ export const Status = (
     }
 
     if (success) {
-      faved.toggle();
+      faved.set(!faved.peek());
     }
     loadingFav.set(false);
     props.onPressFavourite?.();
@@ -197,7 +197,7 @@ export const Status = (
       ? await api.unreblog(mainStatus.id)
       : await api.reblog(mainStatus.id);
     if (success) {
-      reblogged.toggle();
+      reblogged.set(!reblogged.peek());
     }
     loadingReblog.set(false);
   };
@@ -208,7 +208,7 @@ export const Status = (
       ? await api.unbookmark(mainStatus.id)
       : await api.bookmark(mainStatus.id);
     if (success) {
-      bookmarked.toggle();
+      bookmarked.set(!bookmarked.peek());
     }
     loadingBookmark.set(false);
     props.onPressBookmark?.();

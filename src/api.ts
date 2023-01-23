@@ -111,33 +111,42 @@ export const usePeers = (startEmpty = true, initialFilter = '') => {
 
 export const useTimeline = (timeline: 'home' | 'public') => {
   const api = useMyMastodonInstance();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
-  const [nextPage, setNextPage] = useState<string | false>();
+
+  const timelineState = timelines[timeline];
+  const metaRef = timelineMeta[timeline];
 
   const fetchTimeline = async (reset?: boolean) => {
-    if (nextPage === false || loading) {
+    const nextPage = metaRef.nextPage.peek();
+
+    if (nextPage === false || metaRef.loading.peek()) {
       return;
     }
 
-    setLoading(true);
+    metaRef.loading.set(true);
     try {
       const result = await api.getTimeline(
         timeline,
         reset ? undefined : nextPage,
       );
-      if (reset) {
-        setStatuses(result.list);
-      } else {
-        setStatuses(statuses.concat(result.list));
-      }
-      setNextPage(result?.pageInfo?.next ?? false);
+
+      batch(() => {
+        if (reset) {
+          timelineState.set([]);
+        }
+
+        result.list.forEach(status => {
+          const statusId = status.url ?? status.uri;
+          globalStatuses[statusId].set(status);
+          timelineState.push(statusId);
+        });
+      });
+
+      metaRef.nextPage.set(result?.pageInfo?.next ?? false);
     } catch (e: unknown) {
       console.error(e);
-      setError((e as Error).message);
+      metaRef.error.set((e as Error).message);
     } finally {
-      setLoading(false);
+      metaRef.loading.set(false);
     }
   };
 
@@ -149,20 +158,11 @@ export const useTimeline = (timeline: 'home' | 'public') => {
     fetchTimeline(true);
   });
 
-  const reloading =
-    typeof nextPage === 'undefined' && loading && !!statuses.length;
-  const loadingMore = !!nextPage && loading;
-  const hasMore = nextPage !== false;
-
   return {
-    statuses,
+    timeline: timelineState,
+    metaRef,
     fetchTimeline,
     reloadTimeline,
-    reloading,
-    error,
-    loading,
-    loadingMore,
-    hasMore,
   };
 };
 
@@ -226,19 +226,11 @@ export const useTagTimeline = (host: string, tag: string) => {
     };
   });
 
-  // const loadingMore = !!nextPage && loading;
-  // const reloading =
-  //   typeof nextPage === 'undefined' && loading && !!statuses.length;
-  // const hasMore = nextPage !== false;
-
   return {
     timeline,
     metaRef,
     fetchTimeline,
     reloadTimeline,
-    // loadingMore,
-    // reloading,
-    // hasMore,
   };
 };
 

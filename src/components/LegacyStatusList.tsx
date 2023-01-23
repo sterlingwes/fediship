@@ -9,7 +9,7 @@ import React, {
   useRef,
 } from 'react';
 import {InteractionManager, RefreshControl, View} from 'react-native';
-import {useTimeline} from '../api';
+import {useFavourites} from '../api';
 import {LoadMoreFooter} from './LoadMoreFooter';
 import {Status} from './Status';
 import {useAuth} from '../storage/auth';
@@ -57,7 +57,7 @@ const createTimelineRenderer =
     );
   };
 
-interface StatusListProps extends ReturnType<typeof useTimeline> {
+interface StatusListProps extends ReturnType<typeof useFavourites> {
   showDetail?: boolean;
   showThreadFavouritedBy?: boolean;
   statusOverrides?: StatusOverrides;

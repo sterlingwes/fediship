@@ -150,7 +150,7 @@ export const MediaStatus = (
       ? await api.unfavourite(mainStatus.id)
       : await api.favourite(mainStatus.id);
     if (success) {
-      favourited.toggle();
+      favourited.set(!favourited.peek());
     }
     loadingFav.set(false);
     props.onPressFavourite?.();
@@ -162,7 +162,7 @@ export const MediaStatus = (
       ? await api.unbookmark(mainStatus.id)
       : await api.bookmark(mainStatus.id);
     if (success) {
-      bookmarked.toggle();
+      bookmarked.set(!bookmarked.peek());
     }
     loadingBookmark.set(false);
     props.onPressBookmark?.();

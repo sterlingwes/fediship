@@ -1,5 +1,5 @@
 import type {Observable} from '@legendapp/state';
-import {Show} from '@legendapp/state/react';
+import {Show, useSelector} from '@legendapp/state/react';
 import {Legend} from '@legendapp/state/react-native-components';
 import React, {useMemo} from 'react';
 import {StyleCreator} from '../../theme/types';
@@ -48,12 +48,14 @@ export const StatusActionButton = ({
     }
   }, [icon, getColor, active]);
 
+  const isActive = useSelector(active);
+
   return (
     <Legend.Pressable
       disabled$={loading}
       onPress={onPress}
       hitSlop={10}
-      style={[styles.starButton, active.get() && styles.starButtonFaved]}>
+      style={[styles.starButton, isActive && styles.starButtonFaved]}>
       <Show if={loading} else={iconButton}>
         <LoadingSpinner />
       </Show>
