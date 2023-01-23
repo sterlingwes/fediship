@@ -18,6 +18,7 @@ import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {RootStackParamList, TStatusMapped} from '../types';
 import {EmptyList} from './EmptyList';
 import {ErrorBoundary} from './ErrorBoundary';
+import {useComputed} from '@legendapp/state/react';
 
 type StatusOverrides = Partial<ComponentProps<typeof Status>>;
 type ThreadParamOverrides = Partial<RootStackParamList['Thread']>;
@@ -106,6 +107,8 @@ export const LegacyStatusList = forwardRef(
       [navigation, auth, statusOverrides, showDetail, showThreadFavouritedBy],
     );
 
+    const loadingMoreTemporaryTypeFix = useComputed(() => loadingMore);
+
     const LoadFooter = useMemo(
       () => (
         <LoadMoreFooter
@@ -121,10 +124,10 @@ export const LegacyStatusList = forwardRef(
               }),
             )
           }
-          loading={loadingMore}
+          loading={loadingMoreTemporaryTypeFix}
         />
       ),
-      [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef],
+      [fetchTimeline, loadingMoreTemporaryTypeFix, scrollOffsetRef, scrollRef],
     );
 
     return (

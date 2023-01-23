@@ -8,12 +8,12 @@ import React, {
 import {
   FlatList,
   ListRenderItem,
-  // InteractionManager,
+  InteractionManager,
   RefreshControl,
   View,
 } from 'react-native';
 import {useTagTimeline} from '../api';
-// import {LoadMoreFooter} from './LoadMoreFooter';
+import {LoadMoreFooter} from './LoadMoreFooter';
 import {Status} from './Status';
 import {useAuth} from '../storage/auth';
 import {StyleCreator} from '../theme';
@@ -22,7 +22,7 @@ import {RootStackParamList} from '../types';
 import {EmptyList} from './EmptyList';
 import {ErrorBoundary} from './ErrorBoundary';
 import {ReactiveStatus} from './ReactiveStatus';
-import {useSelector} from '@legendapp/state/react';
+import {useComputed, useSelector} from '@legendapp/state/react';
 
 type StatusOverrides = Partial<ComponentProps<typeof Status>>;
 type ThreadParamOverrides = Partial<RootStackParamList['Thread']>;
@@ -49,16 +49,12 @@ interface StatusListProps extends ReturnType<typeof useTagTimeline> {
 export const StatusList = forwardRef(
   (
     {
-      // hasMore,
       timeline,
       metaRef,
-      // loading,
-      // loadingMore,
-      // reloading,
       showDetail,
       showThreadFavouritedBy,
       statusOverrides,
-      // fetchTimeline,
+      fetchTimeline,
       reloadTimeline,
     }: StatusListProps,
     ref,
@@ -87,39 +83,43 @@ export const StatusList = forwardRef(
       [auth, statusOverrides, showDetail, showThreadFavouritedBy],
     );
 
-    // const LoadFooter = useMemo(
-    //   () => (
-    //     <LoadMoreFooter
-    //       onPress={() =>
-    //         fetchTimeline().then(() =>
-    //           InteractionManager.runAfterInteractions(() => {
-    //             setTimeout(() => {
-    //               scrollRef.current?.scrollToOffset({
-    //                 animated: true,
-    //                 offset: scrollOffsetRef.current + 250,
-    //               });
-    //             }, 10);
-    //           }),
-    //         )
-    //       }
-    //       loading={loadingMore}
-    //     />
-    //   ),
-    //   [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef],
-    // );
+    const {loading, reloading, statusIds, hasMore, hasStatuses} = useSelector(
+      () => {
+        const _timeline = timeline.get() ?? [];
+        const _loading = metaRef.loading.get();
+        const _nextPage = metaRef.nextPage.get();
+        return {
+          statusIds: _timeline,
+          loading: _loading,
+          hasMore: _nextPage !== false,
+          hasStatuses: !!_timeline.length,
+          reloading:
+            typeof _nextPage === 'undefined' && _loading && !!_timeline.length,
+        };
+      },
+    );
 
-    const {loading, reloading, statusIds} = useSelector(() => {
-      const _timeline = timeline.get() ?? [];
-      const _loading = metaRef.loading.get();
-      return {
-        statusIds: _timeline,
-        loading: _loading,
-        reloading:
-          typeof metaRef.nextPage.get() === 'undefined' &&
-          _loading &&
-          !!_timeline.length,
-      };
-    });
+    const loadingMore = useComputed(
+      () => !!metaRef.nextPage.get() && metaRef.loading.get(),
+    );
+
+    const LoadFooter = (
+      <LoadMoreFooter
+        onPress={() =>
+          fetchTimeline().then(() =>
+            InteractionManager.runAfterInteractions(() => {
+              setTimeout(() => {
+                scrollRef.current?.scrollToOffset({
+                  animated: true,
+                  offset: scrollOffsetRef.current + 250,
+                });
+              }, 10);
+            }),
+          )
+        }
+        loading={loadingMore}
+      />
+    );
 
     return (
       <ErrorBoundary>
@@ -141,6 +141,7 @@ export const StatusList = forwardRef(
               scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
             }}
             ListEmptyComponent={() => <EmptyList loading={loading} />}
+            ListFooterComponent={hasStatuses && hasMore ? LoadFooter : null}
           />
         </View>
       </ErrorBoundary>
