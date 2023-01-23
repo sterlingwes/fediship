@@ -1,7 +1,9 @@
-import React, {useMemo} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {Share, Platform} from 'react-native';
+import {Show} from '@legendapp/state/react';
+import type {Observable} from '@legendapp/state';
 import {screenWidth} from '../dimensions';
-import {StyleCreator} from '../theme';
+import {StyleCreator, ValidColor} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {Box} from './Box';
 import {BookmarkIcon} from './icons/BookmarkIcon';
@@ -12,6 +14,96 @@ import {ShareGraphIcon} from './icons/ShareGraphIcon';
 import {StarIcon} from './icons/StarIcon';
 import {LoadingSpinner} from './LoadingSpinner';
 import {Type} from './Type';
+
+const IconButton = ({
+  type,
+  loading,
+  detailed,
+  count,
+  active,
+  onPress,
+}: {
+  type: 'boost' | 'bookmarkOrReplies' | 'favouriteOrShare';
+  loading?: Observable<boolean>;
+  detailed?: boolean;
+  count?: number;
+  active?: Observable<boolean>;
+  onPress: () => any;
+}) => {
+  const styles = useThemeStyle(styleCreator);
+  const {getColor} = useThemeGetters();
+
+  let icon: JSX.Element | undefined;
+  let iconColor: ValidColor = detailed ? 'primary' : 'blueAccent';
+  let detailedIcon: JSX.Element | undefined;
+
+  if (active) {
+    iconColor = 'success';
+  }
+
+  const commonIconProps = useMemo(
+    () => ({
+      color: getColor('blueAccent'),
+      width: 20,
+      height: 20,
+    }),
+    [getColor],
+  );
+
+  switch (type) {
+    case 'boost':
+      icon = (
+        <BoostIcon
+          {...commonIconProps}
+          color={getColor(iconColor)}
+          onPress={onPress}
+        />
+      );
+      break;
+    case 'bookmarkOrReplies':
+      icon = (
+        <BookmarkIcon
+          {...commonIconProps}
+          stroke={getColor(iconColor)}
+          onPress={onPress}
+        />
+      );
+
+      detailedIcon = (
+        <MessageIcon {...commonIconProps} color={getColor('primary')} />
+      );
+      break;
+    case 'favouriteOrShare':
+      icon =
+        Platform.OS === 'ios' ? (
+          <ShareBoxIcon {...commonIconProps} onPress={onPress} />
+        ) : (
+          <ShareGraphIcon {...commonIconProps} onPress={onPress} />
+        );
+
+      detailedIcon = (
+        <StarIcon {...commonIconProps} stroke={getColor('primary')} />
+      );
+      break;
+    default:
+    //
+  }
+
+  return (
+    <Box fd="row" style={[styles.statsBox, detailed && styles.statsBoxEqual]}>
+      <Show
+        if={() => loading}
+        else={detailed && detailedIcon ? detailedIcon : icon}>
+        <LoadingSpinner />
+      </Show>
+      {detailed && typeof count === 'number' && (
+        <Box ml={6}>
+          <Type scale="XS">{count}</Type>
+        </Box>
+      )}
+    </Box>
+  );
+};
 
 export const StatusActionBar = ({
   detailed,
@@ -28,104 +120,48 @@ export const StatusActionBar = ({
   onBookmark,
 }: {
   detailed: boolean | undefined;
-  reblogged: boolean | undefined;
+  reblogged: Observable<boolean>;
   reblogCount: number | undefined;
   replyCount: number | undefined;
   favouriteCount: number | undefined;
-  bookmarked: boolean | undefined;
-  loadingBookmark: boolean;
-  loadingReblog: boolean;
+  bookmarked: Observable<boolean>;
+  loadingBookmark: Observable<boolean>;
+  loadingReblog: Observable<boolean>;
   shareUrl: string;
   hasMedia?: boolean;
   onReblog?: () => void;
   onBookmark: () => void;
 }) => {
-  const styles = useThemeStyle(styleCreator);
-  const {getColor} = useThemeGetters();
-
-  const commonIconProps = useMemo(
-    () => ({
-      color: getColor('blueAccent'),
-      width: 20,
-      height: 20,
-    }),
-    [getColor],
-  );
-
-  const onShare = () => {
+  const onShare = useCallback(() => {
     Share.share({url: shareUrl});
-  };
-
-  const boostIconColor = detailed
-    ? 'primary'
-    : reblogged
-    ? 'success'
-    : 'blueAccent';
-
-  const bookmarkIconColor = detailed
-    ? 'primary'
-    : bookmarked
-    ? 'success'
-    : 'blueAccent';
+  }, [shareUrl]);
 
   return (
     <Box mb={10} pt={detailed ? 10 : hasMedia ? 10 : 0} fd="row" f={1}>
       {onReblog && (
-        <Box
-          fd="row"
-          style={[styles.statsBox, detailed && styles.statsBoxEqual]}>
-          {loadingReblog ? (
-            <LoadingSpinner />
-          ) : (
-            <BoostIcon
-              {...commonIconProps}
-              color={getColor(boostIconColor)}
-              onPress={onReblog}
-            />
-          )}
-          {detailed && typeof reblogCount === 'number' && (
-            <Box ml={6}>
-              <Type scale="XS">{reblogCount}</Type>
-            </Box>
-          )}
-        </Box>
+        <IconButton
+          type="boost"
+          onPress={onReblog}
+          active={reblogged}
+          loading={loadingReblog}
+          detailed={detailed}
+          count={reblogCount}
+        />
       )}
-      <Box fd="row" style={[styles.statsBox, detailed && styles.statsBoxEqual]}>
-        {detailed ? (
-          <>
-            <StarIcon {...commonIconProps} stroke={getColor('primary')} />
-            {detailed && typeof favouriteCount === 'number' && (
-              <Box ml={6}>
-                <Type scale="XS">{favouriteCount}</Type>
-              </Box>
-            )}
-          </>
-        ) : Platform.OS === 'ios' ? (
-          <ShareBoxIcon {...commonIconProps} onPress={onShare} />
-        ) : (
-          <ShareGraphIcon {...commonIconProps} onPress={onShare} />
-        )}
-      </Box>
-      <Box fd="row" style={[styles.statsBox, detailed && styles.statsBoxEqual]}>
-        {detailed ? (
-          <>
-            <MessageIcon {...commonIconProps} color={getColor('primary')} />
-            {detailed && typeof replyCount === 'number' && (
-              <Box ml={6}>
-                <Type scale="XS">{replyCount}</Type>
-              </Box>
-            )}
-          </>
-        ) : loadingBookmark ? (
-          <LoadingSpinner />
-        ) : (
-          <BookmarkIcon
-            {...commonIconProps}
-            stroke={getColor(bookmarkIconColor)}
-            onPress={onBookmark}
-          />
-        )}
-      </Box>
+      <IconButton
+        type="favouriteOrShare"
+        onPress={onShare}
+        detailed={detailed}
+        count={favouriteCount}
+      />
+      <IconButton
+        type="bookmarkOrReplies"
+        onPress={onBookmark}
+        active={bookmarked}
+        loading={loadingBookmark}
+        detailed={detailed}
+        count={replyCount}
+      />
     </Box>
   );
 };

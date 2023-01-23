@@ -1,9 +1,9 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useMemo, useRef} from 'react';
 import {Image, StyleSheet, Pressable, View} from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
-import {useRecentFavourites} from '../storage/recent-favourites';
+import {globalStatuses, globalStatusMeta} from '../api/status.state';
 
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
@@ -124,25 +124,21 @@ export const MediaStatus = (
   },
 ) => {
   const api = useMyMastodonInstance();
-  const {favourites, trackStatusFavourite, trackBookmark} =
-    useRecentFavourites();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const mainStatus = props.reblog ? props.reblog : props;
+  const statusUrl = mainStatus.url ?? mainStatus.uri;
   const lastId = useRef(mainStatus.uri);
-  const recentFav = favourites[mainStatus.url ?? mainStatus.uri];
-  const [faved, setFaved] = useState(mainStatus.favourited);
-  const [bookmarked, setBookmarked] = useState(mainStatus.bookmarked);
-  const [loadingFav, setLoadingFav] = useState(false);
-  const [loadingBookmark, setLoadingBookmark] = useState(false);
+  const faved = globalStatuses[mainStatus.url ?? mainStatus.uri].favourited;
+  const bookmarked =
+    globalStatuses[mainStatus.url ?? mainStatus.uri].bookmarked;
   const styles = useThemeStyle(styleCreator);
+
+  const loadingFav = globalStatusMeta[statusUrl].loadingFav;
+  const loadingBookmark = globalStatusMeta[statusUrl].loadingBookmark;
 
   if (lastId.current !== mainStatus.uri) {
     lastId.current = mainStatus.uri;
-    setFaved(mainStatus.favourited || recentFav);
-    setBookmarked(mainStatus.bookmarked);
-    setLoadingFav(false);
-    setLoadingBookmark(false);
   }
 
   const onPressAvatar =
@@ -151,28 +147,26 @@ export const MediaStatus = (
       : undefined;
 
   const onFavourite = async () => {
-    setLoadingFav(true);
-    const success = faved
+    loadingFav.set(true);
+    const success = faved.peek()
       ? await api.unfavourite(mainStatus.id)
       : await api.favourite(mainStatus.id);
     if (success) {
-      trackStatusFavourite(mainStatus.url ?? mainStatus.uri, !faved);
-      setFaved(!faved);
+      faved.toggle();
     }
-    setLoadingFav(false);
+    loadingFav.set(false);
     props.onPressFavourite?.();
   };
 
   const onBookmark = async () => {
-    setLoadingBookmark(true);
+    loadingBookmark.set(true);
     const success = bookmarked
       ? await api.unbookmark(mainStatus.id)
       : await api.bookmark(mainStatus.id);
     if (success) {
-      trackBookmark(mainStatus.url ?? mainStatus.uri, !bookmarked);
-      setBookmarked(!bookmarked);
+      bookmarked.toggle();
     }
-    setLoadingBookmark(false);
+    loadingBookmark.set(false);
     props.onPressBookmark?.();
   };
 

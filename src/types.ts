@@ -49,26 +49,26 @@ export interface TToken {
 
 export interface TStatus {
   id: string;
-  bookmarked?: boolean;
+  bookmarked: boolean;
   created_at: string;
-  edited_at?: string;
+  edited_at: string | undefined;
   content: string; // html
   account: TAccount;
-  favourited?: boolean;
-  favourites_count?: number;
+  favourited: boolean;
+  favourites_count: number | undefined;
   reblog: TStatusMapped | null;
-  reblogged?: boolean;
-  reblogs_count?: number;
+  reblogged: boolean;
+  reblogs_count: number | undefined;
   url: string | null;
   uri: string;
   in_reply_to_id: string | null;
-  replies_count?: number;
+  replies_count: number | undefined;
   poll: TPoll | null;
   sensitive: boolean;
-  pinned?: boolean;
-  spoiler_text?: string | null;
-  emojis?: Emoji[] | null;
-  media_attachments?: TMediaAttachment[];
+  pinned: boolean | undefined;
+  spoiler_text: string | null | undefined;
+  emojis: Emoji[] | null | undefined;
+  media_attachments: TMediaAttachment[] | undefined;
   visibility: Visibility | string;
 }
 

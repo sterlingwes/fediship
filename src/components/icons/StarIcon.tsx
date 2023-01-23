@@ -1,3 +1,5 @@
+import type {Observable} from '@legendapp/state';
+import {useSelector} from '@legendapp/state/react';
 import React from 'react';
 import {ColorValue} from 'react-native';
 import {Svg, Polygon} from 'react-native-svg';
@@ -6,17 +8,51 @@ interface StarIconProps {
   width?: string | number;
   height?: string | number;
   stroke?: ColorValue;
+  strokeActive$?: Observable<boolean>;
+  strokeActiveColor?: ColorValue;
+  strokeInactiveColor?: ColorValue;
   fill?: ColorValue;
+  fillActive$?: Observable<boolean>;
+  fillActiveColor?: ColorValue;
+  fillInactiveColor?: ColorValue;
 }
 
-export const StarIcon = ({width, height, stroke, fill}: StarIconProps) => {
+export const StarIcon = ({
+  width,
+  height,
+  stroke,
+  strokeActive$,
+  strokeActiveColor,
+  strokeInactiveColor,
+  fill,
+  fillActive$,
+  fillActiveColor,
+  fillInactiveColor,
+}: StarIconProps) => {
+  const strokeColor = useSelector(() => {
+    if (!strokeActive$) {
+      return stroke ?? 'currentColor';
+    }
+
+    return strokeActive$.get()
+      ? strokeActiveColor
+      : strokeInactiveColor ?? 'currentColor';
+  });
+  const fillColor = useSelector(() => {
+    if (!fillActive$) {
+      return fill ?? 'none';
+    }
+
+    return fillActive$.get() ? fillActiveColor : fillInactiveColor ?? 'none';
+  });
+
   return (
     <Svg
       width={width ?? '24'}
       height={height ?? '24'}
       viewBox="0 0 24 24"
-      fill={fill ?? 'none'}
-      stroke={stroke ?? 'currentColor'}
+      fill={fillColor}
+      stroke={strokeColor}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round">

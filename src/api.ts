@@ -200,8 +200,8 @@ export const useTagTimeline = (host: string, tag: string) => {
         }
 
         result.list.forEach(status => {
-          globalStatuses[status.id].set(status);
-          timelines[timelineId].push(status.id);
+          globalStatuses[status.url ?? status.uri].set(status);
+          timelines[timelineId].push(status.url ?? status.uri);
         });
       });
 
