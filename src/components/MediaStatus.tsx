@@ -129,13 +129,11 @@ export const MediaStatus = (
   const mainStatus = props.reblog ? props.reblog : props;
   const statusUrl = mainStatus.url ?? mainStatus.uri;
   const lastId = useRef(mainStatus.uri);
-  const faved = globalStatuses[mainStatus.url ?? mainStatus.uri].favourited;
-  const bookmarked =
-    globalStatuses[mainStatus.url ?? mainStatus.uri].bookmarked;
+  const {favourited, bookmarked, reblogged} = globalStatuses[statusUrl];
   const styles = useThemeStyle(styleCreator);
 
-  const loadingFav = globalStatusMeta[statusUrl].loadingFav;
-  const loadingBookmark = globalStatusMeta[statusUrl].loadingBookmark;
+  const {loadingFav, loadingBookmark, loadingReblog} =
+    globalStatusMeta[statusUrl];
 
   if (lastId.current !== mainStatus.uri) {
     lastId.current = mainStatus.uri;
@@ -148,11 +146,11 @@ export const MediaStatus = (
 
   const onFavourite = async () => {
     loadingFav.set(true);
-    const success = faved.peek()
+    const success = favourited.peek()
       ? await api.unfavourite(mainStatus.id)
       : await api.favourite(mainStatus.id);
     if (success) {
-      faved.toggle();
+      favourited.toggle();
     }
     loadingFav.set(false);
     props.onPressFavourite?.();
@@ -235,7 +233,9 @@ export const MediaStatus = (
                   onPress={
                     priorityAction === 'favourite' ? onFavourite : onBookmark
                   }
-                  active={priorityAction === 'favourite' ? faved : bookmarked}
+                  active={
+                    priorityAction === 'favourite' ? favourited : bookmarked
+                  }
                 />
               )}
             </View>
@@ -263,11 +263,11 @@ export const MediaStatus = (
               <StatusActionBar
                 {...{
                   detailed: false,
-                  reblogged: false,
+                  reblogged,
                   reblogCount: props.reblogs_count,
                   favouriteCount: props.favourites_count,
                   replyCount: props.replies_count,
-                  loadingReblog: false,
+                  loadingReblog,
                   shareUrl: mainStatus.url ?? mainStatus.uri,
                   bookmarked,
                   loadingBookmark,
@@ -288,11 +288,11 @@ export const MediaStatus = (
           <StatusActionBar
             detailed
             {...{
-              reblogged: false,
+              reblogged,
               reblogCount: props.reblogs_count,
               favouriteCount: props.favourites_count,
               replyCount: props.replies_count,
-              loadingReblog: false,
+              loadingReblog,
               shareUrl: mainStatus.url ?? mainStatus.uri,
               bookmarked,
               loadingBookmark,
