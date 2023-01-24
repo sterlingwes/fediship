@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo} from 'react';
 import {Share, Platform} from 'react-native';
-import {Show} from '@legendapp/state/react';
+import {Show, useSelector} from '@legendapp/state/react';
 import type {Observable} from '@legendapp/state';
 import {screenWidth} from '../dimensions';
 import {StyleCreator, ValidColor} from '../theme';
@@ -32,12 +32,13 @@ const IconButton = ({
 }) => {
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
+  const isActive = useSelector(() => active?.get() ?? false);
 
   let icon: JSX.Element | undefined;
   let iconColor: ValidColor = detailed ? 'primary' : 'blueAccent';
   let detailedIcon: JSX.Element | undefined;
 
-  if (active) {
+  if (isActive) {
     iconColor = 'success';
   }
 

@@ -41,8 +41,11 @@ export const StatusActionButton = ({
           <BookmarkIcon
             width="18"
             height="18"
-            stroke={active ? 'transparent' : getColor('baseAccent')}
-            fill={active ? getColor('goldAccent') : undefined}
+            strokeActive$={active}
+            strokeActiveColor="transparent"
+            strokeInactiveColor={getColor('baseAccent')}
+            fillActive$={active}
+            fillActiveColor={getColor('goldAccent')}
           />
         );
     }
