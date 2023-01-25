@@ -5,7 +5,7 @@ type TimelineLookup = Record<TimelineId, string[]>;
 
 export const timelines = observable<TimelineLookup>({});
 
-interface TimelineMeta {
+export interface TimelineMeta {
   loading: boolean;
   error: string;
   nextPage: string | undefined | false;

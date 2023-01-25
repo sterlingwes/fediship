@@ -12,7 +12,7 @@ import {
   RefreshControl,
   View,
 } from 'react-native';
-import {useTagTimeline} from '../api';
+import {useTimeline} from '../api';
 import {LoadMoreFooter} from './LoadMoreFooter';
 import {Status} from './Status';
 import {useAuth} from '../storage/auth';
@@ -40,7 +40,7 @@ const createTimelineRenderer =
       />
     );
 
-interface StatusListProps extends ReturnType<typeof useTagTimeline> {
+interface StatusListProps extends ReturnType<typeof useTimeline> {
   showDetail?: boolean;
   showThreadFavouritedBy?: boolean;
   statusOverrides?: StatusOverrides;

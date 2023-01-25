@@ -1,8 +1,12 @@
+import {observable} from '@legendapp/state';
+import {useObservable} from '@legendapp/state/react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {forwardRef, useMemo} from 'react';
-import {LegacyStatusList} from '../../components/LegacyStatusList';
+import {globalStatuses} from '../../api/status.state';
+import {TimelineMeta} from '../../api/timeline.state';
+import {StatusList} from '../../components/StatusList';
 import {useAuth} from '../../storage/auth';
-import {RootStackParamList, TStatus, TStatusMapped} from '../../types';
+import {RootStackParamList, TStatus} from '../../types';
 import {useMount} from '../../utils/hooks';
 import {useNotificationsForTypes} from '../../utils/notifications';
 
@@ -26,24 +30,32 @@ export const StatusActivity = forwardRef(
       'mention',
       'reblog',
     ]);
-    const statuses = useMemo(() => {
+    const timeline = useMemo(() => {
       const uniqueStatuses = new Set<string>();
-      const statusList: TStatusMapped[] = [];
       notifs.forEach(notif => {
         const status = notif.status as TStatus;
-        if (uniqueStatuses.has(status.id)) {
+        const statusId = status.url ?? status.uri;
+        if (uniqueStatuses.has(statusId)) {
           return;
         }
 
-        uniqueStatuses.add(status.id);
-        statusList.push({
+        const statusMapped = {
           ...status,
           sourceHost: auth.host ?? '',
-        });
+        };
+        globalStatuses[statusId].set(statusMapped);
+
+        uniqueStatuses.add(statusId);
       });
 
-      return statusList;
+      return observable(Array.from(uniqueStatuses));
     }, [notifs, auth]);
+
+    const metaRef = useObservable({
+      loading,
+      nextPage: undefined,
+      error: '',
+    } as TimelineMeta);
 
     useMount(() => {
       navigation.setOptions({
@@ -52,10 +64,10 @@ export const StatusActivity = forwardRef(
     });
 
     return (
-      <LegacyStatusList
+      <StatusList
         showDetail
         showThreadFavouritedBy
-        {...{...defaultStatusListProps, statuses, loading}}
+        {...{...defaultStatusListProps, timeline, metaRef}}
         ref={ref}
       />
     );

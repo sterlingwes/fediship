@@ -1,6 +1,10 @@
+import {observable} from '@legendapp/state';
+import {useObservable} from '@legendapp/state/react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {forwardRef, useMemo} from 'react';
-import {LegacyStatusList} from '../../components/LegacyStatusList';
+import {globalStatuses} from '../../api/status.state';
+import {TimelineMeta} from '../../api/timeline.state';
+import {StatusList} from '../../components/StatusList';
 import {useAuth} from '../../storage/auth';
 import {RootStackParamList, TStatus} from '../../types';
 import {useMount} from '../../utils/hooks';
@@ -19,15 +23,26 @@ export const Polls = forwardRef(
   ({navigation}: NativeStackScreenProps<RootStackParamList, 'Polls'>, ref) => {
     const auth = useAuth();
     const {notifs, loading} = useNotificationsForTypes(['poll']);
-    const statuses = useMemo(() => {
-      return notifs.map(notif => {
+    const timeline = useMemo(() => {
+      const statuses = new Set<string>();
+      notifs.forEach(notif => {
         const status = notif.status as TStatus;
-        return {
+        const statusMapped = {
           ...status,
           sourceHost: auth.host ?? '',
         };
+        const statusId = status.url ?? status.uri;
+        statuses.add(statusId);
+        globalStatuses[statusId].set(statusMapped);
       });
+      return observable(Array.from(statuses));
     }, [notifs, auth]);
+
+    const metaRef = useObservable({
+      loading,
+      nextPage: undefined,
+      error: '',
+    } as TimelineMeta);
 
     useMount(() => {
       navigation.setOptions({
@@ -36,8 +51,8 @@ export const Polls = forwardRef(
     });
 
     return (
-      <LegacyStatusList
-        {...{...defaultStatusListProps, statuses, loading}}
+      <StatusList
+        {...{...defaultStatusListProps, timeline, metaRef}}
         ref={ref}
       />
     );
