@@ -134,7 +134,7 @@ export const StatusActionBar = ({
   onBookmark: () => void;
 }) => {
   const onShare = useCallback(() => {
-    Share.share({url: shareUrl});
+    Share.share(Platform.OS === 'ios' ? {url: shareUrl} : {message: shareUrl});
   }, [shareUrl]);
 
   return (
