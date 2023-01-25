@@ -236,38 +236,46 @@ export const useTagTimeline = (host: string, tag: string) => {
 
 export const useFavourites = (type: 'favourites' | 'bookmarks') => {
   const api = useMyMastodonInstance();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
-  const [nextPage, setNextPage] = useState<string | false>();
+  const metaRef = timelineMeta[type];
+  const timeline = timelines[type];
 
   const fetchTimeline = async (reset?: boolean) => {
-    if (!reset && (nextPage === false || loading)) {
+    const nextPage = metaRef.nextPage.peek();
+
+    if (!reset && (nextPage === false || metaRef.loading.peek())) {
       return;
     }
 
-    setLoading(true);
+    metaRef.loading.set(true);
     try {
       const method = type === 'favourites' ? 'getFavourites' : 'getBookmarks';
       const result = await api[method](
         reset ? undefined : nextPage || undefined,
       );
-      if (reset) {
-        setStatuses(result.list);
-      } else {
-        setStatuses(statuses.concat(result.list));
-      }
-      setNextPage(result?.pageInfo?.next ?? false);
+
+      batch(() => {
+        if (reset) {
+          timelines[type].set([]);
+        }
+
+        result.list.forEach(status => {
+          const statusId = status.url ?? status.uri;
+          globalStatuses[statusId].set(status);
+          timelines[type].push(statusId);
+        });
+      });
+
+      metaRef.nextPage.set(result?.pageInfo?.next ?? false);
     } catch (e: unknown) {
       console.error(e);
-      setError((e as Error).message);
+      metaRef.error.set((e as Error).message);
     } finally {
-      setLoading(false);
+      metaRef.loading.set(false);
     }
   };
 
   const reloadTimeline = () => {
-    setNextPage(undefined);
+    metaRef.nextPage.set(undefined);
     return fetchTimeline(true);
   };
 
@@ -275,20 +283,11 @@ export const useFavourites = (type: 'favourites' | 'bookmarks') => {
     fetchTimeline(true);
   });
 
-  const reloading =
-    typeof nextPage === 'undefined' && loading && !!statuses.length;
-  const loadingMore = !!nextPage && loading;
-  const hasMore = nextPage !== false;
-
   return {
-    statuses,
+    timeline,
+    metaRef,
     fetchTimeline,
     reloadTimeline,
-    reloading,
-    error,
-    loading,
-    loadingMore,
-    hasMore,
   };
 };
 
