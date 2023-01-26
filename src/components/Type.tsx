@@ -34,7 +34,8 @@ export const getTextStyle = (
   styles: ReturnType<StyleCreator>,
 ): StyleProp<TextStyle> => {
   return [
-    props.color === null ? undefined : styles.text,
+    styles.baseFamily,
+    props.color === null ? undefined : styles.baseColor,
     props.weight === 'bold' || props.bold ? styles.bold : undefined,
     props.weight === 'semiBold' || props.semiBold ? styles.semiBold : undefined,
     props.weight === 'medium' || props.medium ? styles.medium : undefined,
@@ -53,15 +54,21 @@ export const Type = (props: TypeProps) => {
 
 const styleCreator: StyleCreator = ({getColor}) => ({
   bold: {
-    fontWeight: '700',
+    fontFamily: 'Nunito-Bold',
+    // fontWeight: '700',
   },
   semiBold: {
-    fontWeight: '600',
+    fontFamily: 'Nunito-SemiBold',
+    // fontWeight: '600',
   },
   medium: {
-    fontWeight: '500',
+    fontFamily: 'Nunito-Medium',
+    // fontWeight: '500',
   },
-  text: {
+  baseColor: {
     color: getColor('baseTextColor'),
+  },
+  baseFamily: {
+    fontFamily: 'Nunito-Regular',
   },
 });
