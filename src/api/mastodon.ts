@@ -88,7 +88,12 @@ export class MastodonApiClient extends HTTPClient {
     }
 
     const list = (response.body as TStatus[])
-      .filter(status => !status.in_reply_to_id)
+      .filter(
+        // filter replies and boosted replies
+        status =>
+          !status.in_reply_to_id &&
+          (!status.reblog || !status.reblog.in_reply_to_id),
+      )
       .map(status => ({...status, sourceHost: this.host}))
       .sort((a, b) => b.id.localeCompare(a.id));
 
