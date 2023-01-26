@@ -1,4 +1,4 @@
-import {useCallback, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {TSearchResults} from '../types';
 import {useMount} from '../utils/hooks';
 import {
@@ -39,10 +39,13 @@ export const useSearch = () => {
   const getRemoteApi = useRemoteActivityPubInstance();
   const [searching, setSearching] = useState(false);
   const [searchResults, setResults] = useState<TSearchResults>();
+  const pendingSearchTerm = useRef<string>('');
 
   const search = useCallback(
     async (query: string) => {
       setSearching(true);
+      pendingSearchTerm.current = query;
+
       if (specificAccountSearch(query)) {
         const [handle, host] = query.trim().split('@');
         const remoteApi = getRemoteApi(host);
@@ -50,7 +53,7 @@ export const useSearch = () => {
           host,
           handle,
         );
-        if (accountResponse.ok) {
+        if (accountResponse.ok && query === pendingSearchTerm.current) {
           setResults({
             accounts: [accountResponse.account!],
             statuses: [],
@@ -61,7 +64,7 @@ export const useSearch = () => {
         }
       }
       const results = await api.search(query);
-      if (results) {
+      if (results && query === pendingSearchTerm.current) {
         setResults(results);
       }
       setSearching(false);
@@ -70,6 +73,8 @@ export const useSearch = () => {
   );
 
   const clearResults = useCallback(() => {
+    pendingSearchTerm.current = '';
+    setSearching(false);
     setResults(undefined);
   }, [setResults]);
 

@@ -89,5 +89,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     paddingHorizontal: 16,
     borderRadius: 12,
     color: getColor('baseTextColor'),
+    fontFamily: 'Nunito-Regular',
+    fontSize: 16,
   },
 });

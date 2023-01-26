@@ -200,7 +200,7 @@ export const Explore = forwardRef(
         return (
           <View style={styles.header}>
             <Searchbar
-              placeholder="Search accounts, statuses, tags & instances"
+              placeholder="Search accounts, statuses, tags..."
               onSearch={onSearch}
               onChangeText={text => {
                 setSearchQuery(text);
