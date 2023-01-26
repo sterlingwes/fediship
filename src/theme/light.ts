@@ -6,6 +6,7 @@ export const lightPalette: TThemeContext['palette'] = Object.freeze({
   base: '#E4EBF1',
   baseHighlight: '#C5D8E8',
   baseAccent: '#8AB1D0',
+  contrastAccent: '#24305e',
   primary: '#373D4C',
   secondary: '#59627B',
   blueAccent: '#2b90d9',

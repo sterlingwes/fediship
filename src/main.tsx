@@ -12,7 +12,7 @@ import {
 import {Thread} from './screens/thread';
 import {RootStackParamList} from './types';
 import {PeerProfile} from './screens/peer-profile';
-import {useTheme} from './theme/utils';
+import {useTheme, useThemeStyle} from './theme/utils';
 
 import {ImageViewer} from './screens/image-viewer';
 import {TagTimeline} from './screens/tag-timeline';
@@ -36,6 +36,7 @@ import {ImageCaptioner} from './screens/image-captioner';
 import {OSSList} from './screens/about/oss-list';
 import {About} from './screens/about/about';
 import {TabbedHome} from './screens/tabbed-home';
+import {fontStyleFactory} from './components/Type';
 
 LogBox.ignoreLogs([
   // TODO: need to patch rn video
@@ -45,71 +46,78 @@ LogBox.ignoreLogs([
 ]);
 
 const LIStack = createNativeStackNavigator<RootStackParamList>();
-const LoggedInStack = () => (
-  <LIStack.Navigator screenOptions={{orientation: 'portrait_up'}}>
-    <LIStack.Screen
-      name="Tabs"
-      component={TabbedHome}
-      options={{headerShown: false}}
-    />
+const LoggedInStack = () => {
+  const styles = useThemeStyle(fontStyleFactory);
+  return (
+    <LIStack.Navigator
+      screenOptions={{
+        orientation: 'portrait_up',
+        headerTitleStyle: styles.nativeHeaderFont,
+      }}>
+      <LIStack.Screen
+        name="Tabs"
+        component={TabbedHome}
+        options={{headerShown: false}}
+      />
 
-    <LIStack.Screen
-      name="Profile"
-      component={Profile}
-      options={{headerShown: false}}
-    />
-    <LIStack.Screen name="Thread" component={Thread} />
-    <LIStack.Screen name="PeerProfile" component={PeerProfile} />
-    <LIStack.Screen name="TagTimeline" component={TagTimeline} />
-    <LIStack.Screen name="TagTimelinePrefs" component={TagTimelinePrefs} />
-    <LIStack.Screen
-      name="PeerPicker"
-      component={PeerPicker}
-      options={{
-        presentation: 'fullScreenModal',
-        headerTitle: 'Choose Instance',
-        headerRight: props =>
-          Platform.OS === 'ios' ? (
-            <HeaderRightButton back={props.canGoBack} IconComponent={XIcon} />
-          ) : null,
-      }}
-    />
-    <LIStack.Screen
-      name="ImageViewer"
-      component={ImageViewer}
-      options={{
-        presentation: 'containedTransparentModal',
-        headerShown: false,
-        orientation: 'all',
-      }}
-    />
-    <LIStack.Screen
-      name="ImageCaptioner"
-      component={ImageCaptioner}
-      options={{
-        presentation: 'containedTransparentModal',
-        headerShown: false,
-        orientation: 'all',
-      }}
-    />
-    <LIStack.Screen
-      name="About"
-      component={About}
-      options={{
-        headerTitle: 'About the App',
-        orientation: 'portrait',
-      }}
-    />
-    <LIStack.Screen
-      name="OSSList"
-      component={OSSList}
-      options={{
-        headerTitle: '🙏 Open Source ♥️',
-        orientation: 'portrait',
-      }}
-    />
-  </LIStack.Navigator>
-);
+      <LIStack.Screen
+        name="Profile"
+        component={Profile}
+        options={{headerShown: false}}
+      />
+      <LIStack.Screen name="Thread" component={Thread} />
+      <LIStack.Screen name="PeerProfile" component={PeerProfile} />
+      <LIStack.Screen name="TagTimeline" component={TagTimeline} />
+      <LIStack.Screen name="TagTimelinePrefs" component={TagTimelinePrefs} />
+      <LIStack.Screen
+        name="PeerPicker"
+        component={PeerPicker}
+        options={{
+          presentation: 'fullScreenModal',
+          headerTitle: 'Choose Instance',
+          headerRight: props =>
+            Platform.OS === 'ios' ? (
+              <HeaderRightButton back={props.canGoBack} IconComponent={XIcon} />
+            ) : null,
+        }}
+      />
+      <LIStack.Screen
+        name="ImageViewer"
+        component={ImageViewer}
+        options={{
+          presentation: 'containedTransparentModal',
+          headerShown: false,
+          orientation: 'all',
+        }}
+      />
+      <LIStack.Screen
+        name="ImageCaptioner"
+        component={ImageCaptioner}
+        options={{
+          presentation: 'containedTransparentModal',
+          headerShown: false,
+          orientation: 'all',
+        }}
+      />
+      <LIStack.Screen
+        name="About"
+        component={About}
+        options={{
+          headerTitle: 'About the App',
+          orientation: 'portrait',
+        }}
+      />
+      <LIStack.Screen
+        name="OSSList"
+        component={OSSList}
+        options={{
+          headerTitle: '🙏 Open Source ♥️',
+          orientation: 'portrait',
+        }}
+      />
+    </LIStack.Navigator>
+  );
+};
 
 const LOStack = createNativeStackNavigator<RootStackParamList>();
 const LoggedOutStack = () => (

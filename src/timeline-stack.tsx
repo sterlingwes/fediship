@@ -15,6 +15,8 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import {DrawerHeaderLeft} from './components/Drawer/DrawerHeaderLeft';
 import {DrawerMenu} from './components/Drawer/DrawerMenu';
 import {useKeyboardBanner} from './components/KeyboardBanner';
+import {useThemeStyle} from './theme/utils';
+import {fontStyleFactory} from './components/Type';
 
 const componentForTimelineType = (
   tl: SavedTimeline,
@@ -74,6 +76,7 @@ export const TimelineStack = ({
   const {timelines} = useSavedTimelines();
   const keyboardBanner = useKeyboardBanner();
   const screenRefs = useRef<RefMap>({});
+  const styles = useThemeStyle(fontStyleFactory);
 
   useFocusEffect(
     useCallback(() => {
@@ -152,6 +155,7 @@ export const TimelineStack = ({
         swipeEnabled: true,
         drawerType: 'slide',
         headerLeft: DrawerHeaderLeft,
+        headerTitleStyle: styles.nativeHeaderFont,
       }}>
       {timelines.map(tl => (
         <Drawer.Screen

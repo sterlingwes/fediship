@@ -47,12 +47,12 @@ export const getTextStyle = (
 };
 
 export const Type = (props: TypeProps) => {
-  const styles = useThemeStyle(styleCreator);
+  const styles = useThemeStyle(fontStyleFactory);
   const textStyle = useMemo(() => getTextStyle(props, styles), [props, styles]);
   return <Text {...props} style={textStyle} />;
 };
 
-const styleCreator: StyleCreator = ({getColor}) => ({
+export const fontStyleFactory: StyleCreator = ({getColor}) => ({
   bold: {
     fontFamily: 'Nunito-Bold',
     // fontWeight: '700',
@@ -70,5 +70,9 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   baseFamily: {
     fontFamily: 'Nunito-Regular',
+  },
+  nativeHeaderFont: {
+    fontFamily: 'Nunito-Bold',
+    fontWeight: undefined,
   },
 });

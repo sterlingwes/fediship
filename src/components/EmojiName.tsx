@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {Image, ImageStyle} from 'react-native';
+import {ColorValue, Image, ImageStyle} from 'react-native';
 import {Emoji} from '../types';
 import {Type} from './Type';
 
@@ -8,9 +8,11 @@ const emojiImgStyle = {width: 15, height: 15} as ImageStyle;
 export const EmojiName = ({
   name,
   emojis,
+  textColor,
 }: {
   name: string;
   emojis: Emoji[] | undefined;
+  textColor?: ColorValue;
 }) => {
   const splitParts = useMemo(() => {
     const emojiLookup = (emojis ?? []).reduce((acc, emoji) => {
@@ -33,7 +35,7 @@ export const EmojiName = ({
       {splitParts.map((part, i) => {
         if (typeof part === 'string') {
           return (
-            <Type key={i} scale="S">
+            <Type key={i} color={textColor} scale="S" semiBold>
               {part}
             </Type>
           );

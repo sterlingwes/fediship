@@ -72,6 +72,7 @@ interface StatusHeaderProps {
 
 const StatusHeader = (props: StatusHeaderProps) => {
   const styles = useThemeStyle(styleCreator);
+  const {getColor} = useThemeGetters();
   const {displayName, username} = props;
   return (
     <View style={styles.statusHeader}>
@@ -101,6 +102,7 @@ const StatusHeader = (props: StatusHeaderProps) => {
           <EmojiName
             name={getUsername({displayName, username})}
             emojis={props.userEmojis}
+            textColor={getColor('contrastAccent')}
           />{' '}
           <Type scale="S" style={styles.statusHeaderType}>
             {props.tootTypeMessage}

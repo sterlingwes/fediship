@@ -5,6 +5,7 @@ export interface TThemeContext {
     base: ColorValue;
     baseHighlight: ColorValue;
     baseAccent: ColorValue;
+    contrastAccent: ColorValue;
     primary: ColorValue;
     secondary: ColorValue;
     blueAccent: ColorValue;
