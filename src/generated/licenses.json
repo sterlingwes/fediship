@@ -72,15 +72,6 @@
     "size": 88828
   },
   {
-    "name": "recyclerlistview",
-    "license": "Apache-2.0",
-    "repo": {
-      "type": "git",
-      "url": "git+https://github.com/Flipkart/recyclerlistview.git"
-    },
-    "size": 74434
-  },
-  {
     "name": "@react-navigation/core",
     "license": "MIT",
     "repo": {
@@ -108,15 +99,6 @@
       "directory": "packages/drawer"
     },
     "size": 46291
-  },
-  {
-    "name": "@shopify/flash-list",
-    "license": "MIT",
-    "repo": {
-      "type": "git",
-      "url": "git+https://github.com/Shopify/flash-list.git"
-    },
-    "size": 38210
   },
   {
     "name": "@sterlingwes/microformats-parser",
@@ -174,6 +156,15 @@
       "directory": "packages/bottom-tabs"
     },
     "size": 19331
+  },
+  {
+    "name": "@legendapp/state",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/LegendApp/legend-state.git"
+    },
+    "size": 19011
   },
   {
     "name": "css-select",
@@ -329,15 +320,6 @@
       "url": "git+https://github.com/react-native-netinfo/react-native-netinfo.git"
     },
     "size": 8171
-  },
-  {
-    "name": "tslib",
-    "license": "0BSD",
-    "repo": {
-      "type": "git",
-      "url": "git+https://github.com/Microsoft/tslib.git"
-    },
-    "size": 7832
   },
   {
     "name": "@babel/runtime",
@@ -543,15 +525,6 @@
     "size": 1816
   },
   {
-    "name": "lodash.debounce",
-    "license": "MIT",
-    "repo": {
-      "type": "git",
-      "url": "git+https://github.com/lodash/lodash.git"
-    },
-    "size": 1652
-  },
-  {
     "name": "nth-check",
     "license": "BSD-2-Clause",
     "repo": {
@@ -651,15 +624,6 @@
     "size": 769
   },
   {
-    "name": "ts-object-utils",
-    "license": "ISC",
-    "repo": {
-      "type": "git",
-      "url": "git+https://github.com/naqvitalha/ts-object-utils.git"
-    },
-    "size": 767
-  },
-  {
     "name": "prop-types",
     "license": "MIT",
     "repo": {
@@ -667,15 +631,6 @@
       "url": "git+https://github.com/facebook/prop-types.git"
     },
     "size": 760
-  },
-  {
-    "name": "fbjs",
-    "license": "MIT",
-    "repo": {
-      "type": "git",
-      "url": "git+https://github.com/facebook/fbjs.git"
-    },
-    "size": 665
   },
   {
     "name": "domelementtype",
