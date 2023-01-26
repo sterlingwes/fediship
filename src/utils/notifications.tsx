@@ -13,6 +13,7 @@ import {
   NormalizedNotif,
   TNotification,
   NotificationType,
+  TStatus,
 } from '../types';
 import {AppState} from 'react-native';
 import {
@@ -27,6 +28,9 @@ import {
   storeNotifGroup,
 } from '../storage/notifications';
 import {useMount} from './hooks';
+import {timelineMeta, timelines} from '../api/timeline.state';
+import {useAuth} from '../storage/auth';
+import {globalStatuses} from '../api/status.state';
 
 const supportedNotifTypes: TNotification['type'][] = [
   'follow',
@@ -121,25 +125,42 @@ const notifTypes: NotificationType[] = [
 ];
 
 export const useNotificationsForTypes = (types: Array<NotificationType>) => {
+  const auth = useAuth();
   const api = useMyMastodonInstance();
-  const [loading, setLoading] = useState(false);
-  const [notifs, setNotifs] = useState<TNotification[]>([]);
+  const timelineId = `notif-${types.sort().join('-')}`;
+  const timeline = timelines[timelineId];
+  const metaRef = timelineMeta[timelineId];
 
   useMount(() => {
     const fetchNotifs = async () => {
-      setLoading(true);
+      metaRef.loading.set(true);
       const excludeTypes = notifTypes.filter(
         type => types.includes(type) === false,
       );
       const result = await api.getNotifications({excludeTypes});
-      setNotifs(result.filter(notif => types.includes(notif.type)));
-      setLoading(false);
+
+      const statusIds = new Set<string>();
+      result
+        .filter(notif => types.includes(notif.type))
+        .forEach(notif => {
+          const status = notif.status as TStatus;
+          const statusMapped = {
+            ...status,
+            sourceHost: auth.host ?? '',
+          };
+          const statusId = status.url ?? status.uri;
+          statusIds.add(statusId);
+          globalStatuses[statusId].set(statusMapped);
+        });
+
+      timelines[timelineId].set(Array.from(statusIds));
+      metaRef.loading.set(false);
     };
 
     fetchNotifs();
   });
 
-  return {notifs, loading};
+  return {timeline, metaRef};
 };
 
 export const useNotifications = () => {

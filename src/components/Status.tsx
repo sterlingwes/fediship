@@ -1,9 +1,9 @@
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import React, {useMemo, useRef, useState} from 'react';
+import React, {useMemo, useRef} from 'react';
 import {Image, StyleSheet, Pressable, View} from 'react-native';
 import {useMyMastodonInstance} from '../api/hooks';
-import {useRecentFavourites} from '../storage/recent-favourites';
+import {globalStatuses, globalStatusMeta} from '../api/status.state';
 import {retrieveMediaStatusAllPref} from '../storage/settings/appearance';
 
 import {StyleCreator} from '../theme';
@@ -144,39 +144,22 @@ export const Status = (
   },
 ) => {
   const api = useMyMastodonInstance();
-  const {
-    favourites,
-    reblogs,
-    bookmarks,
-    trackStatusFavourite,
-    trackReblog,
-    trackBookmark,
-  } = useRecentFavourites();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const mainStatus = props.reblog ? props.reblog : props;
+  const statusUrl = mainStatus.url ?? mainStatus.uri;
   const lastId = useRef(mainStatus.uri);
-  const recentFav = favourites[mainStatus.url ?? mainStatus.uri];
-  const recentReblog = reblogs[mainStatus.url ?? mainStatus.uri];
-  const recentBookmark = bookmarks[mainStatus.url ?? mainStatus.uri];
-  const [faved, setFaved] = useState(recentFav || mainStatus.favourited);
-  const [reblogged, setReblogged] = useState(mainStatus.reblogged);
-  const [bookmarked, setBookmarked] = useState(mainStatus.bookmarked);
-  const wasReblogged = recentReblog || reblogged;
-  const wasBookmarked = recentBookmark || bookmarked;
-  const [loadingFav, setLoadingFav] = useState(false);
-  const [loadingReblog, setLoadingReblog] = useState(false);
-  const [loadingBookmark, setLoadingBookmark] = useState(false);
+  const faved = globalStatuses[statusUrl].favourited;
+  const reblogged = globalStatuses[statusUrl].reblogged;
+  const bookmarked = globalStatuses[statusUrl].bookmarked;
   const styles = useThemeStyle(styleCreator);
+
+  const loadingFav = globalStatusMeta[statusUrl].loadingFav;
+  const loadingReblog = globalStatusMeta[statusUrl].loadingReblog;
+  const loadingBookmark = globalStatusMeta[statusUrl].loadingBookmark;
 
   if (lastId.current !== mainStatus.uri) {
     lastId.current = mainStatus.uri;
-    setFaved(recentFav || mainStatus.favourited);
-    setReblogged(mainStatus.reblogged);
-    setBookmarked(mainStatus.bookmarked);
-    setLoadingFav(false);
-    setLoadingReblog(false);
-    setLoadingBookmark(false);
   }
 
   const onPressAvatar =
@@ -187,48 +170,47 @@ export const Status = (
   const replying = !!props.in_reply_to_id;
 
   const onFavourite = async () => {
-    setLoadingFav(true);
+    loadingFav.set(true);
     let success = false;
 
     if (props.isLocal) {
-      success = faved
+      success = faved.peek()
         ? await api.unfavourite(mainStatus.id)
         : await api.favourite(mainStatus.id);
     } else {
       // remote status
-      success = faved ? false : await api.favouriteRemote(mainStatus.uri);
+      success = faved.peek()
+        ? false
+        : await api.favouriteRemote(mainStatus.uri);
     }
 
     if (success) {
-      trackStatusFavourite(mainStatus.url ?? mainStatus.uri, !faved);
-      setFaved(!faved);
+      faved.set(!faved.peek());
     }
-    setLoadingFav(false);
+    loadingFav.set(false);
     props.onPressFavourite?.();
   };
 
   const onReblog = async () => {
-    setLoadingReblog(true);
+    loadingReblog.set(true);
     const success = reblogged
       ? await api.unreblog(mainStatus.id)
       : await api.reblog(mainStatus.id);
     if (success) {
-      trackReblog(mainStatus.url ?? mainStatus.uri, !reblogged);
-      setReblogged(!reblogged);
+      reblogged.set(!reblogged.peek());
     }
-    setLoadingReblog(false);
+    loadingReblog.set(false);
   };
 
   const onBookmark = async () => {
-    setLoadingBookmark(true);
+    loadingBookmark.set(true);
     const success = bookmarked
       ? await api.unbookmark(mainStatus.id)
       : await api.bookmark(mainStatus.id);
     if (success) {
-      trackBookmark(mainStatus.url ?? mainStatus.uri, !bookmarked);
-      setBookmarked(!bookmarked);
+      bookmarked.set(!bookmarked.peek());
     }
-    setLoadingBookmark(false);
+    loadingBookmark.set(false);
     props.onPressBookmark?.();
   };
 
@@ -354,14 +336,14 @@ export const Status = (
               <StatusActionBar
                 {...{
                   detailed: false,
-                  reblogged: wasReblogged,
+                  reblogged,
                   reblogCount: props.reblogs_count,
                   favouriteCount: props.favourites_count,
                   replyCount: props.replies_count,
                   onReblog,
                   loadingReblog,
-                  shareUrl: mainStatus.url ?? mainStatus.uri,
-                  bookmarked: wasBookmarked,
+                  shareUrl: statusUrl,
+                  bookmarked,
                   loadingBookmark,
                   onBookmark,
                   hasMedia: !!mainStatus.media_attachments?.length,
@@ -380,14 +362,14 @@ export const Status = (
           <StatusActionBar
             detailed
             {...{
-              reblogged: wasReblogged,
+              reblogged,
               reblogCount: props.reblogs_count,
               favouriteCount: props.favourites_count,
               replyCount: props.replies_count,
               onReblog,
               loadingReblog,
-              shareUrl: mainStatus.url ?? mainStatus.uri,
-              bookmarked: wasBookmarked,
+              shareUrl: statusUrl,
+              bookmarked,
               loadingBookmark,
               onBookmark,
             }}

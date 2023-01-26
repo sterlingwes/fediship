@@ -4,6 +4,9 @@ import {useMount} from './utils/hooks';
 import {useMyMastodonInstance, useRemoteMastodonInstance} from './api/hooks';
 import {parseStatusUrl} from './api/api.utils';
 import {useAuth} from './storage/auth';
+import {timelineMeta, timelines} from './api/timeline.state';
+import {batch} from '@legendapp/state';
+import {globalStatuses} from './api/status.state';
 
 export const useFollowers = (source = 'mine') => {
   const api = useMyMastodonInstance();
@@ -108,33 +111,42 @@ export const usePeers = (startEmpty = true, initialFilter = '') => {
 
 export const useTimeline = (timeline: 'home' | 'public') => {
   const api = useMyMastodonInstance();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
-  const [nextPage, setNextPage] = useState<string | false>();
+
+  const timelineState = timelines[timeline];
+  const metaRef = timelineMeta[timeline];
 
   const fetchTimeline = async (reset?: boolean) => {
-    if (nextPage === false || loading) {
+    const nextPage = metaRef.nextPage.peek();
+
+    if (nextPage === false || metaRef.loading.peek()) {
       return;
     }
 
-    setLoading(true);
+    metaRef.loading.set(true);
     try {
       const result = await api.getTimeline(
         timeline,
         reset ? undefined : nextPage,
       );
-      if (reset) {
-        setStatuses(result.list);
-      } else {
-        setStatuses(statuses.concat(result.list));
-      }
-      setNextPage(result?.pageInfo?.next ?? false);
+
+      batch(() => {
+        if (reset) {
+          timelineState.set([]);
+        }
+
+        result.list.forEach(status => {
+          const statusId = status.url ?? status.uri;
+          globalStatuses[statusId].set(status);
+          timelineState.push(statusId);
+        });
+      });
+
+      metaRef.nextPage.set(result?.pageInfo?.next ?? false);
     } catch (e: unknown) {
       console.error(e);
-      setError((e as Error).message);
+      metaRef.error.set((e as Error).message);
     } finally {
-      setLoading(false);
+      metaRef.loading.set(false);
     }
   };
 
@@ -146,116 +158,124 @@ export const useTimeline = (timeline: 'home' | 'public') => {
     fetchTimeline(true);
   });
 
-  const reloading =
-    typeof nextPage === 'undefined' && loading && !!statuses.length;
-  const loadingMore = !!nextPage && loading;
-  const hasMore = nextPage !== false;
-
   return {
-    statuses,
+    timeline: timelineState,
+    metaRef,
     fetchTimeline,
     reloadTimeline,
-    reloading,
-    error,
-    loading,
-    loadingMore,
-    hasMore,
   };
 };
 
 export const useTagTimeline = (host: string, tag: string) => {
+  const mountRef = useRef(true);
+  const timelineId = `${host}/${tag}`;
+  const metaRef = timelineMeta[timelineId];
+  const timeline = timelines[timelineId];
+
   const getRemote = useRemoteMastodonInstance();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
-  const [nextPage, setNextPage] = useState<string | false>();
 
   const fetchTimeline = async (reset?: boolean) => {
-    if (nextPage === false || loading) {
+    const nextPage = metaRef.nextPage.peek();
+
+    if (nextPage === false || metaRef.loading.peek()) {
       return;
     }
 
-    setLoading(true);
+    metaRef.loading.set(true);
+
     try {
       const api = getRemote(host);
       const result = await api.getTagTimeline(
         tag,
         reset ? undefined : nextPage,
       );
-      if (reset) {
-        setStatuses(result.list);
-      } else {
-        setStatuses(statuses.concat(result.list));
+
+      if (!mountRef.current) {
+        return; // component unmounted before finish
       }
-      setNextPage(result?.pageInfo?.next ?? false);
+
+      batch(() => {
+        if (reset) {
+          timelines[timelineId].set([]);
+        }
+
+        result.list.forEach(status => {
+          globalStatuses[status.url ?? status.uri].set(status);
+          timelines[timelineId].push(status.url ?? status.uri);
+        });
+      });
+
+      metaRef.nextPage.set(result?.pageInfo?.next ?? false);
     } catch (e: unknown) {
       console.error(e);
-      setError((e as Error).message);
+      metaRef.error.set((e as Error).message);
     } finally {
-      setLoading(false);
+      metaRef.loading.set(false);
     }
   };
 
   const reloadTimeline = () => {
-    setNextPage(undefined);
+    metaRef.nextPage.set(undefined);
     return fetchTimeline(true);
   };
 
   useMount(() => {
     fetchTimeline(true);
+    return () => {
+      mountRef.current = false;
+    };
   });
 
-  const loadingMore = !!nextPage && loading;
-  const reloading =
-    typeof nextPage === 'undefined' && loading && !!statuses.length;
-  const hasMore = nextPage !== false;
-
   return {
-    statuses,
+    timeline,
+    metaRef,
     fetchTimeline,
     reloadTimeline,
-    error,
-    loading,
-    loadingMore,
-    reloading,
-    hasMore,
   };
 };
 
 export const useFavourites = (type: 'favourites' | 'bookmarks') => {
   const api = useMyMastodonInstance();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
-  const [nextPage, setNextPage] = useState<string | false>();
+  const metaRef = timelineMeta[type];
+  const timeline = timelines[type];
 
   const fetchTimeline = async (reset?: boolean) => {
-    if (!reset && (nextPage === false || loading)) {
+    const nextPage = metaRef.nextPage.peek();
+
+    if (!reset && (nextPage === false || metaRef.loading.peek())) {
       return;
     }
 
-    setLoading(true);
+    metaRef.loading.set(true);
     try {
       const method = type === 'favourites' ? 'getFavourites' : 'getBookmarks';
       const result = await api[method](
         reset ? undefined : nextPage || undefined,
       );
-      if (reset) {
-        setStatuses(result.list);
-      } else {
-        setStatuses(statuses.concat(result.list));
-      }
-      setNextPage(result?.pageInfo?.next ?? false);
+
+      batch(() => {
+        if (reset) {
+          timelines[type].set([]);
+        }
+
+        result.list.forEach(status => {
+          const statusId = status.url ?? status.uri;
+          globalStatuses[statusId].set(status);
+          timelines[type].push(statusId);
+        });
+      });
+
+      metaRef.nextPage.set(result?.pageInfo?.next ?? false);
     } catch (e: unknown) {
       console.error(e);
-      setError((e as Error).message);
+      metaRef.error.set((e as Error).message);
     } finally {
-      setLoading(false);
+      metaRef.loading.set(false);
     }
   };
 
   const reloadTimeline = () => {
-    setNextPage(undefined);
+    metaRef.nextPage.set(undefined);
     return fetchTimeline(true);
   };
 
@@ -263,20 +283,11 @@ export const useFavourites = (type: 'favourites' | 'bookmarks') => {
     fetchTimeline(true);
   });
 
-  const reloading =
-    typeof nextPage === 'undefined' && loading && !!statuses.length;
-  const loadingMore = !!nextPage && loading;
-  const hasMore = nextPage !== false;
-
   return {
-    statuses,
+    timeline,
+    metaRef,
     fetchTimeline,
     reloadTimeline,
-    reloading,
-    error,
-    loading,
-    loadingMore,
-    hasMore,
   };
 };
 

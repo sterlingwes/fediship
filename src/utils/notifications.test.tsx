@@ -6,6 +6,8 @@ import {MastodonProvider} from '../api/mastodon-context';
 import {NavigationContainer} from '@react-navigation/native';
 import * as MockStore from '../storage/notifications';
 
+jest.mock('react-native-mmkv');
+
 jest.mock('../storage/notifications');
 
 describe('notifications e2e', () => {

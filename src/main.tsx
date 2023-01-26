@@ -18,7 +18,6 @@ import {ImageViewer} from './screens/image-viewer';
 import {TagTimeline} from './screens/tag-timeline';
 import {ErrorBoundary} from './components/ErrorBoundary';
 import {NotificationProvider} from './utils/notifications';
-import {FavouritesProvider} from './storage/recent-favourites';
 
 import {SavedTimelineProvider} from './storage/saved-timelines';
 import {Authorize} from './screens/user/authorize';
@@ -149,11 +148,9 @@ export const App = () => {
           <AuthProvider>
             <NotificationProvider>
               <SavedTimelineProvider>
-                <FavouritesProvider>
-                  <KeyboardBannerProvider>
-                    <NavigationRoot />
-                  </KeyboardBannerProvider>
-                </FavouritesProvider>
+                <KeyboardBannerProvider>
+                  <NavigationRoot />
+                </KeyboardBannerProvider>
               </SavedTimelineProvider>
             </NotificationProvider>
           </AuthProvider>

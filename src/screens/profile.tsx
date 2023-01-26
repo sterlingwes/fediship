@@ -1,3 +1,4 @@
+import {useComputed} from '@legendapp/state/react';
 import {useNavigation} from '@react-navigation/native';
 import {
   NativeStackNavigationProp,
@@ -436,6 +437,8 @@ export const Profile = ({
     }
   }, [initialLoad, loading, profile, statuses, fetchTimeline]);
 
+  const loadingMoreTemporaryTypeFix = useComputed(() => loadingMore);
+
   const LoadFooter = useMemo(
     () => (
       <LoadMoreFooter
@@ -452,10 +455,16 @@ export const Profile = ({
             }),
           )
         }
-        loading={loadingMore}
+        loading={loadingMoreTemporaryTypeFix}
       />
     ),
-    [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef, self],
+    [
+      fetchTimeline,
+      loadingMoreTemporaryTypeFix,
+      scrollOffsetRef,
+      scrollRef,
+      self,
+    ],
   );
 
   const scrollY = useSharedValue(0);

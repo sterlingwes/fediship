@@ -67,3 +67,5 @@ scripts/out
 /scripts/signing
 android/app/release/
 android/uploadkeystore.jks
+
+.eslintcache

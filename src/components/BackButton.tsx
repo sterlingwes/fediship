@@ -21,11 +21,11 @@ export const BackButton = (props: BackButtonProps) => {
     <TouchableOpacity {...props}>
       <View style={styles.root}>
         <View
-          style={[styles.container, !props.transparent && styles.transparent]}
+          style={[styles.container, props.transparent && styles.transparent]}
         />
         <Chevron
           color={
-            props.transparent
+            !props.transparent
               ? getColor('contrastTextColor')
               : getColor('primary')
           }

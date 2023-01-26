@@ -1,6 +1,3 @@
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {FlashList, ListRenderItem} from '@shopify/flash-list';
 import React, {
   ComponentProps,
   forwardRef,
@@ -8,54 +5,40 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import {InteractionManager, RefreshControl, View} from 'react-native';
+import {
+  FlatList,
+  ListRenderItem,
+  InteractionManager,
+  RefreshControl,
+  View,
+} from 'react-native';
 import {useTimeline} from '../api';
-import {LoadMoreFooter} from '../components/LoadMoreFooter';
-import {Status} from '../components/Status';
+import {LoadMoreFooter} from './LoadMoreFooter';
+import {Status} from './Status';
 import {useAuth} from '../storage/auth';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
-import {RootStackParamList, TStatusMapped} from '../types';
+import {RootStackParamList} from '../types';
 import {EmptyList} from './EmptyList';
 import {ErrorBoundary} from './ErrorBoundary';
+import {ReactiveStatus} from './ReactiveStatus';
+import {useComputed, useSelector} from '@legendapp/state/react';
 
 type StatusOverrides = Partial<ComponentProps<typeof Status>>;
 type ThreadParamOverrides = Partial<RootStackParamList['Thread']>;
 
 const createTimelineRenderer =
   (
-    navigation: NativeStackNavigationProp<RootStackParamList>,
     host: string | undefined,
     statusOverrides?: StatusOverrides,
     threadParamOverrides?: ThreadParamOverrides,
-  ): ListRenderItem<TStatusMapped> =>
-  row => {
-    const status = row.item;
-    const nextStatusUrl = status.reblog ? status.reblog.uri : status.uri;
-    const nextId = status.reblog ? status.reblog.id : status.id;
-    return (
-      <Status
-        isLocal={status.sourceHost === host}
-        {...status}
-        {...statusOverrides}
-        onPress={() => {
-          // TODO: nextId should only be a localId, right now we're passing remote ids
-          // which is leading to failed requests to the local instance
-          navigation.push('Thread', {
-            focusedStatusPreload: status.reblog ?? status,
-            statusUrl: nextStatusUrl,
-            id: nextId,
-            ...threadParamOverrides,
-          });
-        }}
-        onPressAvatar={account => {
-          navigation.push('Profile', {
-            account,
-          });
-        }}
+  ): ListRenderItem<any> =>
+  ({item: statusId}) =>
+    (
+      <ReactiveStatus
+        {...{statusId, host, statusOverrides, threadParamOverrides}}
       />
     );
-  };
 
 interface StatusListProps extends ReturnType<typeof useTimeline> {
   showDetail?: boolean;
@@ -66,11 +49,8 @@ interface StatusListProps extends ReturnType<typeof useTimeline> {
 export const StatusList = forwardRef(
   (
     {
-      hasMore,
-      statuses,
-      loading,
-      loadingMore,
-      reloading,
+      timeline,
+      metaRef,
       showDetail,
       showThreadFavouritedBy,
       statusOverrides,
@@ -80,10 +60,8 @@ export const StatusList = forwardRef(
     ref,
   ) => {
     const auth = useAuth();
-    const navigation =
-      useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const scrollOffsetRef = useRef(0);
-    const scrollRef = useRef<FlashList<TStatusMapped> | null>();
+    const scrollRef = useRef<FlatList | null>();
     const styles = useThemeStyle(styleCreator);
     const {getColor} = useThemeGetters();
 
@@ -95,7 +73,6 @@ export const StatusList = forwardRef(
     const renderItem = useMemo(
       () =>
         createTimelineRenderer(
-          navigation,
           auth.host,
           {
             ...statusOverrides,
@@ -103,38 +80,54 @@ export const StatusList = forwardRef(
           },
           {showThreadFavouritedBy},
         ),
-      [navigation, auth, statusOverrides, showDetail, showThreadFavouritedBy],
+      [auth, statusOverrides, showDetail, showThreadFavouritedBy],
     );
 
-    const LoadFooter = useMemo(
-      () => (
-        <LoadMoreFooter
-          onPress={() =>
-            fetchTimeline().then(() =>
-              InteractionManager.runAfterInteractions(() => {
-                setTimeout(() => {
-                  scrollRef.current?.scrollToOffset({
-                    animated: true,
-                    offset: scrollOffsetRef.current + 250,
-                  });
-                }, 10);
-              }),
-            )
-          }
-          loading={loadingMore}
-        />
-      ),
-      [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef],
+    const {loading, reloading, statusIds, hasMore, hasStatuses} = useSelector(
+      () => {
+        const _timeline = timeline.get() ?? [];
+        const _loading = metaRef.loading.get();
+        const _nextPage = metaRef.nextPage.get();
+        return {
+          statusIds: _timeline,
+          loading: _loading,
+          hasMore: _nextPage !== false,
+          hasStatuses: !!_timeline.length,
+          reloading:
+            typeof _nextPage === 'undefined' && _loading && !!_timeline.length,
+        };
+      },
+    );
+
+    const loadingMore = useComputed(
+      () => !!metaRef.nextPage.get() && metaRef.loading.get(),
+    );
+
+    const LoadFooter = (
+      <LoadMoreFooter
+        onPress={() =>
+          fetchTimeline().then(() =>
+            InteractionManager.runAfterInteractions(() => {
+              setTimeout(() => {
+                scrollRef.current?.scrollToOffset({
+                  animated: true,
+                  offset: scrollOffsetRef.current + 250,
+                });
+              }, 10);
+            }),
+          )
+        }
+        loading={loadingMore}
+      />
     );
 
     return (
       <ErrorBoundary>
         <View style={styles.screen}>
-          <FlashList
+          <FlatList
             ref={nodeRef => (scrollRef.current = nodeRef)}
-            data={statuses}
+            data={statusIds}
             renderItem={renderItem}
-            estimatedItemSize={100}
             refreshControl={
               <RefreshControl
                 tintColor={getColor('primary')}
@@ -143,12 +136,12 @@ export const StatusList = forwardRef(
                 onRefresh={reloadTimeline}
               />
             }
-            keyExtractor={item => item.uri ?? item.id}
+            keyExtractor={statusId => statusId}
             onScroll={event => {
               scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
             }}
             ListEmptyComponent={() => <EmptyList loading={loading} />}
-            ListFooterComponent={statuses.length && hasMore ? LoadFooter : null}
+            ListFooterComponent={hasStatuses && hasMore ? LoadFooter : null}
           />
         </View>
       </ErrorBoundary>

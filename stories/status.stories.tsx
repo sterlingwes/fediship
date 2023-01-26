@@ -24,7 +24,7 @@ const defaultAdditionalProps = {
   onPress: () => {},
 };
 
-const statuses: TStatusMapped[] = [
+const statuses: any[] = [
   statusMicroformatsHcard,
   statusVideo,
   statusLong,

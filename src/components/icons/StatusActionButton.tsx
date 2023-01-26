@@ -1,5 +1,7 @@
+import type {Observable} from '@legendapp/state';
+import {Show, useSelector} from '@legendapp/state/react';
+import {Legend} from '@legendapp/state/react-native-components';
 import React, {useMemo} from 'react';
-import {Pressable} from 'react-native';
 import {StyleCreator} from '../../theme/types';
 import {useThemeGetters, useThemeStyle} from '../../theme/utils';
 import {LoadingSpinner} from '../LoadingSpinner';
@@ -13,8 +15,8 @@ export const StatusActionButton = ({
   onPress,
 }: {
   icon: 'bookmark' | 'favourite';
-  active: boolean | undefined;
-  loading: boolean;
+  active: Observable<boolean>;
+  loading: Observable<boolean>;
   onPress: () => void;
 }) => {
   const styles = useThemeStyle(styleCreator);
@@ -27,8 +29,11 @@ export const StatusActionButton = ({
           <StarIcon
             width="18"
             height="18"
-            stroke={active ? 'transparent' : getColor('baseAccent')}
-            fill={active ? getColor('goldAccent') : undefined}
+            strokeActive$={active}
+            strokeActiveColor="transparent"
+            strokeInactiveColor={getColor('baseAccent')}
+            fillActive$={active}
+            fillActiveColor={getColor('goldAccent')}
           />
         );
       case 'bookmark':
@@ -36,21 +41,28 @@ export const StatusActionButton = ({
           <BookmarkIcon
             width="18"
             height="18"
-            stroke={active ? 'transparent' : getColor('baseAccent')}
-            fill={active ? getColor('goldAccent') : undefined}
+            strokeActive$={active}
+            strokeActiveColor="transparent"
+            strokeInactiveColor={getColor('baseAccent')}
+            fillActive$={active}
+            fillActiveColor={getColor('goldAccent')}
           />
         );
     }
   }, [icon, getColor, active]);
 
+  const isActive = useSelector(active);
+
   return (
-    <Pressable
-      disabled={loading}
+    <Legend.Pressable
+      disabled$={loading}
       onPress={onPress}
       hitSlop={10}
-      style={[styles.starButton, active && styles.starButtonFaved]}>
-      {loading ? <LoadingSpinner /> : iconButton}
-    </Pressable>
+      style={[styles.starButton, isActive && styles.starButtonFaved]}>
+      <Show if={loading} else={iconButton}>
+        <LoadingSpinner />
+      </Show>
+    </Legend.Pressable>
   );
 };
 

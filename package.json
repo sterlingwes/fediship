@@ -20,10 +20,12 @@
     "go": "code . && open -a Simulator && yarn start",
     "ci": "yarn lint && yarn types",
     "gather-licenses": "license-report --only=prod --output=json --config=scripts/license-report-config.json > scripts/out/licenses.json",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "flightcheck": "yarn lint --cache && yarn types && yarn test"
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.3.2",
+    "@legendapp/state": "^1.0.0-rc.2",
     "@openspacelabs/react-native-zoomable-view": "^2.0.4",
     "@react-native-community/netinfo": "^9.0.0",
     "@react-navigation/bottom-tabs": "^6.3.1",
