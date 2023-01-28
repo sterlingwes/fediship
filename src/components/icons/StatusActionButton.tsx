@@ -20,7 +20,7 @@ export const StatusActionButton = ({
   onPress: () => void;
 }) => {
   const styles = useThemeStyle(styleCreator);
-  const {getColor} = useThemeGetters();
+  const {getColor, scheme} = useThemeGetters();
 
   const iconButton = useMemo(() => {
     switch (icon) {
@@ -31,7 +31,9 @@ export const StatusActionButton = ({
             height="18"
             strokeActive$={active}
             strokeActiveColor="transparent"
-            strokeInactiveColor={getColor('baseAccent')}
+            strokeInactiveColor={getColor(
+              scheme === 'light' ? 'goldAccent' : 'baseAccent',
+            )}
             fillActive$={active}
             fillActiveColor={getColor('goldAccent')}
           />
@@ -43,13 +45,15 @@ export const StatusActionButton = ({
             height="18"
             strokeActive$={active}
             strokeActiveColor="transparent"
-            strokeInactiveColor={getColor('baseAccent')}
+            strokeInactiveColor={getColor(
+              scheme === 'light' ? 'goldAccent' : 'baseAccent',
+            )}
             fillActive$={active}
             fillActiveColor={getColor('goldAccent')}
           />
         );
     }
-  }, [icon, getColor, active]);
+  }, [icon, getColor, active, scheme]);
 
   const isActive = useSelector(active);
 
@@ -66,7 +70,7 @@ export const StatusActionButton = ({
   );
 };
 
-const styleCreator: StyleCreator = ({getColor}) => ({
+const styleCreator: StyleCreator = ({getColor, scheme}) => ({
   starButton: {
     position: 'absolute',
     top: 8,
@@ -74,7 +78,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     backgroundColor: getColor('base'),
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: getColor('baseAccent'),
+    borderColor: getColor(scheme === 'light' ? 'goldAccent' : 'baseAccent'),
   },
   starButtonFaved: {
     borderColor: getColor('goldAccent'),

@@ -9,8 +9,9 @@ export const useThemeGetters = () => {
   return useMemo(() => {
     return Object.freeze({
       getColor: (color: ValidColor) => theme.palette[color],
+      scheme: theme.activeScheme,
     });
-  }, [theme.palette]);
+  }, [theme.palette, theme.activeScheme]);
 };
 
 export const useThemeStyle = (styleCreator: StyleCreator) => {

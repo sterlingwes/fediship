@@ -30,6 +30,7 @@ export type ValidColor = keyof TThemeContext['palette'];
 
 export interface StyleCreatorApi {
   getColor: (colorName: ValidColor) => ColorValue;
+  scheme: ColorSchemeName;
 }
 
 type StyleSheetValue = Parameters<typeof StyleSheet.create>[0];
