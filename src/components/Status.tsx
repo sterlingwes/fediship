@@ -177,13 +177,11 @@ export const Status = (
 
     if (props.isLocal) {
       success = faved.peek()
-        ? await api.unfavourite(mainStatus.id)
-        : await api.favourite(mainStatus.id);
+        ? await api.unfavourite(props.id)
+        : await api.favourite(props.id);
     } else {
       // remote status
-      success = faved.peek()
-        ? false
-        : await api.favouriteRemote(mainStatus.uri);
+      success = faved.peek() ? false : await api.favouriteRemote(props.uri);
     }
 
     if (success) {
@@ -196,8 +194,8 @@ export const Status = (
   const onReblog = async () => {
     loadingReblog.set(true);
     const success = reblogged
-      ? await api.unreblog(mainStatus.id)
-      : await api.reblog(mainStatus.id);
+      ? await api.unreblog(props.id)
+      : await api.reblog(props.id);
     if (success) {
       reblogged.set(!reblogged.peek());
     }
@@ -207,8 +205,8 @@ export const Status = (
   const onBookmark = async () => {
     loadingBookmark.set(true);
     const success = bookmarked
-      ? await api.unbookmark(mainStatus.id)
-      : await api.bookmark(mainStatus.id);
+      ? await api.unbookmark(props.id)
+      : await api.bookmark(props.id);
     if (success) {
       bookmarked.set(!bookmarked.peek());
     }
