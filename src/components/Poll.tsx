@@ -7,8 +7,13 @@ import {TPoll} from '../types';
 import {OutlineButton} from './OutlineButton';
 import {Type} from './Type';
 
+const shrinkForRightMargin = 0.8;
+
+const pctIntValue = (value: number, total: number) =>
+  Math.round((value / total) * 100);
+
 const widthPct = (value: number, total: number) =>
-  `${Math.round((value / total) * 100) || 1}%`;
+  `${(pctIntValue(value, total) || 1) * shrinkForRightMargin}%`;
 
 const VoteAmountLine = (props: {
   value: number;
@@ -16,7 +21,9 @@ const VoteAmountLine = (props: {
   selected: boolean;
 }) => {
   const styles = useThemeStyle(styleCreator);
-  const pctLabel = props.value ? widthPct(props.value, props.total) : '0%';
+  const pctLabel = props.value
+    ? `${pctIntValue(props.value, props.total)}%`
+    : '0%';
   return (
     <View style={styles.amountLineContainer}>
       <View
