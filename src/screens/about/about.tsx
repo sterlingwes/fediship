@@ -8,8 +8,7 @@ import {Type} from '../../components/Type';
 import {useThemeGetters} from '../../theme/utils';
 import {RootStackParamList} from '../../types';
 
-const authorHandle =
-  'It\'s currently developed part time, for fun, by me: <a href="https://swj.io/@wes" class="u-url mention">@wes</a> (hi! 👋).';
+const authorHandle = "It's currently developed part time, for fun.";
 
 const feedback =
   'If you\'ve found a bug, are excited about a feature or usecase, or otherwise want to contribute (with feedback, code, testing, or ...), I\'d love to hear from you (<a href="https://swj.io/@wes" class="u-url mention">@wes</a>).';

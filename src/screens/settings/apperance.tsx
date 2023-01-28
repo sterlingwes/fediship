@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Switch,
 } from 'react-native';
+import {timelineMeta} from '../../api/timeline.state';
 import {Type} from '../../components/Type';
 import {
   retrieveMediaStatusAllPref,
@@ -97,6 +98,9 @@ export const AppearanceSettings = () => {
             onPress: () => {
               setMediaStatusAll(!mediaStatusAll);
               saveMediaStatusAllPref(!mediaStatusAll);
+              timelineMeta.home.renderNonce.set(
+                (timelineMeta.home.renderNonce.peek() ?? 0) + 1,
+              );
             },
             rightSide: (
               <Switch
@@ -104,6 +108,9 @@ export const AppearanceSettings = () => {
                 onValueChange={on => {
                   setMediaStatusAll(on);
                   saveMediaStatusAllPref(on);
+                  timelineMeta.home.renderNonce.set(
+                    (timelineMeta.home.renderNonce.peek() ?? 0) + 1,
+                  );
                 }}
                 value={mediaStatusAll}
               />

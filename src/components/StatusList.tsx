@@ -121,6 +121,8 @@ export const StatusList = forwardRef(
       />
     );
 
+    const renderNonce = useSelector(() => metaRef.renderNonce.get());
+
     return (
       <ErrorBoundary>
         <View style={styles.screen}>
@@ -128,6 +130,7 @@ export const StatusList = forwardRef(
             ref={nodeRef => (scrollRef.current = nodeRef)}
             data={statusIds}
             renderItem={renderItem}
+            extraData={renderNonce}
             refreshControl={
               <RefreshControl
                 tintColor={getColor('primary')}

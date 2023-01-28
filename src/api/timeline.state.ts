@@ -9,6 +9,7 @@ export interface TimelineMeta {
   loading: boolean;
   error: string;
   nextPage: string | undefined | false;
+  renderNonce: number; // for forcing re-render
 }
 
 type TimelineMetaLookup = Record<TimelineId, TimelineMeta>;
