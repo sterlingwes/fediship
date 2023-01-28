@@ -67,6 +67,7 @@ interface StatusHeaderProps {
   sendDate: Date;
   tootTypeMessage: string;
   booster: string | undefined;
+  selfBoosted: boolean;
   pinned: boolean | undefined;
 }
 
@@ -77,7 +78,7 @@ const StatusHeader = (props: StatusHeaderProps) => {
   return (
     <View style={styles.statusHeader}>
       <View style={styles.statusHeaderActorsLabels}>
-        {!!props.booster && (
+        {!props.selfBoosted && !!props.booster && (
           <Type
             scale="XS"
             semiBold
@@ -107,6 +108,11 @@ const StatusHeader = (props: StatusHeaderProps) => {
           <Type scale="S" style={styles.statusHeaderType}>
             {props.tootTypeMessage}
           </Type>
+          {props.selfBoosted && (
+            <Type scale="S" style={styles.statusHeaderType}>
+              (self-boost)
+            </Type>
+          )}
         </Type>
       </View>
       <Type scale="XS">{timeAgo(props.sendDate)}</Type>
@@ -241,6 +247,10 @@ export const Status = (
     return <MediaStatus {...props} />;
   }
 
+  const mainUser = mainStatus.account.username || mainStatus.account.acct;
+  const envelopeUser = props.account.username || props.account.acct;
+  const selfBoosted = !!props.reblog && mainUser === envelopeUser;
+
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
       <Box
@@ -302,6 +312,7 @@ export const Status = (
               sendDate={new Date(mainStatus.edited_at ?? mainStatus.created_at)}
               tootTypeMessage={getType(mainStatus)}
               booster={props.reblog ? props.account.display_name : undefined}
+              selfBoosted={selfBoosted}
               pinned={props.pinned}
             />
             {mainStatus.sensitive ? (

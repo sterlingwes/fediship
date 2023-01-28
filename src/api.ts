@@ -130,6 +130,10 @@ export const useTimeline = (timeline: 'home' | 'public') => {
       );
 
       batch(() => {
+        if (!metaRef.renderNonce.peek) {
+          metaRef.renderNonce.set(1);
+        }
+
         if (reset) {
           timelineState.set([]);
         }
