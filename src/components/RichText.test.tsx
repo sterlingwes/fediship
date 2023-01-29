@@ -41,6 +41,9 @@ describe('RichText', () => {
             style={
               Array [
                 Object {
+                  "fontFamily": "Nunito-Regular",
+                },
+                Object {
                   "color": "#E6EEF6",
                 },
                 Object {
@@ -73,6 +76,9 @@ describe('RichText', () => {
               scale="S"
               style={
                 Array [
+                  Object {
+                    "fontFamily": "Nunito-Regular",
+                  },
                   Object {
                     "color": "#E6EEF6",
                   },
@@ -124,6 +130,9 @@ describe('RichText', () => {
               style={
                 Array [
                   Object {
+                    "fontFamily": "Nunito-Regular",
+                  },
+                  Object {
                     "color": "#E6EEF6",
                   },
                   Object {
@@ -141,6 +150,9 @@ describe('RichText', () => {
                 scale="S"
                 style={
                   Array [
+                    Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
                     Object {
                       "color": "#E6EEF6",
                     },
@@ -174,6 +186,9 @@ describe('RichText', () => {
               style={
                 Array [
                   Object {
+                    "fontFamily": "Nunito-Regular",
+                  },
+                  Object {
                     "color": "#E6EEF6",
                   },
                   Object {
@@ -191,6 +206,9 @@ describe('RichText', () => {
                 scale="S"
                 style={
                   Array [
+                    Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
                     Object {
                       "color": "#E6EEF6",
                     },
@@ -224,6 +242,9 @@ describe('RichText', () => {
               style={
                 Array [
                   Object {
+                    "fontFamily": "Nunito-Regular",
+                  },
+                  Object {
                     "color": "#E6EEF6",
                   },
                   Object {
@@ -241,6 +262,9 @@ describe('RichText', () => {
                 scale="S"
                 style={
                   Array [
+                    Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
                     Object {
                       "color": "#E6EEF6",
                     },
@@ -274,6 +298,9 @@ describe('RichText', () => {
               style={
                 Array [
                   Object {
+                    "fontFamily": "Nunito-Regular",
+                  },
+                  Object {
                     "color": "#E6EEF6",
                   },
                   Object {
@@ -291,6 +318,9 @@ describe('RichText', () => {
                 scale="S"
                 style={
                   Array [
+                    Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
                     Object {
                       "color": "#E6EEF6",
                     },
@@ -324,6 +354,9 @@ describe('RichText', () => {
               style={
                 Array [
                   Object {
+                    "fontFamily": "Nunito-Regular",
+                  },
+                  Object {
                     "color": "#E6EEF6",
                   },
                   Object {
@@ -350,10 +383,13 @@ describe('RichText', () => {
                 style={
                   Array [
                     Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
+                    Object {
                       "color": "#E6EEF6",
                     },
                     Object {
-                      "fontWeight": "500",
+                      "fontFamily": "Nunito-Medium",
                     },
                     Object {
                       "fontSize": 16,
@@ -371,6 +407,9 @@ describe('RichText', () => {
                   style={
                     Array [
                       Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
+                      Object {
                         "fontSize": 16,
                         "lineHeight": 20.8,
                       },
@@ -384,6 +423,9 @@ describe('RichText', () => {
                   scale="S"
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "fontSize": 16,
                         "lineHeight": 20.8,
@@ -399,6 +441,9 @@ describe('RichText', () => {
                 scale="S"
                 style={
                   Array [
+                    Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
                     Object {
                       "color": "#E6EEF6",
                     },
@@ -428,10 +473,13 @@ describe('RichText', () => {
                 style={
                   Array [
                     Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
+                    Object {
                       "color": "#E6EEF6",
                     },
                     Object {
-                      "fontWeight": "500",
+                      "fontFamily": "Nunito-Medium",
                     },
                     Object {
                       "fontSize": 16,
@@ -449,6 +497,9 @@ describe('RichText', () => {
                   style={
                     Array [
                       Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
+                      Object {
                         "fontSize": 16,
                         "lineHeight": 20.8,
                       },
@@ -462,6 +513,9 @@ describe('RichText', () => {
                   scale="S"
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "fontSize": 16,
                         "lineHeight": 20.8,
@@ -477,6 +531,9 @@ describe('RichText', () => {
                 scale="S"
                 style={
                   Array [
+                    Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
                     Object {
                       "color": "#E6EEF6",
                     },
@@ -510,6 +567,9 @@ describe('RichText', () => {
               style={
                 Array [
                   Object {
+                    "fontFamily": "Nunito-Regular",
+                  },
+                  Object {
                     "color": "#E6EEF6",
                   },
                   Object {
@@ -527,6 +587,9 @@ describe('RichText', () => {
                 scale="S"
                 style={
                   Array [
+                    Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
                     Object {
                       "color": "#E6EEF6",
                     },

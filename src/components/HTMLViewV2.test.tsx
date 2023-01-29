@@ -98,6 +98,9 @@ describe('HTMLViewV2', () => {
               style={
                 Array [
                   Object {
+                    "fontFamily": "Nunito-Regular",
+                  },
+                  Object {
                     "color": "#E6EEF6",
                   },
                   Object {
@@ -111,6 +114,9 @@ describe('HTMLViewV2', () => {
                 scale="S"
                 style={
                   Array [
+                    Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
                     Object {
                       "color": "#E6EEF6",
                     },
@@ -140,6 +146,9 @@ describe('HTMLViewV2', () => {
               style={
                 Array [
                   Object {
+                    "fontFamily": "Nunito-Regular",
+                  },
+                  Object {
                     "color": "#E6EEF6",
                   },
                   Object {
@@ -153,6 +162,9 @@ describe('HTMLViewV2', () => {
                 scale="S"
                 style={
                   Array [
+                    Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
                     Object {
                       "color": "#E6EEF6",
                     },
@@ -209,6 +221,9 @@ describe('HTMLViewV2', () => {
                 style={
                   Array [
                     Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
+                    Object {
                       "color": "#E6EEF6",
                     },
                     Object {
@@ -222,6 +237,9 @@ describe('HTMLViewV2', () => {
                   scale="S"
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -251,6 +269,9 @@ describe('HTMLViewV2', () => {
                 style={
                   Array [
                     Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
+                    Object {
                       "color": "#E6EEF6",
                     },
                     Object {
@@ -264,6 +285,9 @@ describe('HTMLViewV2', () => {
                   scale="S"
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -293,6 +317,9 @@ describe('HTMLViewV2', () => {
                 style={
                   Array [
                     Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
+                    Object {
                       "color": "#E6EEF6",
                     },
                     Object {
@@ -306,6 +333,9 @@ describe('HTMLViewV2', () => {
                   scale="S"
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -335,6 +365,9 @@ describe('HTMLViewV2', () => {
                 style={
                   Array [
                     Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
+                    Object {
                       "color": "#E6EEF6",
                     },
                     Object {
@@ -348,6 +381,9 @@ describe('HTMLViewV2', () => {
                   scale="S"
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -377,6 +413,9 @@ describe('HTMLViewV2', () => {
                 style={
                   Array [
                     Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
+                    Object {
                       "color": "#E6EEF6",
                     },
                     Object {
@@ -390,6 +429,9 @@ describe('HTMLViewV2', () => {
                   scale="S"
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -419,6 +461,9 @@ describe('HTMLViewV2', () => {
                 style={
                   Array [
                     Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
+                    Object {
                       "color": "#E6EEF6",
                     },
                     Object {
@@ -432,6 +477,9 @@ describe('HTMLViewV2', () => {
                   onPress={[Function]}
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -450,6 +498,9 @@ describe('HTMLViewV2', () => {
                     scale="S"
                     style={
                       Array [
+                        Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -477,6 +528,9 @@ describe('HTMLViewV2', () => {
                 style={
                   Array [
                     Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
+                    Object {
                       "color": "#E6EEF6",
                     },
                     Object {
@@ -490,6 +544,9 @@ describe('HTMLViewV2', () => {
                   scale="S"
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -519,6 +576,9 @@ describe('HTMLViewV2', () => {
                 style={
                   Array [
                     Object {
+                      "fontFamily": "Nunito-Regular",
+                    },
+                    Object {
                       "color": "#E6EEF6",
                     },
                     Object {
@@ -532,6 +592,9 @@ describe('HTMLViewV2', () => {
                   onPress={[Function]}
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -551,6 +614,9 @@ describe('HTMLViewV2', () => {
                     style={
                       Array [
                         Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
+                        Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
                         },
@@ -564,6 +630,9 @@ describe('HTMLViewV2', () => {
                     scale="S"
                     style={
                       Array [
+                        Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -579,6 +648,9 @@ describe('HTMLViewV2', () => {
                   style={
                     Array [
                       Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
+                      Object {
                         "color": "#E6EEF6",
                       },
                       Object {
@@ -594,6 +666,9 @@ describe('HTMLViewV2', () => {
                   onPress={[Function]}
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -613,6 +688,9 @@ describe('HTMLViewV2', () => {
                     style={
                       Array [
                         Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
+                        Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
                         },
@@ -626,6 +704,9 @@ describe('HTMLViewV2', () => {
                     scale="S"
                     style={
                       Array [
+                        Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -641,6 +722,9 @@ describe('HTMLViewV2', () => {
                   style={
                     Array [
                       Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
+                      Object {
                         "color": "#E6EEF6",
                       },
                       Object {
@@ -656,6 +740,9 @@ describe('HTMLViewV2', () => {
                   onPress={[Function]}
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -675,6 +762,9 @@ describe('HTMLViewV2', () => {
                     style={
                       Array [
                         Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
+                        Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
                         },
@@ -688,6 +778,9 @@ describe('HTMLViewV2', () => {
                     scale="S"
                     style={
                       Array [
+                        Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -703,6 +796,9 @@ describe('HTMLViewV2', () => {
                   style={
                     Array [
                       Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
+                      Object {
                         "color": "#E6EEF6",
                       },
                       Object {
@@ -718,6 +814,9 @@ describe('HTMLViewV2', () => {
                   onPress={[Function]}
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -737,6 +836,9 @@ describe('HTMLViewV2', () => {
                     style={
                       Array [
                         Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
+                        Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
                         },
@@ -750,6 +852,9 @@ describe('HTMLViewV2', () => {
                     scale="S"
                     style={
                       Array [
+                        Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
@@ -765,6 +870,9 @@ describe('HTMLViewV2', () => {
                   style={
                     Array [
                       Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
+                      Object {
                         "color": "#E6EEF6",
                       },
                       Object {
@@ -780,6 +888,9 @@ describe('HTMLViewV2', () => {
                   onPress={[Function]}
                   style={
                     Array [
+                      Object {
+                        "fontFamily": "Nunito-Regular",
+                      },
                       Object {
                         "color": "#E6EEF6",
                       },
@@ -799,6 +910,9 @@ describe('HTMLViewV2', () => {
                     style={
                       Array [
                         Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
+                        Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
                         },
@@ -812,6 +926,9 @@ describe('HTMLViewV2', () => {
                     scale="S"
                     style={
                       Array [
+                        Object {
+                          "fontFamily": "Nunito-Regular",
+                        },
                         Object {
                           "fontSize": 16,
                           "lineHeight": 20.8,
