@@ -1,4 +1,4 @@
-name: CI
+name: oss-licenses
 on:
   push:
     branches:
