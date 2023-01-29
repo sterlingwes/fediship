@@ -70,7 +70,7 @@ export const OSSList = () => {
   );
 };
 
-const styleCreator: StyleCreator = ({getColor}) => ({
+const styleCreator: StyleCreator = ({getColor, ...rest}) => ({
   messageBoxHat: {
     backgroundColor: getColor('base'),
     zIndex: 1,
@@ -78,7 +78,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   messageBox: {
     height: 10,
     backgroundColor: getColor('base'),
-    ...shadow({getColor}),
+    ...shadow({getColor, ...rest}),
   },
   scrollContainer: {
     paddingTop: 20,

@@ -13,13 +13,13 @@ export const AvatarImage = ({uri, style}: {uri: string; style?: ViewStyle}) => {
   );
 };
 
-const styleCreator: StyleCreator = ({getColor}) => ({
+const styleCreator: StyleCreator = ({getColor, ...rest}) => ({
   headerAvatar: {
     backgroundColor: getColor('base'),
     borderRadius: 5,
     borderWidth: 2,
     borderColor: getColor('secondary'),
-    ...shadow({getColor}),
+    ...shadow({getColor, ...rest}),
     width: 100,
     height: 100,
   },
