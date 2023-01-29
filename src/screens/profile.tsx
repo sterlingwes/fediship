@@ -1,4 +1,3 @@
-import {useComputed} from '@legendapp/state/react';
 import {useNavigation} from '@react-navigation/native';
 import {
   NativeStackNavigationProp,
@@ -33,9 +32,9 @@ import {LockIcon} from '../components/icons/LockIcon';
 import {InfoBanner} from '../components/InfoBanner';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import {LoadMoreFooter} from '../components/LoadMoreFooter';
+import {ReactiveStatus} from '../components/ReactiveStatus';
 import {RichText} from '../components/RichText';
 import {SolidButton} from '../components/SolidButton';
-import {Status} from '../components/Status';
 import {Type} from '../components/Type';
 import {screenHeight} from '../dimensions';
 import {getActiveApp, getActiveUserProfile} from '../storage/auth';
@@ -197,30 +196,10 @@ const ProfileHeader = (props: ProfileHeaderProps) => {
 const createProfileTimelineRenderer =
   (
     navigation: NativeStackNavigationProp<RootStackParamList, 'Profile'>,
-  ): ListRenderItem<TStatusMapped> =>
+    host: string | undefined,
+  ): ListRenderItem<string> =>
   row => {
-    const status = row.item;
-    const nextStatusUrl = status.reblog ? status.reblog.uri : status.uri;
-    const nextId = status.reblog ? status.reblog.id : status.id;
-    return (
-      <Status
-        isLocal={false}
-        key={status.id}
-        {...status}
-        onPress={() => {
-          navigation.push('Thread', {
-            focusedStatusPreload: status.reblog ?? status,
-            statusUrl: nextStatusUrl,
-            id: nextId,
-          });
-        }}
-        onPressAvatar={
-          (/*account */) => {
-            // TODO: re-enable when we enable profile boosts
-          }
-        }
-      />
-    );
+    return <ReactiveStatus statusId={row.item} host={host} />;
   };
 
 const errorMessage = (
@@ -392,7 +371,7 @@ export const Profile = ({
     profile,
     profileSource,
     loading,
-    statuses,
+    statusIds,
     refreshing,
     loadingMore,
     hasMore,
@@ -404,8 +383,8 @@ export const Profile = ({
   } = useAPProfile(host, accountHandle, account);
 
   const renderItem = useMemo(
-    () => createProfileTimelineRenderer(navigation),
-    [navigation],
+    () => createProfileTimelineRenderer(navigation, host),
+    [navigation, host],
   );
 
   const headerComponent = useMemo(
@@ -431,13 +410,11 @@ export const Profile = ({
   );
 
   useEffect(() => {
-    if (initialLoad.current && !loading && profile && !statuses.length) {
+    if (initialLoad.current && !loading && profile && !statusIds.length) {
       initialLoad.current = false;
       fetchTimeline();
     }
-  }, [initialLoad, loading, profile, statuses, fetchTimeline]);
-
-  const loadingMoreTemporaryTypeFix = useComputed(() => loadingMore);
+  }, [initialLoad, loading, profile, statusIds, fetchTimeline]);
 
   const LoadFooter = useMemo(
     () => (
@@ -455,16 +432,10 @@ export const Profile = ({
             }),
           )
         }
-        loading={loadingMoreTemporaryTypeFix}
+        loading={loadingMore}
       />
     ),
-    [
-      fetchTimeline,
-      loadingMoreTemporaryTypeFix,
-      scrollOffsetRef,
-      scrollRef,
-      self,
-    ],
+    [fetchTimeline, loadingMore, scrollOffsetRef, scrollRef, self],
   );
 
   const scrollY = useSharedValue(0);
@@ -493,13 +464,13 @@ export const Profile = ({
   return (
     <View style={styles.container}>
       <Animated.FlatList
-        data={statuses}
+        data={statusIds}
         renderItem={renderItem}
         style={styles.container}
         scrollEventThrottle={16}
         onScroll={scrollHandler}
         ListHeaderComponent={headerComponent}
-        ListFooterComponent={statuses.length && hasMore ? LoadFooter : null}
+        ListFooterComponent={statusIds.length && hasMore ? LoadFooter : null}
         ListEmptyComponent={() =>
           error ? (
             <ProfileError

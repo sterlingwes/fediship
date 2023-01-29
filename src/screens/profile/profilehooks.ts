@@ -1,10 +1,15 @@
-import {useCallback, useRef, useState} from 'react';
+import {batch, opaqueObject} from '@legendapp/state';
+import {useComputed, useSelector} from '@legendapp/state/react';
+import {useCallback, useRef} from 'react';
 import {
   useMyMastodonInstance,
   useRemoteActivityPubInstance,
   useRemoteMastodonInstance,
 } from '../../api/hooks';
 import {MastodonApiClient} from '../../api/mastodon';
+import {globalStatuses} from '../../api/status.state';
+import {timelines} from '../../api/timeline.state';
+import {globalUsers, userMeta} from '../../api/user.state';
 import {Emoji, TAccount, TStatusMapped} from '../../types';
 import {useMount} from '../../utils/hooks';
 import {getHostAndHandle} from '../../utils/mastodon';
@@ -55,18 +60,13 @@ export const useAPProfile = (
   const getRemoteAPInstance = useRemoteActivityPubInstance();
   const getRemoteMasto = useRemoteMastodonInstance();
   const emojis = useRef<Emoji[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [localId, setLocalId] = useState<string>();
-  const [profileSource, setProfileSource] = useState<
-    'local' | 'merged' | 'remote'
-  >('remote');
-  const [refreshing, setRefreshing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
-  const [following, setFollowing] = useState<boolean | undefined>();
-  const [error, setError] = useState<Error>();
-  const [profile, setProfile] = useState<TAccount>();
-  const [statuses, setStatuses] = useState<TStatusMapped[]>([]);
-  const [nextPage, setNextPage] = useState<string | false>();
+  const userFQN =
+    account && account.acct?.includes('@')
+      ? account.acct
+      : `${accountHandle}@${host}`;
+  const userTimelineRef = timelines[userFQN];
+  const userRef = globalUsers[userFQN];
+  const userMetaRef = userMeta[userFQN];
   const pinnedIds = useRef<string[]>([]);
 
   const getIdParts = () => {
@@ -99,17 +99,23 @@ export const useAPProfile = (
       nextPageRecurse,
       profileRecurse,
       existingStatuses,
+      recursionCount,
     }: {
       nextPageRecurse: string | undefined;
       profileRecurse: TAccount | undefined;
-      existingStatuses: TStatusMapped[] | undefined;
+      existingStatuses: string[] | undefined;
+      recursionCount?: number | undefined;
     } = {
       nextPageRecurse: undefined,
       profileRecurse: undefined,
       existingStatuses: undefined,
+      recursionCount: undefined,
     },
   ) => {
     const idParts = getIdParts();
+    const nextPage = userMetaRef.nextPage.peek();
+    const loading = userMetaRef.loading.peek();
+    const profile = userRef.peek();
     const nextPageUrl = nextPageRecurse ?? nextPage;
     const alreadyLoading = loading && !nextPageRecurse;
     const profileForMerge = profileRecurse ?? profile;
@@ -118,7 +124,9 @@ export const useAPProfile = (
       return;
     }
 
-    setLoading(true);
+    userMetaRef.loading.set(true);
+
+    const statuses = userTimelineRef.peek();
 
     try {
       const remoteActivityPub = getRemoteAPInstance(idParts.host);
@@ -127,193 +135,263 @@ export const useAPProfile = (
         profileForMerge,
       );
       if (response) {
-        let appendable = response.result.filter(
-          toot => !pinnedIds.current.includes(toot.id),
-        );
+        let appendable: string[] = [];
+        let newStatuses: string[] = [];
 
-        appendable = await appendable.reduce(async (chain, toot) => {
-          const statusList = await chain;
-          const resolvedStatus = await localOrAPFallback(toot, undefined, api);
-          return statusList.concat({
-            ...resolvedStatus,
-            emojis: emojis.current,
-          });
-        }, Promise.resolve([]) as Promise<TStatusMapped[]>);
-        const newStatuses = (existingStatuses ?? statuses).concat(appendable);
-        setStatuses(newStatuses);
-        setNextPage(response.pageInfo?.next ?? false);
+        batch(async () => {
+          const unpinnedToots = response.result.filter(
+            toot => !pinnedIds.current.includes(toot.id),
+          );
 
-        if (appendable.length < 3 && response.pageInfo?.next) {
+          appendable = await unpinnedToots.reduce(async (chain, toot) => {
+            const statusList = await chain;
+            const resolvedStatus = await localOrAPFallback(
+              toot,
+              undefined,
+              api,
+            );
+            const newStatus = {
+              ...resolvedStatus,
+              emojis: emojis.current,
+            };
+            const statusId = newStatus.url ?? newStatus.uri;
+            globalStatuses[statusId].set(newStatus);
+            return statusList.concat(statusId);
+          }, Promise.resolve([]) as Promise<string[]>);
+
+          newStatuses = (existingStatuses ?? statuses).concat(appendable);
+          userTimelineRef.set(newStatuses);
+          userMetaRef.nextPage.set(response.pageInfo?.next ?? false);
+        });
+
+        if (
+          (!recursionCount || recursionCount < 2) &&
+          !!appendable.length &&
+          appendable.length < 3 &&
+          response.pageInfo?.next
+        ) {
           fetchTimeline({
             nextPageRecurse: response.pageInfo.next,
             profileRecurse,
             existingStatuses: newStatuses,
+            recursionCount:
+              typeof recursionCount === 'number' ? recursionCount + 1 : 1,
           });
           return;
         }
       }
     } catch (e: unknown) {
       console.error(e);
-      setError(e as Error);
+      userMetaRef.error.set(opaqueObject(e as Error));
     } finally {
-      setLoading(false);
+      userMetaRef.loading.set(false);
     }
   };
 
-  const fetchAccountAndTimeline = async () => {
-    const idParts = getIdParts();
+  const fetchAccountAndTimeline = () =>
+    batch(async () => {
+      const idParts = getIdParts();
 
-    if (!idParts.host || !idParts.handle) {
-      setLoading(false);
-      return;
-    }
-
-    if (profile) {
-      setRefreshing(true);
-    }
-
-    setLoading(true);
-
-    try {
-      const userIdent = `${idParts.handle}@${idParts.host}`;
-      let localAccount: TAccount | undefined;
-      let localTimeline: TStatusMapped[] | undefined;
-      let localTimelineByIdUrl: Record<string, TStatusMapped> = {};
-      localAccount = await api.findAccount(userIdent);
-      if (localAccount?.id) {
-        const relationship = await api.getRelationship(localAccount.id);
-        setLocalId(localAccount.id);
-        setFollowing(relationship?.following);
-        localTimeline = await api.getProfileTimeline(localAccount.id);
-        localTimelineByIdUrl = localTimeline.reduce(
-          (acc, status) => ({
-            ...acc,
-            [status.uri]: status,
-          }),
-          {} as Record<string, TStatusMapped>,
-        );
+      if (!idParts.host || !idParts.handle) {
+        userMetaRef.loading.set(false);
+        return;
       }
 
-      let remoteResult:
-        | Awaited<ReturnType<typeof remoteActivityPub['getProfileByHandle']>>
-        | undefined;
+      const profile = userRef.peek();
+      if (profile) {
+        userMetaRef.refreshing.set(true);
+      }
 
-      const remoteActivityPub = getRemoteAPInstance(idParts.host);
+      userMetaRef.loading.set(true);
+
       try {
-        remoteResult = await remoteActivityPub.getProfileByHandle(
-          idParts.host,
-          idParts.handle,
+        const userIdent = `${idParts.handle}@${idParts.host}`;
+        let localAccount: TAccount | undefined;
+        let localTimeline: TStatusMapped[] | undefined;
+        let localTimelineByIdUrl: Record<string, TStatusMapped> = {};
+        localAccount = await api.findAccount(userIdent);
+        if (localAccount?.id) {
+          const relationship = await api.getRelationship(localAccount.id);
+          userMetaRef.localId.set(localAccount.id);
+          userMetaRef.following.set(!!relationship?.following);
+          localTimeline = await api.getProfileTimeline(localAccount.id);
+          localTimelineByIdUrl = localTimeline.reduce(
+            (acc, status) => ({
+              ...acc,
+              [status.uri]: status,
+            }),
+            {} as Record<string, TStatusMapped>,
+          );
+        }
+
+        let remoteResult:
+          | Awaited<ReturnType<typeof remoteActivityPub['getProfileByHandle']>>
+          | undefined;
+
+        const remoteActivityPub = getRemoteAPInstance(idParts.host);
+        try {
+          remoteResult = await remoteActivityPub.getProfileByHandle(
+            idParts.host,
+            idParts.handle,
+          );
+
+          if (remoteResult.ok) {
+            pinnedIds.current = remoteResult.pinnedIds;
+            userMetaRef.nextPage.set(remoteResult.pageInfo?.next ?? false);
+          }
+        } catch (e: any) {
+          if (e.message.includes('not signed') === false) {
+            throw e;
+          }
+        }
+
+        const instanceEmojis = await fetchEmojis(idParts.host);
+
+        if (!remoteResult?.ok && !localAccount) {
+          const e = new Error(
+            remoteResult?.error ??
+              'Error fetching user profile which was also not accessible via your instance',
+          );
+          // @ts-ignore
+          e.meta = {userIdent};
+          userMetaRef.loading.set(false);
+          userMetaRef.error.set(opaqueObject(e as Error));
+          return;
+        }
+
+        const [remoteOrLocalProfile, mergeSource] = mergeRemoteIntoLocalProfile(
+          remoteResult?.ok ? remoteResult.account : undefined,
+          localAccount,
+          instanceEmojis,
         );
 
-        if (remoteResult.ok) {
-          pinnedIds.current = remoteResult.pinnedIds;
-          setNextPage(remoteResult.pageInfo?.next ?? false);
-        }
-      } catch (e: any) {
-        if (e.message.includes('not signed') === false) {
-          throw e;
-        }
-      }
+        const timeline = remoteResult?.ok
+          ? await remoteResult.timeline.reduce(async (chain, toot) => {
+              const statusList = await chain;
+              const resolvedStatus = await localOrAPFallback(
+                toot,
+                localTimelineByIdUrl[toot.id],
+                api,
+              );
 
-      const instanceEmojis = await fetchEmojis(idParts.host);
-
-      if (!remoteResult?.ok && !localAccount) {
-        const e = new Error(
-          remoteResult?.error ??
-            'Error fetching user profile which was also not accessible via your instance',
-        );
-        // @ts-ignore
-        e.meta = {userIdent};
-        setLoading(false);
-        setError(e);
-        return;
-      }
-
-      const [remoteOrLocalProfile, mergeSource] = mergeRemoteIntoLocalProfile(
-        remoteResult?.ok ? remoteResult.account : undefined,
-        localAccount,
-        instanceEmojis,
-      );
-
-      const timeline = remoteResult?.ok
-        ? await remoteResult.timeline.reduce(async (chain, toot) => {
-            const statusList = await chain;
-            const resolvedStatus = await localOrAPFallback(
-              toot,
-              localTimelineByIdUrl[toot.id],
-              api,
-            );
-            return statusList.concat({
-              ...resolvedStatus,
+              return statusList.concat({
+                ...resolvedStatus,
+                emojis: instanceEmojis,
+              });
+            }, Promise.resolve([]) as Promise<TStatusMapped[]>)
+          : localTimeline?.map(toot => ({
+              ...toot,
               emojis: instanceEmojis,
-            });
-          }, Promise.resolve([]) as Promise<TStatusMapped[]>)
-        : localTimeline?.map(toot => ({
-            ...toot,
-            emojis: instanceEmojis,
-          }));
+            }));
 
-      if (timeline) {
-        setStatuses(timeline);
+        const timelineStatusIds = [] as string[];
+        if (timeline) {
+          timeline.forEach(status => {
+            const statusId = status.url ?? status.uri;
+            timelineStatusIds.push(statusId);
+            globalStatuses[statusId].set(status);
+          });
+          userTimelineRef.set(Array.from(timelineStatusIds));
+        }
+
+        userMetaRef.profileSource.set(mergeSource);
+        userRef.set(remoteOrLocalProfile);
+
+        if (
+          remoteOrLocalProfile &&
+          timeline &&
+          timeline.length < 3 &&
+          remoteResult?.ok &&
+          remoteResult.pageInfo?.next
+        ) {
+          userMetaRef.refreshing.set(false);
+          fetchTimeline({
+            nextPageRecurse: remoteResult.pageInfo.next,
+            profileRecurse: remoteOrLocalProfile,
+            existingStatuses: timelineStatusIds,
+          });
+          return;
+        }
+      } catch (e: unknown) {
+        console.error(e);
+        userMetaRef.error.set(opaqueObject(e as Error));
+      } finally {
+        userMetaRef.refreshing.set(false);
+        userMetaRef.loading.set(false);
       }
-
-      setProfileSource(mergeSource);
-      setProfile(remoteOrLocalProfile);
-
-      if (
-        remoteOrLocalProfile &&
-        timeline &&
-        timeline.length < 3 &&
-        remoteResult?.ok &&
-        remoteResult.pageInfo?.next
-      ) {
-        setRefreshing(false);
-        fetchTimeline({
-          nextPageRecurse: remoteResult.pageInfo.next,
-          profileRecurse: remoteOrLocalProfile,
-          existingStatuses: timeline,
-        });
-        return;
-      }
-    } catch (e: unknown) {
-      console.error(e);
-      setError(e as Error);
-    } finally {
-      setRefreshing(false);
-      setLoading(false);
-    }
-  };
+    });
 
   const onToggleFollow = useCallback(async () => {
+    const localId = userMetaRef.localId.peek();
     if (!localId) {
       return;
     }
-    setFollowLoading(true);
-    if (following) {
+    userMetaRef.followLoading.set(true);
+    if (userMetaRef.following.peek()) {
       const ok = await api.unfollow(localId);
       if (ok) {
-        setFollowing(false);
+        userMetaRef.following.set(false);
       }
     } else {
       const ok = await api.follow(localId);
       if (ok) {
-        setFollowing(true);
+        userMetaRef.following.set(true);
       }
     }
-    setFollowLoading(false);
-  }, [setFollowLoading, following, setFollowing, localId, api]);
+    userMetaRef.followLoading.set(false);
+  }, [userMetaRef, api]);
 
   useMount(() => {
     fetchAccountAndTimeline();
   });
 
-  const loadingMore = !!nextPage && loading;
-  const hasMore = nextPage !== false;
+  const {
+    error,
+    following,
+    followLoading,
+    hasMore,
+    loading,
+    localId,
+    profile,
+    profileSource,
+    refreshing,
+    statusIds,
+  } = useSelector(() => {
+    const _error = userMetaRef.error.get();
+    const _following = userMetaRef.following.get();
+    const _followLoading = userMetaRef.followLoading.get();
+    const _loading = userMetaRef.loading.get();
+    const _localId = userMetaRef.localId.get();
+    const _nextPage = userMetaRef.nextPage.get();
+    const _profile = userRef.get();
+    const _profileSource = userMetaRef.profileSource.get();
+    const _refreshing = userMetaRef.refreshing.get();
+    const _timeline = userTimelineRef.get() ?? [];
+    return {
+      error: _error,
+      following: _following,
+      followLoading: _followLoading,
+      hasMore: _nextPage !== false,
+      hasStatuses: !!_timeline.length,
+      loading: _loading,
+      localId: _localId,
+      profile: _profile,
+      profileSource: _profileSource,
+      refreshing: _refreshing,
+      statusIds: _timeline,
+      reloading:
+        typeof _nextPage === 'undefined' && _loading && !!_timeline.length,
+    };
+  });
+
+  const loadingMore = useComputed(
+    () => !!userMetaRef.nextPage.get() && !!userMetaRef.loading.get(),
+  );
 
   return {
     profile,
     profileSource,
-    statuses,
+    statusIds,
     fetchTimeline,
     fetchAccountAndTimeline,
     error,

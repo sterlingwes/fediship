@@ -47,6 +47,10 @@ export const ReactiveStatus = ({
         });
       }}
       onPressAvatar={account => {
+        if (account.acct === status.account.acct) {
+          return;
+        }
+
         navigation.push('Profile', {
           account,
         });
