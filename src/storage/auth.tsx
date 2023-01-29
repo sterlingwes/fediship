@@ -1,3 +1,4 @@
+import {batch} from '@legendapp/state';
 import React, {
   createContext,
   ReactNode,
@@ -5,44 +6,48 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import {MMKV} from 'react-native-mmkv';
 import {useMyMastodonInstance} from '../api/hooks';
 import {MastodonApiClient} from '../api/mastodon';
+import {globalAuth, globalAuthUsers} from '../api/user.state';
 import {TAccount, TApp, TToken} from '../types';
+import {getUserFQNFromAccount} from '../utils/mastodon';
 
-import {readJson} from './utils';
-
-const appStorage = new MMKV({id: 'oauth_apps'});
-
-export const getClientApp = (host: string) => readJson<TApp>(host, appStorage);
+export const getClientApp = (host: string) => globalAuth.appLookup[host].peek();
 
 export const setClientApp = (host: string, app: TApp) =>
-  appStorage.set(host, JSON.stringify(app));
+  globalAuth.appLookup[host].set(app);
 
-const authStorage = new MMKV({id: 'oauth_users'});
-
-export const getUserAuth = (user: string) =>
-  readJson<TToken>(user, authStorage);
+export const getUserAuth = (user: string) => globalAuth.authLookup[user].peek();
 
 export const setUserAuth = (user: string, tokenResult: TToken) =>
-  authStorage.set(user, JSON.stringify(tokenResult));
+  globalAuth.authLookup[user].set(tokenResult);
 
-export const clearUserAuth = (user: string) => authStorage.delete(user);
+export const clearUserAuth = (user: string) =>
+  globalAuth.authLookup[user].delete();
 
-const activeStorage = new MMKV({id: 'active'});
-export const getActiveUser = () => activeStorage.getString('user');
-export const setActiveUser = (user: string) => activeStorage.set('user', user);
-export const getActiveApp = () => activeStorage.getString('app');
+export const getActiveUser = () => globalAuth.primaryAccountId?.peek();
+export const setActiveUser = (user: string) =>
+  globalAuth.primaryAccountId?.set(user);
+export const getActiveApp = () => globalAuth.primaryApp?.peek();
 export const setActiveApp = (appHost: string) =>
-  activeStorage.set('app', appHost);
+  globalAuth.primaryApp?.set(appHost);
 export const clearActiveAuth = () => {
-  activeStorage.delete('app');
-  activeStorage.delete('user');
+  batch(() => {
+    globalAuth.primaryApp?.delete();
+    globalAuth.primaryAccountId?.delete();
+  });
 };
-export const setActiveUserProfile = (user: TAccount) =>
-  activeStorage.set('user_profile', JSON.stringify(user));
+export const setActiveUserProfile = (user: TAccount) => {
+  const primaryId = globalAuth.primaryAccountId?.peek();
+  const userIdent = getUserFQNFromAccount(user);
+  if (!primaryId) {
+    globalAuth.primaryAccountId?.set(userIdent);
+  }
+  globalAuthUsers[userIdent].account.set(user);
+  console.log('set', userIdent, 'as active');
+};
 export const getActiveUserProfile = () =>
-  readJson<TAccount>('user_profile', activeStorage);
+  globalAuthUsers[globalAuth.primaryAccountId?.peek() as string].account.get();
 
 interface SetAuthParams {
   user?: string;
@@ -105,7 +110,11 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
   const setAuth = useCallback(
     ({user, host, oauthApp, tokenResult}: SetAuthParams) => {
       const userIdent = `${user}@${host}`;
-      setAuthState({token: tokenResult?.access_token, app: oauthApp});
+      setAuthState({
+        token: tokenResult?.access_token,
+        app: oauthApp,
+        userIdent,
+      });
       if (user && tokenResult && host) {
         setUserAuth(userIdent, tokenResult);
         setActiveApp(host);

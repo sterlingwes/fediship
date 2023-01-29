@@ -154,6 +154,7 @@ export const User = ({
             label: loggingOut ? 'Logging out...' : 'Logout',
             hideChevron: true,
             onPress: async () => {
+              console.log({loggingOut, auth});
               if (loggingOut || !auth.app || !auth.token || !auth.userIdent) {
                 return;
               }

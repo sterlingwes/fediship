@@ -37,6 +37,7 @@ import {OSSList} from './screens/about/oss-list';
 import {About} from './screens/about/about';
 import {TabbedHome} from './screens/tabbed-home';
 import {fontStyleFactory} from './components/Type';
+import {setupStatePersistence} from './initializer';
 
 LogBox.ignoreLogs([
   // TODO: need to patch rn video
@@ -44,6 +45,8 @@ LogBox.ignoreLogs([
   // Was a recent change with fetch proxy work, but...
   'Require cycle: node_modules/react-native/Libraries/Network/fetch.js',
 ]);
+
+setupStatePersistence();
 
 const LIStack = createNativeStackNavigator<RootStackParamList>();
 const LoggedInStack = () => {

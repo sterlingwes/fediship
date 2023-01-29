@@ -1,7 +1,7 @@
 import {TAccount} from '../types';
 
 export const getUserFQNFromAccount = (account: TAccount) => {
-  if (account.id?.includes('@')) {
+  if (typeof account.id === 'string' && account.id.includes('@')) {
     return account.id;
   }
 

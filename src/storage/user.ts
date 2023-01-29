@@ -14,14 +14,14 @@ export const useUserProfile = () => {
     }
 
     const fetchProfile = async () => {
-      const response = await api.verifyAuth();
-      if (!response) {
+      const user = await api.verifyAuth();
+      if (!user) {
         console.error('Could not verifyAuth, logging out');
         auth.clearAuth();
         return;
       }
 
-      setActiveUserProfile(response);
+      setActiveUserProfile(user);
     };
 
     fetchProfile();
