@@ -44,7 +44,6 @@ export const setActiveUserProfile = (user: TAccount) => {
     globalAuth.primaryAccountId?.set(userIdent);
   }
   globalAuthUsers[userIdent].account.set(user);
-  console.log('set', userIdent, 'as active');
 };
 export const getActiveUserProfile = () =>
   globalAuthUsers[globalAuth.primaryAccountId?.peek() as string].account.get();
