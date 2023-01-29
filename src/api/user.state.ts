@@ -21,8 +21,11 @@ export const globalUsers = observable<UserLookup>({});
 
 export const globalAuth = observable<Auth>({authLookup: {}, appLookup: {}});
 export const globalAuthUsers = observable<AuthUserLookup>({});
-persistObservable(globalAuth, {local: 'globalAuth'});
-persistObservable(globalAuthUsers, {local: 'globalAuthUsers'});
+
+if (!__TEST__) {
+  persistObservable(globalAuth, {local: 'globalAuth'});
+  persistObservable(globalAuthUsers, {local: 'globalAuthUsers'});
+}
 
 export interface UserMeta {
   localId: string;
