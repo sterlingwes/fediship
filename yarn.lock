@@ -2206,6 +2206,11 @@ babel-plugin-dynamic-import-node@^2.3.3:
   dependencies:
     object.assign "^4.1.0"
 
+babel-plugin-global-define@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/babel-plugin-global-define/-/babel-plugin-global-define-1.0.3.tgz#262c528f0c26bf318f4ccc77cf21df43a0fa6308"
+  integrity sha512-M8Sby4wRLuLr+9UB8V31knVRf/rl0xkk51A7um6hUCvVPyOvLtI0u0k1OPiMgE2d7CwmeSa33NzGpaALHPQCPg==
+
 babel-plugin-istanbul@^6.0.0:
   version "6.1.1"
   resolved "https://registry.yarnpkg.com/babel-plugin-istanbul/-/babel-plugin-istanbul-6.1.1.tgz#fa88ec59232fd9b4e36dbbc540a8ec9a9b47da73"

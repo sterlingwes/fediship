@@ -65,6 +65,7 @@
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",
     "babel-jest": "^26.6.3",
+    "babel-plugin-global-define": "^1.0.3",
     "eslint": "^7.32.0",
     "jest": "^26.6.3",
     "license-report": "^5.0.2",
