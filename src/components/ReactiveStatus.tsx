@@ -5,6 +5,7 @@ import {globalStatuses} from '../api/status.state';
 import {Status} from './Status';
 import {RootStackParamList} from '../types';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {getUserFQNFromAccount} from '../utils/mastodon';
 
 type StatusOverrides = Partial<ComponentProps<typeof Status>>;
 type ThreadParamOverrides = Partial<RootStackParamList['Thread']>;
@@ -14,11 +15,13 @@ export const ReactiveStatus = ({
   statusId,
   statusOverrides,
   threadParamOverrides,
+  fromProfileAcct,
 }: {
   host: string | undefined;
   statusId: string;
   statusOverrides?: StatusOverrides;
   threadParamOverrides?: ThreadParamOverrides;
+  fromProfileAcct?: string | undefined;
 }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -47,7 +50,8 @@ export const ReactiveStatus = ({
         });
       }}
       onPressAvatar={account => {
-        if (account.acct === status.account.acct) {
+        const acct = getUserFQNFromAccount(account);
+        if (acct && acct === fromProfileAcct) {
           return;
         }
 

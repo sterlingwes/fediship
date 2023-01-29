@@ -1,5 +1,19 @@
 import {TAccount} from '../types';
 
+export const getUserFQNFromAccount = (account: TAccount) => {
+  if (account.id?.includes('@')) {
+    return account.id;
+  }
+
+  if (account.acct?.includes('@')) {
+    return account.acct;
+  }
+
+  const urlParts = account.url.replace(/^https?:\/\//, '').split('/');
+  const urlHost = urlParts.shift();
+  return `${account.acct ?? account.username}@${urlHost}`;
+};
+
 export const getHostAndHandle = (account: TAccount) => {
   const [accountHandle, host] = account.acct?.split('@') ?? [];
   if (accountHandle && host) {

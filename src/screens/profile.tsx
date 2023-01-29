@@ -47,6 +47,7 @@ import {
   TField,
   TStatusMapped,
 } from '../types';
+import {getUserFQNFromAccount} from '../utils/mastodon';
 import {useAPProfile} from './profile/profilehooks';
 
 interface ProfileHeaderProps {
@@ -197,9 +198,16 @@ const createProfileTimelineRenderer =
   (
     navigation: NativeStackNavigationProp<RootStackParamList, 'Profile'>,
     host: string | undefined,
+    fromProfileAcct: string | undefined,
   ): ListRenderItem<string> =>
   row => {
-    return <ReactiveStatus statusId={row.item} host={host} />;
+    return (
+      <ReactiveStatus
+        statusId={row.item}
+        host={host}
+        fromProfileAcct={fromProfileAcct}
+      />
+    );
   };
 
 const errorMessage = (
@@ -382,9 +390,18 @@ export const Profile = ({
     onToggleFollow,
   } = useAPProfile(host, accountHandle, account);
 
+  const fromProfileAcct = useMemo(() => {
+    const userAccount = profile ?? account;
+    if (!userAccount) {
+      return `${accountHandle}@${host}`;
+    }
+    return getUserFQNFromAccount(userAccount);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile, account]);
+
   const renderItem = useMemo(
-    () => createProfileTimelineRenderer(navigation, host),
-    [navigation, host],
+    () => createProfileTimelineRenderer(navigation, host, fromProfileAcct),
+    [navigation, host, fromProfileAcct],
   );
 
   const headerComponent = useMemo(
