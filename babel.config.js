@@ -5,7 +5,7 @@ module.exports = {
     [
       'global-define',
       {
-        __TEST__: true,
+        __TEST__: false,
       },
     ],
   ],
