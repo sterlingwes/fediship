@@ -118,6 +118,16 @@ const LoggedInStack = () => {
           orientation: 'portrait',
         }}
       />
+      <LIStack.Screen
+        name="LoginAnother"
+        component={Login}
+        options={{headerTitle: 'Add Another Account'}}
+      />
+      <LIStack.Screen
+        name="AuthorizeAnother"
+        component={Authorize}
+        options={{headerTitle: 'Authorize'}}
+      />
     </LIStack.Navigator>
   );
 };

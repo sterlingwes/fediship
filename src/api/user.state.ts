@@ -1,4 +1,9 @@
-import {observable, OpaqueObject} from '@legendapp/state';
+import {
+  observable,
+  ObservableObject,
+  ObservablePersistState,
+  OpaqueObject,
+} from '@legendapp/state';
 import {persistObservable} from '@legendapp/state/persist';
 import {TAccount, TApp, TToken} from '../types';
 
@@ -22,10 +27,14 @@ export const globalUsers = observable<UserLookup>({});
 export const globalAuth = observable<Auth>({authLookup: {}, appLookup: {}});
 export const globalAuthUsers = observable<AuthUserLookup>({});
 
+let globalAuthPersist: ObservableObject<ObservablePersistState> | undefined;
+
 if (!__TEST__) {
-  persistObservable(globalAuth, {local: 'globalAuth'});
+  globalAuthPersist = persistObservable(globalAuth, {local: 'globalAuth'});
   persistObservable(globalAuthUsers, {local: 'globalAuthUsers'});
 }
+
+export {globalAuthPersist};
 
 export interface UserMeta {
   localId: string;

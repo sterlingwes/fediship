@@ -11,12 +11,13 @@ import {
 } from 'react-native';
 import {ChevronInverted} from '../components/icons/Chevron';
 import {Type} from '../components/Type';
-import {useAuth} from '../storage/auth';
+import {getAllUserProfiles, useAuth} from '../storage/auth';
 import {useSavedTimelines} from '../storage/saved-timelines';
 import {StyleCreator} from '../theme';
 import {useThemeGetters, useThemeStyle} from '../theme/utils';
 import {NotificationGroups, RootStackParamList} from '../types';
 import {useMount} from '../utils/hooks';
+import {getUserFQNFromAccount} from '../utils/mastodon';
 import {useNotifications} from '../utils/notifications';
 import {flex} from '../utils/styles';
 import {clearStorage} from '../utils/testing';
@@ -77,8 +78,10 @@ export const User = ({
 
   useMount(() => readTab());
 
-  const menuItems = useMemo(
-    (): MenuSection[] => [
+  const menuItems = useMemo((): MenuSection[] => {
+    const linkedProfiles = getAllUserProfiles();
+
+    return [
       {
         title: 'Relationships',
         data: [
@@ -144,10 +147,44 @@ export const User = ({
       {
         title: 'Account',
         data: [
+          ...(linkedProfiles.secondary.length === 0
+            ? [
+                {
+                  label: 'Your Profile',
+                  onPress: () => {
+                    navigation.push('MyProfile', {self: true});
+                  },
+                },
+              ]
+            : [
+                {
+                  label: `${getUserFQNFromAccount(
+                    linkedProfiles.primary,
+                  )} (main)`,
+                  onPress: () => {
+                    navigation.push('MyProfile', {self: true});
+                  },
+                },
+                ...linkedProfiles.secondary.map(account => {
+                  const userFQN = getUserFQNFromAccount(account);
+                  const [accountHandle, host] = userFQN.split('@');
+                  return {
+                    label: userFQN,
+                    onPress: () => {
+                      navigation.push('MyProfile', {
+                        self: true,
+                        accountHandle,
+                        host,
+                        account,
+                      });
+                    },
+                  };
+                }),
+              ]),
           {
-            label: 'Your Profile',
+            label: 'Add Another Profile',
             onPress: () => {
-              navigation.push('MyProfile', {self: true});
+              navigation.push('LoginAnother', {secondary: true});
             },
           },
           {
@@ -221,18 +258,17 @@ export const User = ({
             },
           ]
         : []),
-    ],
-    [
-      navigation,
-      notifs,
-      readType,
-      setLoggingOut,
-      auth,
-      loggingOut,
-      clearedTimelines,
-      clearAllSavedTimelines,
-    ],
-  );
+    ];
+  }, [
+    navigation,
+    notifs,
+    readType,
+    setLoggingOut,
+    auth,
+    loggingOut,
+    clearedTimelines,
+    clearAllSavedTimelines,
+  ]);
 
   const renderItem: ListRenderItem<typeof menuItems[0]['data'][0]> = ({
     item,

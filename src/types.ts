@@ -163,8 +163,10 @@ export type RootStackParamList = {
   User: undefined;
   About: undefined;
   OSSList: undefined;
-  Login: undefined;
-  Authorize: {host: string; scope: string};
+  Login: undefined | {secondary: boolean};
+  LoginAnother: undefined | {secondary: boolean};
+  Authorize: {host: string; scope: string; secondary?: boolean};
+  AuthorizeAnother: {host: string; scope: string; secondary?: boolean};
   UserMain: undefined;
   TagTimeline: {host: string; tag: string};
   TagTimelinePrefs: {

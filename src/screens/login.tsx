@@ -2,6 +2,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
 import {View} from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
+import {globalAuthPersist} from '../api/user.state';
 import {SolidButton} from '../components/SolidButton';
 import {Type} from '../components/Type';
 import {oauthScopes} from '../constants';
@@ -13,27 +14,37 @@ import {centered, flex} from '../utils/styles';
 
 export const Login = ({
   navigation,
+  route,
 }: NativeStackScreenProps<RootStackParamList, 'Login'>) => {
+  const {secondary} = route.params ?? {};
   const auth = useAuth();
   const [host, setHost] = useState('');
   const {getColor} = useThemeGetters();
   const styles = useThemeStyle(styleCreator);
 
   const onLogin = () => {
-    auth.setAuth({host});
-    navigation.navigate('Authorize', {host, scope: oauthScopes});
+    if (secondary) {
+      navigation.navigate('AuthorizeAnother', {
+        host,
+        scope: oauthScopes,
+        secondary,
+      });
+    } else {
+      auth.setAuth({host});
+      navigation.navigate('Authorize', {host, scope: oauthScopes});
+    }
   };
 
   return (
     <View style={[flex, centered]}>
-      <Type scale="XL">Welcome!</Type>
+      <Type scale="XL">Where does this account live?</Type>
       <View style={styles.spacer} />
       <TextInput
         value={host}
         onChangeText={setHost}
         style={styles.input}
         placeholder="example.com"
-        placeholderTextColor={getColor('baseHighlight')}
+        placeholderTextColor={getColor('contrastAccent')}
         keyboardType="url"
         autoCorrect={false}
         spellCheck={false}
@@ -41,7 +52,7 @@ export const Login = ({
       />
       <View style={styles.spacer} />
       <SolidButton onPress={onLogin} disabled={!host}>
-        Login
+        {secondary ? 'Authorize' : 'Login'}
       </SolidButton>
     </View>
   );

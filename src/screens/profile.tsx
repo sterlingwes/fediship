@@ -356,7 +356,10 @@ export const Profile = ({
   const styles = useThemeStyle(styleCreator);
 
   const {host, accountHandle} = useMemo(() => {
-    if (!route.params.self) {
+    if (
+      !route.params.self ||
+      (route.params.host && route.params.accountHandle)
+    ) {
       return route.params;
     }
     const appHost = getActiveApp();

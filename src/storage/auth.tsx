@@ -22,8 +22,13 @@ export const getUserAuth = (user: string) => globalAuth.authLookup[user].peek();
 export const setUserAuth = (user: string, tokenResult: TToken) =>
   globalAuth.authLookup[user].set(tokenResult);
 
-export const clearUserAuth = (user: string) =>
-  globalAuth.authLookup[user].delete();
+export const clearAllUserAuth = () => {
+  batch(() => {
+    globalAuth.authLookup.delete();
+    globalAuth.primaryAccountId?.delete();
+    globalAuth.primaryApp?.delete();
+  });
+};
 
 export const getActiveUser = () => globalAuth.primaryAccountId?.peek();
 export const setActiveUser = (user: string) =>
@@ -47,6 +52,18 @@ export const setActiveUserProfile = (user: TAccount) => {
 };
 export const getActiveUserProfile = () =>
   globalAuthUsers[globalAuth.primaryAccountId?.peek() as string].account.get();
+
+export const getAllUserProfiles = () => {
+  const primaryId = globalAuth.primaryAccountId?.peek();
+  const userLookup = globalAuthUsers.peek();
+  return {
+    primary: userLookup[primaryId as string].account,
+    secondary: Object.keys(userLookup)
+      .filter(userId => userId !== primaryId)
+      .sort()
+      .map(userId => userLookup[userId].account),
+  };
+};
 
 interface SetAuthParams {
   user?: string;
@@ -115,9 +132,11 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
         userIdent,
       });
       if (user && tokenResult && host) {
-        setUserAuth(userIdent, tokenResult);
-        setActiveApp(host);
-        setActiveUser(userIdent);
+        batch(() => {
+          setUserAuth(userIdent, tokenResult);
+          setActiveApp(host);
+          setActiveUser(userIdent);
+        });
       }
     },
     [setAuthState],
@@ -151,9 +170,11 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
       return false;
     }
 
-    clearUserAuth(activeUser ?? auth.userIdent);
+    batch(() => {
+      clearAllUserAuth();
+      clearActiveAuth();
+    });
     setAuth({});
-    clearActiveAuth();
     return true;
   }, [auth, setAuth, api]);
 

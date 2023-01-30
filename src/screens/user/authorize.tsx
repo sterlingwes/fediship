@@ -3,6 +3,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {WebView} from 'react-native-webview';
 import {useMyMastodonInstance} from '../../api/hooks';
+import {globalAuthUsers, globalAuth} from '../../api/user.state';
 import {LoadingSpinner} from '../../components/LoadingSpinner';
 import {Type} from '../../components/Type';
 import {oauthScopes} from '../../constants';
@@ -21,8 +22,9 @@ const authCodeParam = 'oauth/authorize/native?code=';
 
 export const Authorize = ({
   route,
+  navigation,
 }: NativeStackScreenProps<RootStackParamList, 'Authorize'>) => {
-  const {host, scope} = route.params;
+  const {host, scope, secondary} = route.params;
   const api = useMyMastodonInstance();
   const {getColor} = useThemeGetters();
   const [loading, setLoading] = useState(true);
@@ -46,6 +48,8 @@ export const Authorize = ({
 
     if (!clientId) {
       fetchClientId();
+    } else {
+      console.log(`reusing existing OAuth client app for ${host}`);
     }
   });
 
@@ -84,13 +88,24 @@ export const Authorize = ({
       }
 
       api.actorId = user.id;
-      setActiveUserProfile(user);
-      auth.setAuth({user: user.acct, host, oauthApp: app, tokenResult: token});
+      if (secondary) {
+        globalAuthUsers[user.id].account.set(user);
+        globalAuth.authLookup[user.id].set(token);
+        navigation.navigate('User');
+      } else {
+        setActiveUserProfile(user);
+        auth.setAuth({
+          user: user.acct,
+          host,
+          oauthApp: app,
+          tokenResult: token,
+        });
+      }
     };
 
     setLoading(true);
     authenticate();
-  }, [authCode, loading, setLoading, auth, host, api]);
+  }, [navigation, authCode, loading, secondary, setLoading, auth, host, api]);
 
   const params = useMemo(() => {
     if (!clientId) {
@@ -128,6 +143,7 @@ export const Authorize = ({
     <View style={flex}>
       {!authCode && (
         <WebView
+          incognito
           onLoadEnd={() => setLoading(false)}
           renderError={errorName => <Type>{errorName}</Type>}
           source={{
