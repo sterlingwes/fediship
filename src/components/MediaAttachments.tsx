@@ -9,11 +9,9 @@ import {Type} from './Type';
 import {PlayCircleIcon} from './icons/PlayCircleIcon';
 import {RedundantImage} from './RedundantImage';
 import {Box} from './Box';
+import {screenWidth} from '../dimensions';
 
-const dimensProps = ({
-  width,
-  height,
-}: NonNullable<TMediaAttachment['meta']>['small']) => ({
+const dimensProps = ({width, height}: {width: number; height: number}) => ({
   width,
   height,
 });
@@ -29,12 +27,22 @@ const Media = (
   const {getColor} = useThemeGetters();
 
   const componentForType = (type: TMediaAttachment['type']) => {
-    if (!props.meta) {
-      console.warn('Invalid media attachment (no meta)');
-      return null;
+    let dims: {width: number; height: number} | undefined = props.meta?.small;
+
+    if (!dims) {
+      dims = {width: screenWidth, height: screenWidth / 2};
     }
 
-    switch (type) {
+    let refinedType = type;
+
+    if (
+      type === 'unknown' &&
+      (props.remote_url.endsWith('png') || props.remote_url.endsWith('jpg'))
+    ) {
+      refinedType = 'image';
+    }
+
+    switch (refinedType) {
       case 'image':
         return (
           <Pressable
@@ -44,7 +52,7 @@ const Media = (
               fallbackUri={props.remote_url}
               source={{
                 uri: props.preview_url,
-                ...dimensProps(props.meta.small ?? {}),
+                ...dimensProps(dims),
               }}
               style={[
                 styles.previewImage,
