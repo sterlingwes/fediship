@@ -51,7 +51,7 @@
       "type": "git",
       "url": "git+https://github.com/csstree/csstree.git"
     },
-    "size": 103875
+    "size": 103885
   },
   {
     "name": "react-native-gesture-handler",
@@ -99,6 +99,15 @@
       "directory": "packages/drawer"
     },
     "size": 46291
+  },
+  {
+    "name": "@legendapp/state",
+    "license": "MIT",
+    "repo": {
+      "type": "git",
+      "url": "git+https://github.com/LegendApp/legend-state.git"
+    },
+    "size": 31420
   },
   {
     "name": "@sterlingwes/microformats-parser",
@@ -156,15 +165,6 @@
       "directory": "packages/bottom-tabs"
     },
     "size": 19331
-  },
-  {
-    "name": "@legendapp/state",
-    "license": "MIT",
-    "repo": {
-      "type": "git",
-      "url": "git+https://github.com/LegendApp/legend-state.git"
-    },
-    "size": 19011
   },
   {
     "name": "css-select",
