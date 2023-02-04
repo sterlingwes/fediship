@@ -51,8 +51,9 @@ export const ImageViewer = (
 
   const target = attachments[currentIndex];
   const Wrapper = target.type === 'image' ? ZoomPanView : View;
+
   const width = screenWidth - imagePadding * 2;
-  const height = target.meta
+  const height = target.meta?.original
     ? (target.meta.original.height / target.meta.original.width) * width
     : width;
 
