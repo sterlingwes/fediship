@@ -178,11 +178,38 @@ export const useNotifications = () => {
   const localFetching = useRef(false);
   const [notifs, setNotifs] = useState<NotificationGroups>(getNotifGroup());
 
+  const fetchNotifs = async () => {
+    markFetch();
+    localFetching.current = true;
+    setLoadingNotifications(true);
+
+    try {
+      const notifications = await api.getNotifications();
+      const previousReadTimes = getLastTypeReads();
+      const supported = filterNotifTypes(notifications, previousReadTimes);
+      if (supported && supported.length) {
+        const currentLastTime = supported[0].key;
+        saveLastNotifTime(currentLastTime);
+        const grouped = groupTypes(supported);
+        storeNotifGroup(grouped);
+        const count = countNotifs(grouped);
+        setNewNotifCount(count);
+        setTabRead(false);
+        setNotifs(grouped);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    setLoadingNotifications(false);
+    localFetching.current = false;
+  };
+
   useFocusEffect(
     useCallback(() => {
       const currentAppState = AppState.currentState;
 
-      const fetchNotifs = async () => {
+      const mountFetchNotifs = async () => {
         if (localFetching.current) {
           return;
         }
@@ -196,36 +223,15 @@ export const useNotifications = () => {
           return;
         }
 
-        markFetch();
-        localFetching.current = true;
-
-        try {
-          const notifications = await api.getNotifications();
-          const previousReadTimes = getLastTypeReads();
-          const supported = filterNotifTypes(notifications, previousReadTimes);
-          if (supported && supported.length) {
-            const currentLastTime = supported[0].key;
-            saveLastNotifTime(currentLastTime);
-            const grouped = groupTypes(supported);
-            storeNotifGroup(grouped);
-            const count = countNotifs(grouped);
-            setNewNotifCount(count);
-            setTabRead(false);
-            setNotifs(grouped);
-          }
-        } catch (e) {
-          console.error(e);
-        }
-
-        localFetching.current = false;
+        return fetchNotifs();
       };
 
-      setLoadingNotifications(true);
-      fetchNotifs().then(() => setLoadingNotifications(false));
+      mountFetchNotifs();
 
       // given how expensive re-evaluating this callback could be, take care
       // in ensuring these dependencies rarely change
-    }, [setNotifs, api, setTabRead, setNewNotifCount, setLoadingNotifications]),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setLoadingNotifications]),
   );
 
   const readTab = () => {
@@ -268,5 +274,6 @@ export const useNotifications = () => {
     readTab,
     readType,
     loadingNotifications,
+    fetchNotifs,
   };
 };

@@ -4,6 +4,7 @@ import {
   Alert,
   DevSettings,
   ListRenderItem,
+  RefreshControl,
   SectionList,
   StyleSheet,
   TouchableOpacity,
@@ -70,7 +71,8 @@ export const User = ({
 }: NativeStackScreenProps<RootStackParamList, 'Explore'>) => {
   const auth = useAuth();
   const [clearedTimelines, setClearedTimelines] = useState(false);
-  const {notifs, readTab, readType} = useNotifications();
+  const {notifs, readTab, readType, loadingNotifications, fetchNotifs} =
+    useNotifications();
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();
   const [loggingOut, setLoggingOut] = useState(false);
@@ -296,6 +298,14 @@ export const User = ({
       <SectionList
         sections={menuItems}
         renderItem={renderItem}
+        refreshControl={
+          <RefreshControl
+            tintColor={getColor('primary')}
+            colors={[getColor('primary')]}
+            refreshing={loadingNotifications}
+            onRefresh={fetchNotifs}
+          />
+        }
         renderSectionHeader={props => <ListHeader {...props} />}
         keyExtractor={(item, index) => `${item.label}-${index}`}
       />
