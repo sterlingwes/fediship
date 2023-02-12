@@ -2,7 +2,6 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
 import {View} from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
-import {globalAuthPersist} from '../api/user.state';
 import {SolidButton} from '../components/SolidButton';
 import {Type} from '../components/Type';
 import {oauthScopes} from '../constants';
