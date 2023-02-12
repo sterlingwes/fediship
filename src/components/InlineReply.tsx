@@ -28,16 +28,18 @@ import {RootStackParamList, Visibility} from '../types';
 
 export const InlineReply = ({
   inReplyToId,
+  replyToHandles,
   onSent,
 }: {
   inReplyToId: string;
+  replyToHandles: string[];
   onlyReply?: boolean;
   onSent?: () => void;
 }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const keyboardBanner = useKeyboardBanner();
-  const [textValue, setTextValue] = useState('');
+  const [textValue, setTextValue] = useState(replyToHandles.join(' ') + ' ');
   const [replying, setReplying] = useState(false);
   const styles = useThemeStyle(styleCreator);
   const {getColor} = useThemeGetters();

@@ -47,6 +47,13 @@ export interface TToken {
   created_at: number;
 }
 
+interface TMention {
+  id: string; // possibly stringified number
+  username: string;
+  acct: string; // webfinger user@host OR just user if local
+  url: string;
+}
+
 export interface TStatus {
   id: string;
   bookmarked: boolean;
@@ -62,6 +69,7 @@ export interface TStatus {
   url: string | null;
   uri: string;
   in_reply_to_id: string | null;
+  mentions?: TMention[];
   replies_count: number | undefined;
   poll: TPoll | null;
   sensitive: boolean;

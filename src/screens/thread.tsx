@@ -228,10 +228,18 @@ export const Thread = ({
       );
     }
 
+    const replyToHandles = [`@${item.account.acct}`].concat(
+      item.mentions?.map(({acct}) => `@${acct}`) ?? [],
+    );
+
     return (
       <>
         {statusComponent}
-        <InlineReply inReplyToId={item.id} onSent={fetchThread} />
+        <InlineReply
+          inReplyToId={item.id}
+          replyToHandles={replyToHandles}
+          onSent={fetchThread}
+        />
       </>
     );
   };
