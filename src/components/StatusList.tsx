@@ -11,6 +11,8 @@ import {
   InteractionManager,
   RefreshControl,
   View,
+  ViewToken,
+  ViewabilityConfig,
 } from 'react-native';
 import {useTimeline} from '../api';
 import {LoadMoreFooter} from './LoadMoreFooter';
@@ -45,6 +47,18 @@ interface StatusListProps extends ReturnType<typeof useTimeline> {
   showThreadFavouritedBy?: boolean;
   statusOverrides?: StatusOverrides;
 }
+
+const viewabilityConfig: ViewabilityConfig = {
+  minimumViewTime: 1000,
+  itemVisiblePercentThreshold: 100,
+};
+const onViewableItemsChanged: (info: {
+  viewableItems: Array<ViewToken>;
+  changed: Array<ViewToken>;
+}) => void = info => {
+  const {viewableItems} = info;
+  console.log({viewableItems});
+};
 
 export const StatusList = forwardRef(
   (
@@ -131,6 +145,8 @@ export const StatusList = forwardRef(
             data={statusIds}
             renderItem={renderItem}
             extraData={renderNonce}
+            viewabilityConfig={viewabilityConfig}
+            onViewableItemsChanged={onViewableItemsChanged}
             refreshControl={
               <RefreshControl
                 tintColor={getColor('primary')}
