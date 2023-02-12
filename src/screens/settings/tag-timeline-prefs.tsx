@@ -60,7 +60,7 @@ export const TagTimelinePrefs = ({
 
   const removeTimeline = useCallback(() => {
     softDeleteSavedTimeline(route.params.name);
-    navigation.navigate('Local', {timeline: 'home'});
+    navigation.navigate('Home', {timeline: 'home'});
   }, [softDeleteSavedTimeline, route, navigation]);
 
   useFocusEffect(

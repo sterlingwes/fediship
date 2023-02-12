@@ -156,7 +156,7 @@ export type RootStackParamList = {
   Tabs: undefined;
   Drawer: undefined;
   Timelines: undefined;
-  Local: TimelineParams;
+  Home: TimelineParams;
   Federated: TimelineParams;
   Explore: undefined;
   Compose: undefined | {inReplyToId: string; routeTime: number};

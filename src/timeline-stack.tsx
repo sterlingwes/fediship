@@ -24,7 +24,7 @@ const componentForTimelineType = (
 ) => {
   if (tl.type) {
     return (
-      props: NativeStackScreenProps<RootStackParamList, 'Local' | 'Federated'>,
+      props: NativeStackScreenProps<RootStackParamList, 'Home' | 'Federated'>,
     ) => (
       <Timeline
         ref={(nodeRef: ScreenRefHandle) =>

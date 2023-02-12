@@ -33,9 +33,13 @@ export const setPickedPeer = (host: string) =>
   storage.set(lastPickedPeer, host);
 
 const defaultTimelines = [
-  {name: 'Local', type: 'home'},
+  {name: 'Home', type: 'home'},
   {name: 'Federated', type: 'public'},
 ] as SavedTimeline[];
+
+const renames: Record<string, string> = {
+  Local: 'Home',
+};
 
 const getInitialTimelines = () => {
   const saved = readJson(
@@ -48,14 +52,18 @@ const getInitialTimelines = () => {
   }
 
   const uniqueNames = new Set<string>();
-  return saved.filter(tl => {
-    if (uniqueNames.has(tl.name)) {
-      return false;
-    }
+  return saved
+    .map(({name, ...rest}) =>
+      renames[name] ? {...rest, name: renames[name]} : {...rest, name},
+    )
+    .filter(tl => {
+      if (uniqueNames.has(tl.name)) {
+        return false;
+      }
 
-    uniqueNames.add(tl.name);
-    return true;
-  });
+      uniqueNames.add(tl.name);
+      return true;
+    });
 };
 
 export const SavedTimelineProvider = ({children}: {children: ReactNode}) => {

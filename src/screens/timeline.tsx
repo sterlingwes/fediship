@@ -6,7 +6,7 @@ import {RootStackParamList} from '../types';
 
 export const Timeline = forwardRef(
   (
-    {route}: NativeStackScreenProps<RootStackParamList, 'Local' | 'Federated'>,
+    {route}: NativeStackScreenProps<RootStackParamList, 'Home' | 'Federated'>,
     ref,
   ) => {
     const timeline = useTimeline(route.params.timeline);

@@ -26,7 +26,7 @@ export const SaveTimelineButton = ({
       if (!host || !tag) {
         return;
       }
-      const next = nextRoute ?? ('Local' as keyof RootStackParamList);
+      const next = nextRoute ?? ('Home' as keyof RootStackParamList);
       navigation.push('TagTimelinePrefs', {
         name: params.name,
         host,
