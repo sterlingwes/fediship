@@ -5,7 +5,7 @@ module.exports = {
     [
       'global-define',
       {
-        __TEST__: false,
+        __TEST__: process.env.NODE_ENV === 'test',
       },
     ],
   ],
