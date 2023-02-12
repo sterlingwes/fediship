@@ -1,15 +1,16 @@
 import {useMyMastodonInstance} from '../api/hooks';
+import type {TAccount} from '../types';
 import {useMount} from '../utils/hooks';
 import {getActiveUserProfile, setActiveUserProfile, useAuth} from './auth';
 
-let lastSavedProfile: number | undefined;
+let cachedProfile: TAccount | undefined;
 
 export const useUserProfile = () => {
   const auth = useAuth();
   const api = useMyMastodonInstance();
 
   useMount(() => {
-    if (lastSavedProfile || !auth.token || typeof auth.host !== 'string') {
+    if (cachedProfile || !auth.token || typeof auth.host !== 'string') {
       return;
     }
 
@@ -21,10 +22,13 @@ export const useUserProfile = () => {
         return;
       }
 
+      cachedProfile = user;
       setActiveUserProfile(user);
     };
 
-    fetchProfile();
+    if (!cachedProfile) {
+      fetchProfile();
+    }
   });
 
   return getActiveUserProfile();
