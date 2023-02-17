@@ -30,6 +30,8 @@ import {InfoIcon} from '../components/icons/InfoIcon';
 import {XCircleIcon} from '../components/icons/XCircleIcon';
 import {TrashIcon} from '../components/icons/TrashIcon';
 import {parseStatus} from './composer.utils';
+import {getAllUserProfiles} from '../storage/auth';
+import {UserIcon} from '../components/icons/UserIcon';
 
 interface Attachment {
   uri: string;
@@ -112,7 +114,7 @@ export const Composer = ({
   route,
 }: BottomTabScreenProps<RootStackParamList, 'Compose'>) => {
   const {inReplyToId, routeTime} = route.params ?? {};
-  const api = useMyMastodonInstance();
+  const {api} = useMyMastodonInstance();
   const keyboardBanner = useKeyboardBanner();
   const [textValue, setTextValue] = useState('');
   const [sendError, setSendError] = useState('');
@@ -132,6 +134,17 @@ export const Composer = ({
     [string | undefined, number | undefined]
   >([inReplyToId, routeTime]);
   const [vizModalShown, setVizModalShown] = useState(false);
+  const [senderModalShown, setSendModalShown] = useState(false);
+
+  const senderOptions = useMemo(() => {
+    const profiles = getAllUserProfiles();
+    return [
+      profiles.primary.acct,
+      ...profiles.secondary.map(({acct}) => acct),
+    ].map(acct => ({id: acct, label: acct}));
+  }, []);
+
+  const [senderAcct, setSenderAcct] = useState(senderOptions[0].id);
 
   useFocusEffect(
     useCallback(() => {
@@ -371,9 +384,32 @@ export const Composer = ({
                 {startCase(visibility)}
               </SolidButton>
             </Box>
+            {senderOptions.length > 1 && (
+              <Box mr={10}>
+                <SolidButton
+                  onPress={() => setSendModalShown(true)}
+                  Icon={UserIcon}>
+                  {senderAcct}
+                </SolidButton>
+              </Box>
+            )}
           </Box>
         </Box>
       </ScrollView>
+      <BottomSheet
+        visible={senderModalShown}
+        onClose={() => setSendModalShown(false)}>
+        <Box p={20}>
+          <RadioOptions
+            options={senderOptions}
+            selection={senderAcct}
+            onPress={id => {
+              setSenderAcct(id);
+              setSendModalShown(false);
+            }}
+          />
+        </Box>
+      </BottomSheet>
       <BottomSheet
         visible={vizModalShown}
         onClose={() => setVizModalShown(false)}>
