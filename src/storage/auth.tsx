@@ -54,8 +54,8 @@ export const getActiveUserProfile = () =>
   globalAuthUsers[globalAuth.primaryAccountId?.peek() as string].account.get();
 
 export const getAllUserProfiles = () => {
-  const primaryId = globalAuth.primaryAccountId?.peek();
-  const userLookup = globalAuthUsers.peek();
+  const primaryId = globalAuth.primaryAccountId?.get();
+  const userLookup = globalAuthUsers.get();
   return {
     primary: userLookup[primaryId as string].account,
     secondary: Object.keys(userLookup)
@@ -100,7 +100,10 @@ const rehydrateAuth = (api: MastodonApiClient) => {
   const token = userAuth?.access_token;
   const actorId = userProfile?.id;
 
+  console.log('setting token', token, userIdent);
+
   if (host && token) {
+    console.log({api});
     api.host = host;
     api.token = token;
     api.actorId = actorId;
@@ -115,7 +118,7 @@ const rehydrateAuth = (api: MastodonApiClient) => {
 };
 
 export const AuthProvider = ({children}: {children: ReactNode}) => {
-  const api = useMyMastodonInstance();
+  const {api} = useMyMastodonInstance();
   const [auth, setAuthState] = useState<{
     userIdent?: string;
     token?: string;
