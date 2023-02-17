@@ -1,10 +1,8 @@
 import React from 'react';
 import {ColorValue} from 'react-native';
-import {Svg, Path, Circle} from 'react-native-svg';
+import {Svg, Path, Circle, SvgProps} from 'react-native-svg';
 
-interface UserIconProps {
-  width?: string;
-  height?: string;
+interface UserIconProps extends SvgProps {
   color?: ColorValue;
 }
 
