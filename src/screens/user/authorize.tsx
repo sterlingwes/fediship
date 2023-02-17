@@ -89,8 +89,9 @@ export const Authorize = ({
 
       api.actorId = user.id;
       if (secondary) {
-        globalAuthUsers[user.id].account.set(user);
-        globalAuth.authLookup[user.id].set(token);
+        const fqn = `${user.acct}@${host}`;
+        globalAuthUsers[fqn].account.set(user);
+        globalAuth.authLookup[fqn].set(token);
         navigation.navigate('User');
       } else {
         setActiveUserProfile(user);
