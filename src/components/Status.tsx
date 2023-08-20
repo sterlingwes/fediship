@@ -254,12 +254,10 @@ export const Status = (
 
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
+      {props.focused && <Box style={styles.focusBarHighlight} />}
       <Box
         c
-        style={[
-          props.lastStatus !== false && styles.statusThreadTerminated,
-          props.focused && styles.statusFocused,
-        ]}>
+        style={[props.lastStatus !== false && styles.statusThreadTerminated]}>
         <View style={[styles.statusContainer]}>
           <View style={styles.statusLeftColumn}>
             <ReplyLine
@@ -422,9 +420,6 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     paddingHorizontal: 20,
     paddingLeft: 15,
   },
-  statusFocused: {
-    backgroundColor: getColor('baseHighlight'),
-  },
   statusThreadTerminated: {
     borderBottomColor: getColor('baseAccent'),
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -455,6 +450,14 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   avatarFocused: {
     borderWidth: 2,
     borderColor: getColor('secondary'),
+  },
+  focusBarHighlight: {
+    width: 4,
+    backgroundColor: getColor('baseAccent'),
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
   },
   statusMessage: {
     flex: 1,
