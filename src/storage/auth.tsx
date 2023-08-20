@@ -118,7 +118,7 @@ const rehydrateAuth = (api: MastodonApiClient) => {
 };
 
 export const AuthProvider = ({children}: {children: ReactNode}) => {
-  const {api} = useMyMastodonInstance();
+  const api = useMyMastodonInstance();
   const [auth, setAuthState] = useState<{
     userIdent?: string;
     token?: string;
