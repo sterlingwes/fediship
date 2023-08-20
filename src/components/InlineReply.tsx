@@ -25,6 +25,7 @@ import {ExternalLink} from './icons/ExternalLinkIcon';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList, Visibility} from '../types';
+import {avatarSize} from './status.constants';
 
 export const InlineReply = ({
   inReplyToId,
@@ -170,8 +171,8 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     marginBottom: 20,
   },
   userAvatar: {
-    width: 60,
-    height: 60,
+    width: avatarSize,
+    height: avatarSize,
     resizeMode: 'cover',
     borderRadius: 5,
     backgroundColor: getColor('baseAccent'),

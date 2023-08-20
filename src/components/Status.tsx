@@ -25,6 +25,7 @@ import {StatusActionBar} from './StatusActionBar';
 import {StatusFavouritedByList} from './StatusFavouritedByList';
 import {Type} from './Type';
 import {ViewMoreButton} from './ViewMoreButton';
+import {avatarSize} from './status.constants';
 
 const CollapsedStatus = (props: TStatus & {collapsed: boolean}) => {
   const navigation =
@@ -433,8 +434,8 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     textAlign: 'right',
   },
   avatar: {
-    width: 60,
-    height: 60,
+    width: avatarSize,
+    height: avatarSize,
     marginRight: 15,
     borderRadius: 5,
     backgroundColor: getColor('baseAccent'),
