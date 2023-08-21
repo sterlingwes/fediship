@@ -174,16 +174,22 @@ export const StatusList = forwardRef(
             onScroll={event => {
               scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
             }}
-            renderRightActions={({item}) => (
+            renderRightActions={({item}, {close}) => (
               <SwipeableQuickActions>
                 <SwipeableQuickActionButton
-                  onPress={() => onPressLikeStatus(item)}
+                  onPress={() => {
+                    onPressLikeStatus(item);
+                    close();
+                  }}
                   text="+"
                   style={styles.swipeBtn}
                   textStyle={styles.swipeBtnText}
                 />
                 <SwipeableQuickActionButton
-                  onPress={() => onPressDislikeStatus(item)}
+                  onPress={() => {
+                    onPressDislikeStatus(item);
+                    close();
+                  }}
                   text="-"
                   style={styles.swipeBtn}
                   textStyle={styles.swipeBtnText}
