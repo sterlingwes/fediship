@@ -16,12 +16,14 @@ export const ReactiveStatus = ({
   statusOverrides,
   threadParamOverrides,
   fromProfileAcct,
+  onPressFavourite,
 }: {
   host: string | undefined;
   statusId: string;
   statusOverrides?: StatusOverrides;
   threadParamOverrides?: ThreadParamOverrides;
   fromProfileAcct?: string | undefined;
+  onPressFavourite?: () => void;
 }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -49,6 +51,7 @@ export const ReactiveStatus = ({
           ...threadParamOverrides,
         });
       }}
+      onPressFavourite={onPressFavourite}
       onPressAvatar={account => {
         const acct = getUserFQNFromAccount(account);
         if (acct && acct === fromProfileAcct) {

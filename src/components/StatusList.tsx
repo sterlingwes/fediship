@@ -34,6 +34,13 @@ import {saveStatusDislike, saveStatusLike} from '../api/like-count.state';
 type StatusOverrides = Partial<ComponentProps<typeof Status>>;
 type ThreadParamOverrides = Partial<RootStackParamList['Thread']>;
 
+const onPressLikeStatus = (statusUri: string) => {
+  const status = globalStatuses[statusUri].peek();
+  if (status) {
+    saveStatusLike(status);
+  }
+};
+
 const createTimelineRenderer =
   (
     host: string | undefined,
@@ -43,7 +50,15 @@ const createTimelineRenderer =
   ({item: statusId}) =>
     (
       <ReactiveStatus
-        {...{statusId, host, statusOverrides, threadParamOverrides}}
+        {...{
+          statusId,
+          host,
+          statusOverrides,
+          threadParamOverrides,
+          onPressFavourite: () => {
+            onPressLikeStatus(statusId);
+          },
+        }}
       />
     );
 
@@ -131,13 +146,6 @@ export const StatusList = forwardRef(
     );
 
     const renderNonce = useSelector(() => metaRef.renderNonce.get());
-
-    const onPressLikeStatus = (statusUri: string) => {
-      const status = globalStatuses[statusUri].peek();
-      if (status) {
-        saveStatusLike(status);
-      }
-    };
 
     const onPressDislikeStatus = (statusUri: string) => {
       const status = globalStatuses[statusUri].peek();
