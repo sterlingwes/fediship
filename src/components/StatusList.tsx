@@ -10,6 +10,7 @@ import {
   InteractionManager,
   RefreshControl,
   View,
+  FlatList,
 } from 'react-native';
 import {
   SwipeableFlatList,
@@ -67,13 +68,13 @@ export const StatusList = forwardRef(
   ) => {
     const auth = useAuth();
     const scrollOffsetRef = useRef(0);
-    // const scrollRef = useRef<typeof SwipeableFlatList | null>();
+    const scrollRef = useRef<FlatList<string>>(null);
     const styles = useThemeStyle(styleCreator);
     const {getColor} = useThemeGetters();
 
     useImperativeHandle(ref, () => ({
       scrollToTop: () => {
-        // scrollRef.current?.scrollToOffset({offset: 0})
+        scrollRef.current?.scrollToOffset({offset: 0});
       },
       getIsAtTop: () => scrollOffsetRef.current === 0,
     }));
@@ -117,10 +118,10 @@ export const StatusList = forwardRef(
           fetchTimeline().then(() =>
             InteractionManager.runAfterInteractions(() => {
               setTimeout(() => {
-                // scrollRef.current?.scrollToOffset({
-                //   animated: true,
-                //   offset: scrollOffsetRef.current + 250,
-                // });
+                scrollRef.current?.scrollToOffset({
+                  animated: true,
+                  offset: scrollOffsetRef.current + 250,
+                });
               }, 10);
             }),
           )
@@ -149,8 +150,8 @@ export const StatusList = forwardRef(
       <ErrorBoundary>
         <View style={styles.screen}>
           <SwipeableFlatList
-            // ref={nodeRef => (scrollRef.current = nodeRef)}
             data={statusIds}
+            flatListRef={scrollRef}
             renderItem={renderItem}
             extraData={renderNonce}
             refreshControl={

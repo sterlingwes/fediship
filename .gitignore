@@ -69,3 +69,4 @@ android/app/release/
 android/uploadkeystore.jks
 
 .eslintcache
+.yalc
