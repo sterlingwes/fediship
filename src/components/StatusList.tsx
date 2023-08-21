@@ -6,12 +6,16 @@ import React, {
   useRef,
 } from 'react';
 import {
-  FlatList,
   ListRenderItem,
   InteractionManager,
   RefreshControl,
   View,
 } from 'react-native';
+import {
+  SwipeableFlatList,
+  SwipeableQuickActionButton,
+  SwipeableQuickActions,
+} from 'react-native-swipe-list';
 import {useTimeline} from '../api';
 import {LoadMoreFooter} from './LoadMoreFooter';
 import {Status} from './Status';
@@ -23,6 +27,8 @@ import {EmptyList} from './EmptyList';
 import {ErrorBoundary} from './ErrorBoundary';
 import {ReactiveStatus} from './ReactiveStatus';
 import {useComputed, useSelector} from '@legendapp/state/react';
+import {globalStatuses} from '../api/status.state';
+import {saveStatusDislike, saveStatusLike} from '../api/like-count.state';
 
 type StatusOverrides = Partial<ComponentProps<typeof Status>>;
 type ThreadParamOverrides = Partial<RootStackParamList['Thread']>;
@@ -61,12 +67,14 @@ export const StatusList = forwardRef(
   ) => {
     const auth = useAuth();
     const scrollOffsetRef = useRef(0);
-    const scrollRef = useRef<FlatList | null>();
+    // const scrollRef = useRef<typeof SwipeableFlatList | null>();
     const styles = useThemeStyle(styleCreator);
     const {getColor} = useThemeGetters();
 
     useImperativeHandle(ref, () => ({
-      scrollToTop: () => scrollRef.current?.scrollToOffset({offset: 0}),
+      scrollToTop: () => {
+        // scrollRef.current?.scrollToOffset({offset: 0})
+      },
       getIsAtTop: () => scrollOffsetRef.current === 0,
     }));
 
@@ -109,10 +117,10 @@ export const StatusList = forwardRef(
           fetchTimeline().then(() =>
             InteractionManager.runAfterInteractions(() => {
               setTimeout(() => {
-                scrollRef.current?.scrollToOffset({
-                  animated: true,
-                  offset: scrollOffsetRef.current + 250,
-                });
+                // scrollRef.current?.scrollToOffset({
+                //   animated: true,
+                //   offset: scrollOffsetRef.current + 250,
+                // });
               }, 10);
             }),
           )
@@ -123,11 +131,25 @@ export const StatusList = forwardRef(
 
     const renderNonce = useSelector(() => metaRef.renderNonce.get());
 
+    const onPressLikeStatus = (statusUri: string) => {
+      const status = globalStatuses[statusUri].peek();
+      if (status) {
+        saveStatusLike(status);
+      }
+    };
+
+    const onPressDislikeStatus = (statusUri: string) => {
+      const status = globalStatuses[statusUri].peek();
+      if (status) {
+        saveStatusDislike(status);
+      }
+    };
+
     return (
       <ErrorBoundary>
         <View style={styles.screen}>
-          <FlatList
-            ref={nodeRef => (scrollRef.current = nodeRef)}
+          <SwipeableFlatList
+            // ref={nodeRef => (scrollRef.current = nodeRef)}
             data={statusIds}
             renderItem={renderItem}
             extraData={renderNonce}
@@ -143,6 +165,22 @@ export const StatusList = forwardRef(
             onScroll={event => {
               scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
             }}
+            renderRightActions={({item}) => (
+              <SwipeableQuickActions>
+                <SwipeableQuickActionButton
+                  onPress={() => onPressLikeStatus(item)}
+                  text="+"
+                  style={styles.swipeBtn}
+                  textStyle={styles.swipeBtnText}
+                />
+                <SwipeableQuickActionButton
+                  onPress={() => onPressDislikeStatus(item)}
+                  text="-"
+                  style={styles.swipeBtn}
+                  textStyle={styles.swipeBtnText}
+                />
+              </SwipeableQuickActions>
+            )}
             ListEmptyComponent={() => <EmptyList loading={loading} />}
             ListFooterComponent={hasStatuses && hasMore ? LoadFooter : null}
           />
@@ -176,5 +214,19 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     fontWeight: 'bold',
     marginTop: 5,
     textAlign: 'right',
+  },
+  swipeBtn: {
+    flex: 1,
+    width: 100,
+    justifyContent: 'center',
+    alignContent: 'center',
+    backgroundColor: getColor('baseHighlight'),
+    borderLeftColor: getColor('baseAccent'),
+    borderLeftWidth: 1,
+  },
+  swipeBtnText: {
+    fontSize: 25,
+    textAlign: 'center',
+    color: getColor('baseTextColor'),
   },
 });

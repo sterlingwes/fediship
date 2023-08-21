@@ -6629,6 +6629,11 @@ react-native-svg@^12.3.0:
     css-select "^4.2.1"
     css-tree "^1.0.0-alpha.39"
 
+react-native-swipe-list@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-swipe-list/-/react-native-swipe-list-0.0.2.tgz#fc0c9c5317902d669b9bf768fc4fb1edb1557f3f"
+  integrity sha512-NMa/924vkikVnmE9TgXZLiXqfQaBSwM5vpwOZ+wp7eFGdZhYFuW9rblaesx2y6sbDbJGjwlPPlSNhzBWPUU61A==
+
 react-native-toast-message@^2.1.5:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.1.5.tgz#550acb9c6c0f1ee49c6b57b65a56d34e297eb723"

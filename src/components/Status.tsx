@@ -394,6 +394,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   container: {
     flex: 1,
     minHeight: 100,
+    backgroundColor: getColor('base'),
   },
   textColor: {
     color: getColor('baseTextColor'),
