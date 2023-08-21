@@ -254,7 +254,11 @@ export const Status = (
 
   return (
     <Pressable onPress={props.onPress} style={styles.container}>
-      {props.focused && <Box style={styles.focusBarHighlight} />}
+      {props.focused && (
+        <Box style={styles.focusBarHighlight}>
+          <Box style={styles.focusBarAvatarBox} />
+        </Box>
+      )}
       <Box
         c
         style={[props.lastStatus !== false && styles.statusThreadTerminated]}>
@@ -453,12 +457,21 @@ const styleCreator: StyleCreator = ({getColor}) => ({
     borderColor: getColor('secondary'),
   },
   focusBarHighlight: {
-    width: 4,
+    width: 30,
     backgroundColor: getColor('baseAccent'),
     position: 'absolute',
     left: 0,
     top: 0,
     bottom: 0,
+  },
+  focusBarAvatarBox: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    borderRadius: 10,
+    width: avatarSize + 10,
+    height: avatarSize + 10,
+    backgroundColor: getColor('base'),
   },
   statusMessage: {
     flex: 1,
