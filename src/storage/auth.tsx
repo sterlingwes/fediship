@@ -103,7 +103,6 @@ const rehydrateAuth = (api: MastodonApiClient) => {
   console.log('setting token', token, userIdent);
 
   if (host && token) {
-    console.log({api});
     api.host = host;
     api.token = token;
     api.actorId = actorId;
