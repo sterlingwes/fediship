@@ -95,13 +95,13 @@ export const TimelineStack = ({
 
         const index = tlRoute.state?.index;
         if (typeof index !== 'number') {
-          // assume we're on local
-          const isTop = screenRefs.current?.Local?.getIsAtTop();
+          // assume we're on Home
+          const isTop = screenRefs.current?.Home?.getIsAtTop();
           if (isTop) {
             navigation.dispatch(DrawerActions.toggleDrawer());
             return;
           }
-          screenRefs.current?.Local?.scrollToTop();
+          screenRefs.current?.Home?.scrollToTop();
           return;
         }
         const childTab = tlRoute.state?.routeNames?.[index];

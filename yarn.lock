@@ -6631,7 +6631,7 @@ react-native-svg@^12.3.0:
 
 "react-native-swipe-list@https://github.com/sterlingwes/react-native-swipe-list":
   version "0.0.2"
-  resolved "https://github.com/sterlingwes/react-native-swipe-list#5d769116695ed990a25847d36bd198077d2bc5da"
+  resolved "https://github.com/sterlingwes/react-native-swipe-list#2b1f7de7faa0febabba0afde88be287aa173cd6a"
 
 react-native-toast-message@^2.1.5:
   version "2.1.5"
