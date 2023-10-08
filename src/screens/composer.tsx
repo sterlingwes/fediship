@@ -114,7 +114,7 @@ export const Composer = ({
   route,
 }: BottomTabScreenProps<RootStackParamList, 'Compose'>) => {
   const {inReplyToId, routeTime} = route.params ?? {};
-  const {api} = useMyMastodonInstance();
+  const api = useMyMastodonInstance();
   const keyboardBanner = useKeyboardBanner();
   const [textValue, setTextValue] = useState('');
   const [sendError, setSendError] = useState('');
