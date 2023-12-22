@@ -38,6 +38,7 @@ import {About} from './screens/about/about';
 import {TabbedHome} from './screens/tabbed-home';
 import {fontStyleFactory} from './components/Type';
 import {setupStatePersistence} from './initializer';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 LogBox.ignoreLogs([
   // TODO: need to patch rn video
@@ -163,21 +164,23 @@ const NavigationRoot = () => {
 
 export const App = () => {
   return (
-    <ErrorBoundary>
-      <ThemeProvider>
-        <NoNetworkCheck>
-          <AuthProvider>
-            <NotificationProvider>
-              <SavedTimelineProvider>
-                <KeyboardBannerProvider>
-                  <NavigationRoot />
-                </KeyboardBannerProvider>
-              </SavedTimelineProvider>
-            </NotificationProvider>
-          </AuthProvider>
-        </NoNetworkCheck>
-      </ThemeProvider>
-      <Toast />
-    </ErrorBoundary>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <ErrorBoundary>
+        <ThemeProvider>
+          <NoNetworkCheck>
+            <AuthProvider>
+              <NotificationProvider>
+                <SavedTimelineProvider>
+                  <KeyboardBannerProvider>
+                    <NavigationRoot />
+                  </KeyboardBannerProvider>
+                </SavedTimelineProvider>
+              </NotificationProvider>
+            </AuthProvider>
+          </NoNetworkCheck>
+        </ThemeProvider>
+        <Toast />
+      </ErrorBoundary>
+    </GestureHandlerRootView>
   );
 };

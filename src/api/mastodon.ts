@@ -458,6 +458,7 @@ export class MastodonApiClient extends HTTPClient {
     );
 
     if (!response.ok) {
+      console.error('createApplication', response.status);
       return;
     }
 

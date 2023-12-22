@@ -1,3 +1,11 @@
+const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+
+const defaultConfig = getDefaultConfig(__dirname);
+
+const {
+  resolver: {sourceExts, assetExts},
+} = getDefaultConfig(__dirname);
+
 const storiesResolverConfig = require('./metro-stories.config');
 
 const env = process.env.APP_ENV || 'default';
@@ -17,19 +25,22 @@ const generateCacheKey = () => {
 const cacheVersion = generateCacheKey();
 console.log(`using cache key: ${cacheVersion}`);
 
-module.exports = (async () => {
-  return {
-    cacheVersion,
-    transformer: {
-      getTransformOptions: async () => ({
-        transform: {
-          experimentalImportSupport: false,
-          inlineRequires: true,
-        },
-      }),
-    },
-    resolver: {
-      ...storiesResolverConfig,
-    },
-  };
-})();
+const config = {
+  cacheVersion,
+  transformer: {
+    getTransformOptions: async () => ({
+      transform: {
+        experimentalImportSupport: false,
+        inlineRequires: true,
+      },
+    }),
+    babelTransformerPath: require.resolve('react-native-svg-transformer'),
+  },
+  resolver: {
+    assetExts: assetExts.filter(ext => ext !== 'svg'),
+    ...storiesResolverConfig,
+    sourceExts: [...sourceExts, 'svg'],
+  },
+};
+
+module.exports = mergeConfig(defaultConfig, config);

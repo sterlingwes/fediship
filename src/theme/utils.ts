@@ -14,6 +14,10 @@ export const useThemeGetters = () => {
   }, [theme.palette, theme.activeScheme]);
 };
 
+// RN 72 styles.create returns a strict object type
+// need to do a bunch of type work to conform to chg
+type LooseStyles = any;
+
 export const useThemeStyle = (styleCreator: StyleCreator) => {
   const themeApi = useThemeGetters();
 
@@ -21,7 +25,7 @@ export const useThemeStyle = (styleCreator: StyleCreator) => {
     return StyleSheet.create(styleCreator(themeApi));
   }, [styleCreator, themeApi]);
 
-  return styles;
+  return styles as LooseStyles;
 };
 
 export const useTheme = () => {
