@@ -103,6 +103,12 @@ export const User = ({
               navigation.push('FollowerList', {source: 'mine'});
             },
           },
+          {
+            label: 'Upvotes / Downvotes',
+            onPress: () => {
+              navigation.push('VoteList');
+            },
+          },
         ],
       },
       {

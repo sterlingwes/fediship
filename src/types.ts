@@ -215,6 +215,7 @@ export type RootStackParamList = {
     }>;
   };
   FollowerList: {source: 'mine' | 'theirs'};
+  VoteList: undefined;
   AppearanceSettings: undefined;
 };
 

@@ -9,6 +9,8 @@ interface LikeCountState {
   boosterDislikeCountLookup: Record<string, number>;
 }
 
+export type LikeCountStateKey = keyof LikeCountState;
+
 const initialCountState = {
   authorLikeCountLookup: {},
   authorDislikeCountLookup: {},
@@ -31,7 +33,7 @@ const loadLikeCountState = () => {
   );
 };
 
-const likeCountState: LikeCountState = loadLikeCountState();
+export const likeCountState: LikeCountState = loadLikeCountState();
 
 export const saveStatusLike = (status: TStatus) => {
   if (status.reblog) {

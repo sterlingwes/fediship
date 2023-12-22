@@ -10,6 +10,7 @@ import {Polls} from './timelines/polls';
 import {Profile} from './profile';
 import {fontStyleFactory} from '../components/Type';
 import {useThemeStyle} from '../theme/utils';
+import {VoteList} from './user/votelist';
 
 const UStack = createNativeStackNavigator();
 
@@ -30,6 +31,11 @@ export const UserStack = () => {
         name="FollowerList"
         component={FollowerList}
         options={{headerTitle: ''}}
+      />
+      <UStack.Screen
+        name="VoteList"
+        component={VoteList}
+        options={{headerTitle: 'Upvotes / Downvotes'}}
       />
       <UStack.Screen
         name="FavouritesTimeline"
