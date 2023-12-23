@@ -18,7 +18,7 @@ import {RootStackParamList} from '../../types';
 import {useMount} from '../../utils/hooks';
 import {flex} from '../../utils/styles';
 
-const authCodeParam = 'oauth/authorize/native?code=';
+const authCodeParam = '?code=';
 
 export const Authorize = ({
   route,
