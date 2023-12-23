@@ -144,7 +144,7 @@ export const Thread = ({
 
   const focusedThread = useMemo(() => {
     const targetPosition = statuses.findIndex(
-      status => (status.uri ?? status.url) === statusUrl,
+      status => (status.uri || status.url) === statusUrl,
     );
 
     if (targetPosition > 2 && initialLoad) {

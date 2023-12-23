@@ -23,7 +23,7 @@ export const transformPerson = (
   profileHref: string,
   person: APPerson,
 ): TAccount => {
-  const urlParts = (person.url ?? profileHref).split('/');
+  const urlParts = (person.url || profileHref).split('/');
   let handle = urlParts.pop();
   const host = urlParts[2]; // after protocol and empty?
 

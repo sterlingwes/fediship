@@ -127,7 +127,7 @@ export const MediaStatus = (
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const mainStatus = props.reblog ? props.reblog : props;
-  const statusUrl = mainStatus.url ?? mainStatus.uri;
+  const statusUrl = mainStatus.url || mainStatus.uri;
   const lastId = useRef(mainStatus.uri);
   const {favourited, bookmarked, reblogged} = globalStatuses[statusUrl];
   const styles = useThemeStyle(styleCreator);
@@ -268,7 +268,7 @@ export const MediaStatus = (
                   favouriteCount: props.favourites_count,
                   replyCount: props.replies_count,
                   loadingReblog,
-                  shareUrl: mainStatus.url ?? mainStatus.uri,
+                  shareUrl: mainStatus.url || mainStatus.uri,
                   bookmarked,
                   loadingBookmark,
                   onBookmark,
@@ -293,7 +293,7 @@ export const MediaStatus = (
               favouriteCount: props.favourites_count,
               replyCount: props.replies_count,
               loadingReblog,
-              shareUrl: mainStatus.url ?? mainStatus.uri,
+              shareUrl: mainStatus.url || mainStatus.uri,
               bookmarked,
               loadingBookmark,
               onBookmark,

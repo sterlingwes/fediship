@@ -148,7 +148,7 @@ export const useNotificationsForTypes = (types: Array<NotificationType>) => {
             ...status,
             sourceHost: auth.host ?? '',
           };
-          const statusId = status.url ?? status.uri;
+          const statusId = status.url || status.uri;
           statusIds.add(statusId);
           globalStatuses[statusId].set(statusMapped);
         });

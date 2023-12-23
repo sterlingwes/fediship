@@ -154,7 +154,7 @@ export const useAPProfile = (
               ...resolvedStatus,
               emojis: emojis.current,
             };
-            const statusId = newStatus.url ?? newStatus.uri;
+            const statusId = newStatus.url || newStatus.uri;
             globalStatuses[statusId].set(newStatus);
             return statusList.concat(statusId);
           }, Promise.resolve([]) as Promise<string[]>);
@@ -225,7 +225,9 @@ export const useAPProfile = (
         }
 
         let remoteResult:
-          | Awaited<ReturnType<typeof remoteActivityPub['getProfileByHandle']>>
+          | Awaited<
+              ReturnType<(typeof remoteActivityPub)['getProfileByHandle']>
+            >
           | undefined;
 
         const remoteActivityPub = getRemoteAPInstance(idParts.host);
@@ -287,7 +289,7 @@ export const useAPProfile = (
         const timelineStatusIds = [] as string[];
         if (timeline) {
           timeline.forEach(status => {
-            const statusId = status.url ?? status.uri;
+            const statusId = status.url || status.uri;
             timelineStatusIds.push(statusId);
             globalStatuses[statusId].set(status);
           });

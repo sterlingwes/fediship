@@ -156,7 +156,7 @@ export const Status = (
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const mainStatus = props.reblog ? props.reblog : props;
-  const statusUrl = mainStatus.url ?? mainStatus.uri;
+  const statusUrl = mainStatus.url || mainStatus.uri;
   const lastId = useRef(mainStatus.uri);
   const faved = globalStatuses[statusUrl].favourited;
   const reblogged = globalStatuses[statusUrl].reblogged;

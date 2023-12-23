@@ -139,7 +139,7 @@ export const useTimeline = (timeline: 'home' | 'public') => {
         }
 
         result.list.forEach(status => {
-          const statusId = status.url ?? status.uri;
+          const statusId = status.url || status.uri;
           globalStatuses[statusId].set(status);
           timelineState.push(statusId);
         });
@@ -204,8 +204,8 @@ export const useTagTimeline = (host: string, tag: string) => {
         }
 
         result.list.forEach(status => {
-          globalStatuses[status.url ?? status.uri].set(status);
-          timelines[timelineId].push(status.url ?? status.uri);
+          globalStatuses[status.url || status.uri].set(status);
+          timelines[timelineId].push(status.url || status.uri);
         });
       });
 
@@ -263,7 +263,7 @@ export const useFavourites = (type: 'favourites' | 'bookmarks') => {
         }
 
         result.list.forEach(status => {
-          const statusId = status.url ?? status.uri;
+          const statusId = status.url || status.uri;
           globalStatuses[statusId].set(status);
           timelines[type].push(statusId);
         });
