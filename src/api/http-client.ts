@@ -9,13 +9,27 @@ export interface ClientOptions {
   fetchOverride?: ReturnType<typeof createFetchProxy>;
 }
 
+let clientCount = 0;
+
 export class HTTPClient {
   private options: ClientOptions;
   private fetch: GlobalFetch['fetch'];
+  private allowAuthDefault = false;
+  private clientIndex = 0;
 
   constructor(options: ClientOptions) {
     this.options = options;
     this.fetch = options.fetchOverride ?? createFetchProxy();
+
+    if (!options?.host) {
+      clientCount++;
+      this.clientIndex = clientCount;
+
+      // if no host, assume the client is for our own server and default to
+      // allowing the token with any request regardless of specifically
+      // requesting auth (gotosocial workaround)
+      this.allowAuthDefault = true;
+    }
   }
 
   get host() {
@@ -23,6 +37,7 @@ export class HTTPClient {
   }
 
   set token(token: string) {
+    console.log('set token for client index', this.clientIndex);
     this.options.token = token;
   }
 
@@ -57,6 +72,17 @@ export class HTTPClient {
   }
 
   async get(info: RequestInfo, extra?: RequestInit) {
+    console.log('get', this.host, info, this.clientIndex);
+    if (this.options.token && this.allowAuthDefault) {
+      return this.req(info, {
+        ...extra,
+        method: 'GET',
+        headers: {
+          ...extra?.headers,
+          Authorization: `Bearer ${this.options.token}`,
+        },
+      });
+    }
     return this.req(info, {...extra, method: 'GET'});
   }
 

@@ -93,7 +93,9 @@ const rehydrateAuth = (api: MastodonApiClient) => {
     return {};
   }
 
-  const userIdent = `${activeUser}@${activeApp}`;
+  const userIdent = activeUser.includes(activeApp)
+    ? activeUser
+    : `${activeUser}@${activeApp}`;
   const host = activeApp;
   const userAuth = getUserAuth(activeUser);
   const userProfile = getActiveUserProfile();

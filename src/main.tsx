@@ -39,6 +39,7 @@ import {TabbedHome} from './screens/tabbed-home';
 import {fontStyleFactory} from './components/Type';
 import {setupStatePersistence} from './initializer';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {MastodonProvider} from './api/mastodon-context';
 
 LogBox.ignoreLogs([
   // TODO: need to patch rn video
@@ -168,15 +169,17 @@ export const App = () => {
       <ErrorBoundary>
         <ThemeProvider>
           <NoNetworkCheck>
-            <AuthProvider>
-              <NotificationProvider>
-                <SavedTimelineProvider>
-                  <KeyboardBannerProvider>
-                    <NavigationRoot />
-                  </KeyboardBannerProvider>
-                </SavedTimelineProvider>
-              </NotificationProvider>
-            </AuthProvider>
+            <MastodonProvider>
+              <AuthProvider>
+                <NotificationProvider>
+                  <SavedTimelineProvider>
+                    <KeyboardBannerProvider>
+                      <NavigationRoot />
+                    </KeyboardBannerProvider>
+                  </SavedTimelineProvider>
+                </NotificationProvider>
+              </AuthProvider>
+            </MastodonProvider>
           </NoNetworkCheck>
         </ThemeProvider>
         <Toast />
