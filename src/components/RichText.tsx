@@ -111,7 +111,7 @@ export const RichText = ({
         props: {
           scale: 'S',
           onPress: onLinkPress,
-          color: getColor('primary'),
+          color: getColor('contrastAccent'),
           medium: true,
           hitSlop: hitSlopV(20),
         } as TypeProps,

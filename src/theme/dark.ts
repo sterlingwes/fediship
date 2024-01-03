@@ -3,11 +3,11 @@ import {Theme as NavTheme} from '@react-navigation/native';
 import {TThemeContext} from './types';
 
 export const darkPalette: TThemeContext['palette'] = Object.freeze({
-  base: '#282c37',
-  baseHighlight: '#373D4C',
-  baseAccent: '#59627B',
-  contrastAccent: '#ffecd1',
-  primary: '#9baec8',
+  base: '#101010',
+  baseHighlight: '#191919',
+  baseAccent: '#616161',
+  contrastAccent: '#2b90d9',
+  primary: '#FFF',
   secondary: '#d9e1e8',
   blueAccent: '#2b90d9',
   goldAccent: '#ca8f04',
@@ -24,11 +24,11 @@ export const darkPalette: TThemeContext['palette'] = Object.freeze({
 export const darkNavigationTheme: NavTheme = Object.freeze({
   dark: true,
   colors: {
-    primary: '#9baec8',
-    background: '#282c37',
-    card: '#282c37',
+    primary: '#FFF',
+    background: '#101010',
+    card: '#101010',
     text: '#E6EEF6',
-    border: '#59627B',
+    border: '#191919',
     notification: '#2b90d9',
   },
 });

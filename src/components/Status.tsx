@@ -104,7 +104,7 @@ const StatusHeader = (props: StatusHeaderProps) => {
           <EmojiName
             name={getUsername({displayName, username})}
             emojis={props.userEmojis}
-            textColor={getColor('contrastAccent')}
+            textColor={getColor('primary')}
           />{' '}
           <Type scale="S" style={styles.statusHeaderType}>
             {props.tootTypeMessage}
@@ -458,7 +458,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   focusBarHighlight: {
     width: 30,
-    backgroundColor: getColor('baseAccent'),
+    backgroundColor: getColor('baseHighlight'),
     position: 'absolute',
     left: 0,
     top: 0,
