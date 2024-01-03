@@ -534,7 +534,7 @@ const styleCreator: StyleCreator = ({getColor}) => ({
   },
   header: {
     overflow: 'hidden',
-    backgroundColor: getColor('baseAccent'),
+    backgroundColor: getColor('baseHighlight'),
     minHeight: screenHeight / 3,
   },
   headerBgImage: {
